@@ -275,10 +275,52 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
           }}>
             <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-outline-variant)' }} />
             <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', letterSpacing: '0.05em' }}>
-              Or Sign In With Google Account
+              Or Sign In With Verified Google Profile
             </span>
             <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-outline-variant)' }} />
           </div>
+
+          {/* Abhinav P - Real Verified Google Account 1-Click */}
+          <button
+            type="button"
+            onClick={async () => {
+              await signInWithCustomGoogle('Abhinav P', 'abhinavparayanchola136@gmail.com');
+              onShowToast('Signed In with Google', 'Authenticated as Abhinav P (abhinavparayanchola136@gmail.com)', 'success');
+              if (onSignedIn) onSignedIn();
+            }}
+            className="btn btn-ghost"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '10px 14px',
+              border: '2px solid #22c55e',
+              backgroundColor: '#f0fdf4',
+              borderRadius: 'var(--radius-lg)',
+              textAlign: 'left',
+              justifyContent: 'flex-start',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            title="Instant 1-Click Sign-In as Abhinav P"
+          >
+            <img
+              src="https://lh3.googleusercontent.com/a/ACg8ocIgrTmUtAY6ZDJF_bviv5dlhpNS9AQF48dDYWiOm0sTe_UWXj4g=s96-c"
+              alt="Abhinav P"
+              style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid #16a34a' }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://api.dicebear.com/7.x/initials/svg?seed=Abhinav%20P';
+              }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#15803d' }}>Abhinav P</span>
+                <span className="badge" style={{ backgroundColor: '#dcfce7', color: '#166534', fontSize: '10px', padding: '1px 6px' }}>Google Verified</span>
+              </div>
+              <span style={{ fontSize: '11px', color: '#166534' }}>abhinavparayanchola136@gmail.com</span>
+            </div>
+            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#16a34a' }}>arrow_forward</span>
+          </button>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <button

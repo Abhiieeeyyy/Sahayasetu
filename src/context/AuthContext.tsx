@@ -45,7 +45,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // 1. Check for OAuth callback code in URL search parameters (PKCE flow)
+        // 1. Check for hash tokens (#access_token=...&refresh_token=...)
+        if (window.location.hash.includes('access_token=')) {
+          const hashClean = window.location.hash.startsWith('#') 
+            ? window.location.hash.substring(1) 
+            : window.location.hash;
+          const hashParams = new URLSearchParams(hashClean);
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+
+          if (accessToken && refreshToken) {
+            try {
+              const { data, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+              });
+              // Clean up the hash from the browser address bar
+              window.history.replaceState({}, '', window.location.pathname);
+              if (data?.session?.user) {
+                const u = data.session.user;
+                const profile: GoogleUserProfile = {
+                  id: u.id,
+                  email: u.email || '',
+                  fullName: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Citizen Applicant',
+                  avatarUrl: u.user_metadata?.avatar_url || u.user_metadata?.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.email || 'CA')}`,
+                  provider: 'google'
+                };
+                localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
+                setUser(profile);
+                setIsLoading(false);
+                return;
+              }
+            } catch (hashErr) {
+              console.warn('Failed to set session from URL hash:', hashErr);
+            }
+          }
+        }
+
+        // 2. Check for OAuth callback code in URL search parameters (PKCE flow)
         const searchParams = new URLSearchParams(window.location.search);
         const code = searchParams.get('code');
         const errorDesc = searchParams.get('error_description') || searchParams.get('error');

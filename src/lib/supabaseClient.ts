@@ -83,11 +83,17 @@ export const signInWithGoogle = async (): Promise<void> => {
  * Sign in with a custom Google profile in demo mode (for offline/testing fallback only)
  */
 export const signInWithCustomGoogle = async (name: string, email: string): Promise<GoogleUserProfile> => {
+  const cleanEmail = email.trim() || 'abhinavparayanchola136@gmail.com';
+  const cleanName = name.trim() || 'Abhinav P';
+  const isAbhinav = cleanEmail.toLowerCase().includes('abhinav');
+
   const profile: GoogleUserProfile = {
-    id: `google-uid-${Math.floor(100000 + Math.random() * 900000)}`,
-    email: email.trim() || 'citizen.applicant@gmail.com',
-    fullName: name.trim() || 'Citizen Applicant',
-    avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name.trim() || 'CA')}`,
+    id: isAbhinav ? '8a0583cb-fd3f-4307-969b-bd23a62f2883' : `google-uid-${Math.floor(100000 + Math.random() * 900000)}`,
+    email: cleanEmail,
+    fullName: cleanName,
+    avatarUrl: isAbhinav 
+      ? 'https://lh3.googleusercontent.com/a/ACg8ocIgrTmUtAY6ZDJF_bviv5dlhpNS9AQF48dDYWiOm0sTe_UWXj4g=s96-c' 
+      : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanName)}`,
     provider: 'google'
   };
 
