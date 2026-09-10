@@ -107,6 +107,19 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
 
   const t = TRANSLATIONS[currentLang];
 
+  // Display OAuth redirect error if returned from provider on hosted site
+  React.useEffect(() => {
+    const oauthError = sessionStorage.getItem('sahayasetu_oauth_error');
+    if (oauthError) {
+      sessionStorage.removeItem('sahayasetu_oauth_error');
+      onShowToast(
+        currentLang === 'ML' ? 'ഗൂഗിൾ ലോഗിൻ പിശക്' : 'Google Sign-In Notice',
+        `${oauthError}. Please verify Supabase URL Configuration.`,
+        'error'
+      );
+    }
+  }, [onShowToast, currentLang]);
+
   const handleGoogleClick = async () => {
     setIsRedirecting(true);
     try {

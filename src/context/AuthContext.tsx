@@ -89,6 +89,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (errorDesc) {
           console.error('Google OAuth callback notice:', errorDesc);
+          try {
+            sessionStorage.setItem('sahayasetu_oauth_error', errorDesc);
+          } catch {}
           window.history.replaceState({}, '', window.location.pathname);
         }
 
