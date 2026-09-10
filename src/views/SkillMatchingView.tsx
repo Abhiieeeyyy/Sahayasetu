@@ -80,15 +80,31 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   const [selectedReqId, setSelectedReqId] = useState<string>(scopedRequisitions[0]?.id || '');
   const [isPostNeedOpen, setIsPostNeedOpen] = useState(false);
   const [isRecomputing, setIsRecomputing] = useState(false);
+  const [requisitionSearchQuery, setRequisitionSearchQuery] = useState('');
+
+  // Filtered civil requisitions based on search query
+  const displayedRequisitions = React.useMemo(() => {
+    const query = requisitionSearchQuery.trim().toLowerCase();
+    if (!query) return scopedRequisitions;
+
+    return scopedRequisitions.filter(r => 
+      r.title.toLowerCase().includes(query) ||
+      r.id.toLowerCase().includes(query) ||
+      (r.agency && r.agency.toLowerCase().includes(query)) ||
+      (r.sectorLocation && r.sectorLocation.toLowerCase().includes(query)) ||
+      (r.worksite && r.worksite.toLowerCase().includes(query)) ||
+      r.requiredSkills.some(s => s.toLowerCase().includes(query))
+    );
+  }, [scopedRequisitions, requisitionSearchQuery]);
 
   useEffect(() => {
-    if (scopedRequisitions.length > 0 && (!selectedReqId || !scopedRequisitions.some(r => r.id === selectedReqId))) {
-      setSelectedReqId(scopedRequisitions[0].id);
+    if (displayedRequisitions.length > 0 && (!selectedReqId || !displayedRequisitions.some(r => r.id === selectedReqId))) {
+      setSelectedReqId(displayedRequisitions[0].id);
     }
-  }, [scopedRequisitions, selectedReqId]);
+  }, [displayedRequisitions, selectedReqId]);
 
   // Active selected requisition object
-  const activeReq = scopedRequisitions.find(r => r.id === selectedReqId) || scopedRequisitions[0];
+  const activeReq = displayedRequisitions.find(r => r.id === selectedReqId) || displayedRequisitions[0] || scopedRequisitions.find(r => r.id === selectedReqId) || scopedRequisitions[0];
 
   // --------------------------------------------------------------------------
   // CANDIDATE OVERLAP MATCHING COMPUTATION
@@ -147,6 +163,7 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
       jobTitle: activeReq.title,
       agencyName: activeReq.agency,
       dailyWage: activeReq.dailyWage,
+      worksite: activeReq.sectorLocation || activeReq.worksite,
       districtName: activeReq.districtName || activeRegionalAdmin?.districtName || 'District',
       assignedDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
     });
@@ -313,12 +330,47 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
         <div style={{ gridColumn: 'span 5', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)' }}>
-              Active Civil Requisitions ({scopedRequisitions.length})
+              Active Civil Requisitions ({displayedRequisitions.length}{requisitionSearchQuery ? ` / ${scopedRequisitions.length}` : ''})
             </span>
             <span className="badge badge-rls">Sorted by Urgency</span>
           </div>
 
-          {scopedRequisitions.length === 0 ? (
+          {/* Search Bar for Active Civil Requisitions */}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <div className="search-input-wrapper" style={{ width: '100%' }}>
+              <span className="material-symbols-outlined">search</span>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Search requisitions by title, ID, trade, worksite, agency..."
+                value={requisitionSearchQuery}
+                onChange={(e) => setRequisitionSearchQuery(e.target.value)}
+                style={{ paddingLeft: '38px', paddingRight: requisitionSearchQuery ? '32px' : '12px', fontSize: '12.5px' }}
+              />
+              {requisitionSearchQuery && (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setRequisitionSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: '6px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    padding: '2px',
+                    minHeight: '24px',
+                    width: '24px',
+                    color: 'var(--color-on-surface-variant)'
+                  }}
+                  title="Clear search"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>close</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {displayedRequisitions.length === 0 ? (
             <div style={{
               backgroundColor: 'var(--color-surface-lowest)',
               border: '1px dashed var(--color-outline-variant)',
@@ -327,24 +379,37 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
               textAlign: 'center',
               color: 'var(--color-on-surface-variant)'
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'var(--color-outline)', display: 'block', marginBottom: '8px' }}>
-                assignment_late
+              <span className="material-symbols-outlined" style={{ fontSize: '36px', color: 'var(--color-outline)', display: 'block', marginBottom: '8px' }}>
+                search_off
               </span>
-              <div style={{ fontWeight: 600, fontSize: '14px' }}>No Active Job Openings in {districtLabel}</div>
-              <div style={{ fontSize: '12px', marginTop: '4px', marginBottom: '12px' }}>
-                Post a job availability requisition to match registered artisans in this district.
+              <div style={{ fontWeight: 600, fontSize: '14px' }}>
+                {requisitionSearchQuery ? `No requisitions match "${requisitionSearchQuery}"` : `No Active Job Openings in ${districtLabel}`}
               </div>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={() => setIsPostNeedOpen(true)}
-              >
-                <span className="material-symbols-outlined">add_circle</span>
-                <span>+ Post Job Availability</span>
-              </button>
+              <div style={{ fontSize: '12px', marginTop: '4px', marginBottom: '12px' }}>
+                {requisitionSearchQuery ? 'Try searching with another keyword, skill, or requisition ID.' : 'Post a job availability requisition to match registered artisans in this district.'}
+              </div>
+              {requisitionSearchQuery ? (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setRequisitionSearchQuery('')}
+                >
+                  <span className="material-symbols-outlined">clear_all</span>
+                  <span>Clear Search Filter</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => setIsPostNeedOpen(true)}
+                >
+                  <span className="material-symbols-outlined">add_circle</span>
+                  <span>+ Post Job Availability</span>
+                </button>
+              )}
             </div>
           ) : (
-            scopedRequisitions.map((req) => {
+            displayedRequisitions.map((req) => {
               const isSelected = req.id === activeReq?.id;
               const progressPct = Math.round((req.assignedCount / req.requiredCount) * 100);
 

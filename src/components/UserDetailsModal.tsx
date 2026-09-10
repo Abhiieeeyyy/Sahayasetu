@@ -23,7 +23,7 @@ interface UserDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   beneficiary: Beneficiary;
-  onOpenPass: (beneficiary: Beneficiary) => void;
+  onOpenPass?: (beneficiary: Beneficiary) => void;
 }
 
 export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
@@ -45,22 +45,28 @@ export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         style={{ maxWidth: '620px', width: '95%' }} 
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div className="modal-header" style={{ backgroundColor: 'var(--color-surface-lowest)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Header */}
+        <div style={{
+          padding: '20px 24px',
+          borderBottom: '1px solid var(--color-outline-variant)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: 'var(--color-surface-low)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-primary-container)',
-              color: 'var(--color-on-primary-container)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-surface-container)',
+              border: '2px solid var(--color-secondary)',
+              color: 'var(--color-secondary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
-                badge
-              </span>
+              <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>person</span>
             </div>
             <div>
               <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-on-surface-variant)', fontWeight: 700 }}>
@@ -287,21 +293,11 @@ export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         <div className="modal-footer" style={{
           padding: 'var(--space-md) var(--space-lg)',
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
           alignItems: 'center',
           backgroundColor: 'var(--color-surface-low)',
           borderTop: '1px solid var(--color-outline-variant)'
         }}>
-          <button 
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => onOpenPass(beneficiary)}
-            title="Generate and print official civilian relief QR pass"
-          >
-            <span className="material-symbols-outlined">badge</span>
-            <span>View &amp; Print Relief Pass</span>
-          </button>
-
           <button 
             type="button" 
             className="btn btn-primary" 

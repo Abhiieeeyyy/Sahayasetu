@@ -22,7 +22,6 @@
 import React, { useState, useMemo } from 'react';
 import { Beneficiary, VocationalSkill, UserRole, RegionalAdminAccount } from '../types';
 import { IntakeDrawer } from '../components/IntakeDrawer';
-import { OfflinePassModal } from '../components/OfflinePassModal';
 import { UserDetailsModal } from '../components/UserDetailsModal';
 
 interface BeneficiaryIntakeViewProps {
@@ -55,13 +54,81 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'camp' | 'makeshift' | 'available' | 'masons' | 'electricians'>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('ALL');
-  const [showOfflineBanner, setShowOfflineBanner] = useState(true);
   const [isIntakeDrawerOpen, setIsIntakeDrawerOpen] = useState(false);
-  const [activePassBeneficiary, setActivePassBeneficiary] = useState<Beneficiary | null>(null);
   const [selectedUserDetails, setSelectedUserDetails] = useState<Beneficiary | null>(null);
 
   // Active district for regional admin (defaults to Wayanad if not logged in)
   const targetDistrictId = activeRegionalAdmin?.districtId || 'KL-WYD-2024';
+
+  // --------------------------------------------------------------------------
+  // REAL CSV ROSTER EXPORT
+  // --------------------------------------------------------------------------
+  const handleExportRoster = () => {
+    if (filteredBeneficiaries.length === 0) {
+      onShowToast('Export Notice', 'No beneficiary records found to export.', 'warning');
+      return;
+    }
+
+    const headers = [
+      'Beneficiary ID',
+      'Full Name',
+      'Phone Number',
+      'Aadhaar Masked',
+      'District',
+      'Relief Camp ID',
+      'Calamity Impact',
+      'Vocational Skills',
+      'Experience (Years)',
+      'Living Status',
+      'Placement Status',
+      'Daily Wage (INR)',
+      'Assigned Worksite',
+      'Assigned Project',
+      'Aadhaar Bio-Verified',
+      'Medical Fit',
+      'Registration Date'
+    ];
+
+    const escapeCsv = (val: any) => {
+      if (val === undefined || val === null) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = filteredBeneficiaries.map(b => [
+      escapeCsv(b.id),
+      escapeCsv(b.name),
+      escapeCsv(b.phone),
+      escapeCsv(b.aadhaarMasked),
+      escapeCsv(b.district || b.districtId),
+      escapeCsv(b.campId),
+      escapeCsv(b.calamity),
+      escapeCsv(b.skills?.join('; ') || ''),
+      escapeCsv(b.experienceYears),
+      escapeCsv(b.livingStatus),
+      escapeCsv(b.placementStatus),
+      escapeCsv(b.dailyWageTier),
+      escapeCsv(b.assignedWorksite || b.worksite || 'N/A'),
+      escapeCsv(b.assignedProjectId || 'N/A'),
+      escapeCsv(b.isBioVerified ? 'Yes' : 'No'),
+      escapeCsv(b.isMedicalFit ? 'Yes' : 'No'),
+      escapeCsv(b.registeredDate)
+    ].join(','));
+
+    const csvContent = [headers.join(','), ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.setAttribute('download', `SahayaSetu_Beneficiary_Roster_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    onShowToast('Roster Exported', `Successfully exported ${filteredBeneficiaries.length} records to CSV.`, 'success');
+  };
 
   // --------------------------------------------------------------------------
   // DERIVED FILTERED BENEFICIARY ROSTER (STRICT REGIONAL SCOPING)
@@ -178,47 +245,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
         </div>
       </div>
 
-      {/* ----------------------------------------------------------------------
-       * SECTION 2: COLLAPSIBLE LOCAL-FIRST OFFLINE NOTIFICATION DRAWER
-       * Notifies field officers of local AES-256 storage during network disruptions
-       * ---------------------------------------------------------------------- */}
-      {showOfflineBanner && (
-        <div style={{
-          backgroundColor: '#fffbeb',
-          border: '1px solid #fde68a',
-          borderRadius: 'var(--radius-md)',
-          padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 'var(--space-md)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--color-secondary)' }}>
-              cloud_sync
-            </span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#92400e' }}>
-                Local-First Storage Enabled (AES-256 GCM)
-              </div>
-              <div style={{ fontSize: '0.8125rem', color: '#b45309', marginTop: '2px' }}>
-                All registrations stored locally will background-sync once Meppadi Sector Tower 4 resumes microwave uplink.
-              </div>
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-offline">Mesh Node 09-KL</span>
-            <button 
-              className="btn btn-ghost" 
-              onClick={() => setShowOfflineBanner(false)}
-              style={{ minHeight: '28px', width: '28px', padding: 0, color: '#92400e' }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* ----------------------------------------------------------------------
        * SECTION 3: MISSION KPI METRICS STRIP (5 Cards)
@@ -309,44 +336,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
        * SECTION 3.5: RBAC PERMISSION & REGION SCOPING BANNER
        * Confirms strict isolation for Regional Admin vs Global Oversight for Super Admin
        * ---------------------------------------------------------------------- */}
-      {currentRole === 'regional-admin' ? (
-        <div style={{
-          backgroundColor: '#eff6ff',
-          border: '1px solid #bfdbfe',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 16px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-          fontSize: '12px',
-          color: '#1e3a8a'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--color-primary)' }}>lock</span>
-            <span>
-              <strong>Strict Region Scoping Active:</strong> Logged in as <strong>{activeRegionalAdmin?.name || 'Regional Officer'}</strong> (Officer ID: <code className="font-mono">{activeRegionalAdmin?.officerCredentialId || activeRegionalAdmin?.sdmaOfficerId}</code>). Your access is strictly restricted to registered records in <strong>{activeRegionalAdmin?.districtName || 'Wayanad'} ({targetDistrictId})</strong>. Other district records are strictly isolated.
-            </span>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-rls font-mono">Region: {targetDistrictId}</span>
-            {onOpenEditCredentials && (
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={onOpenEditCredentials}
-                style={{ fontSize: '11px', padding: '4px 10px' }}
-                title="Update your login password, name, phone, or email"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>key</span>
-                <span>Edit My Credentials</span>
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
+      {currentRole === 'super-admin' && (
         <div style={{
           backgroundColor: '#f0fdf4',
           border: '1px solid #bbf7d0',
@@ -476,23 +466,12 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
           <button
             className="btn btn-secondary"
-            onClick={() => onShowToast('Export Initiated', 'Encrypted CSV exported to local offline cache.', 'info')}
-            title="Export filtered roster to secure CSV"
+            onClick={handleExportRoster}
+            title="Export filtered roster to CSV"
           >
             <span className="material-symbols-outlined">file_download</span>
             <span className="hidden-sm">Export Roster</span>
           </button>
-
-          {currentRole === 'super-admin' && (
-            <button
-              className="btn btn-primary"
-              onClick={() => setIsIntakeDrawerOpen(true)}
-              title="Register new displaced beneficiary (Super Admin Access)"
-            >
-              <span className="material-symbols-outlined">person_add</span>
-              <span>+ Rapid Intake</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -624,14 +603,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
                           <span>View Details</span>
                         </button>
 
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => setActivePassBeneficiary(b)}
-                          title="View & Print Official Civilian Relief Pass"
-                        >
-                          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>badge</span>
-                          <span className="hidden-sm">Relief Pass</span>
-                        </button>
+
 
                         {currentRole === 'super-admin' && (
                           b.placementStatus === 'Available' ? (
@@ -692,18 +664,6 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
           isOpen={true}
           beneficiary={selectedUserDetails}
           onClose={() => setSelectedUserDetails(null)}
-          onOpenPass={(ben) => {
-            setSelectedUserDetails(null);
-            setActivePassBeneficiary(ben);
-          }}
-        />
-      )}
-
-      {activePassBeneficiary && (
-        <OfflinePassModal
-          isOpen={true}
-          beneficiary={activePassBeneficiary}
-          onClose={() => setActivePassBeneficiary(null)}
         />
       )}
     </div>

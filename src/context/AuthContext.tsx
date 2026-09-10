@@ -82,44 +82,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
-        // 2. Check for OAuth callback code in URL search parameters (PKCE flow)
+        // 2. Check for OAuth callback code / error in URL search parameters (PKCE flow)
         const searchParams = new URLSearchParams(window.location.search);
         const code = searchParams.get('code');
         const errorDesc = searchParams.get('error_description') || searchParams.get('error');
 
         if (errorDesc) {
-          console.warn('Google OAuth redirected with notice:', errorDesc);
-          window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+          console.error('Google OAuth callback notice:', errorDesc);
+          window.history.replaceState({}, '', window.location.pathname);
         }
 
-        if (code) {
+        // 3. First check if Supabase's automatic detectSessionInUrl already established the session
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        let activeSession = initialSession;
+
+        // 4. If no session established yet but code exists, exchange code safely
+        if (!activeSession && code) {
           try {
             const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-            // Clean up the URL search params so ?code= is removed from address bar
-            window.history.replaceState({}, '', window.location.pathname + window.location.hash);
-            if (data?.session?.user) {
-              const u = data.session.user;
-              const profile: GoogleUserProfile = {
-                id: u.id,
-                email: u.email || '',
-                fullName: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Citizen Applicant',
-                avatarUrl: u.user_metadata?.avatar_url || u.user_metadata?.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.email || 'CA')}`,
-                provider: 'google'
-              };
-              localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
-              setUser(profile);
-              setIsLoading(false);
-              return;
+            if (data?.session) {
+              activeSession = data.session;
             }
           } catch (exchangeErr) {
-            console.warn('OAuth code exchange notice:', exchangeErr);
+            console.warn('Manual OAuth code exchange notice (may have been consumed automatically):', exchangeErr);
+            // Re-verify session in case Supabase background listener completed exchange
+            const { data: { session: recheckSession } } = await supabase.auth.getSession();
+            activeSession = recheckSession;
           }
         }
 
-        // 2. Check active Supabase session
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const u = session.user;
+        // Clean up code and state from address bar once processed
+        if (code || searchParams.get('state')) {
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+
+        if (activeSession?.user) {
+          const u = activeSession.user;
           const profile: GoogleUserProfile = {
             id: u.id,
             email: u.email || '',
@@ -133,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // 3. Check stored local session
+        // 5. Check stored local session fallback
         const stored = getActiveGoogleUser();
         setUser(stored);
       } catch (err) {
@@ -161,9 +159,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
           setUser(profile);
+          setIsLoading(false);
         } else if (_event === 'SIGNED_OUT') {
           setUser(null);
           localStorage.removeItem('sahayasetu_google_user');
+          setIsLoading(false);
         }
       });
 

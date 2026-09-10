@@ -8,15 +8,15 @@
  * their active civil reconstruction deployments, check guaranteed daily wage ledgers,
  * track Direct Benefit Transfer (DBT) disbursals, and access multilingual relief advisories.
  * 
- * Architectural Directives Implemented:
- * 1. Citizen Broadcast Alert Banner: Urgent safety routes and cash distribution hubs.
- * 2. Worker Identity Dossier: Profile banner for Ramesh K., Aadhaar Bio-Verified status,
+ * Key Capabilities:
+ * 1. Worker Identity Dossier: Profile banner for citizen, Aadhaar Bio-Verified status,
  *    and camp accommodation ID.
- * 3. Multilingual Support: Switcher for English and Malayalam (മലയാളം).
- * 4. Active Deployment Card: Real-time work shift telemetry and supervisor contacts.
- * 5. Daily Wage Ledger & DBT Disbursal Tracker: Verifiable record of hours worked,
- *    base wages, hardship zone supplements, and bank transfer transaction refs.
- * 6. Printable Offline Relief Pass: Immediate access to generate a printable physical pass.
+ * 2. Full Multilingual Support: Switcher for English and Malayalam (മലയാളം) that translates
+ *    the entire user portal when Malayalam is selected.
+ * 3. Active Deployment Banner: Real-time work shift telemetry, supervisor contacts, and worksite location.
+ * 4. 4-Step Progress Stepper: Visual lifecycle tracking of relief & employment aid.
+ * 5. Printable & PDF Downloadable Relief Pass: Immediate access to generate and download
+ *    a physical credential pass with assigned worksite details.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -35,6 +35,14 @@ interface BeneficiarySelfPortalViewProps {
   onNavigateToRegister?: () => void;
 }
 
+const RELATION_LABELS_ML: Record<string, string> = {
+  'Self': 'സ്വന്തം',
+  'Spouse': 'ഭാര്യ / ഭർത്താവ്',
+  'Parent': 'മാതാപിതാക്കൾ',
+  'Child': 'മകൻ / മകൾ',
+  'Dependent': 'ആശ്രിതർ'
+};
+
 export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps> = ({
   beneficiary,
   beneficiariesList = [],
@@ -45,6 +53,7 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
 }) => {
   const { user } = useAuth();
   const { language: currentLang, setLanguage: setCurrentLang } = useLanguage();
+  const isMalayalam = currentLang === 'ML';
   const [isPassModalOpen, setIsPassModalOpen] = useState(false);
 
   // Synchronized Citizen Assignment Notifications
@@ -67,6 +76,12 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
 
   const latestAssignmentNotif = notifications.find(n => n.type === 'JOB_ASSIGNMENT');
   const isAssigned = beneficiary?.placementStatus === 'Assigned' || !!latestAssignmentNotif;
+
+  // Assigned worksite determination
+  const assignedWorksite = latestAssignmentNotif?.worksite || 
+    beneficiary?.assignedWorksite || 
+    beneficiary?.worksite || 
+    (isMalayalam ? 'മേപ്പാടി സെക്ടർ 2 വർക്ക്സ് ഹബ്ബ്' : 'Meppadi Sector 2 Works Hub');
 
   // If user has not yet registered an application, show informative state
   if (!beneficiary) {
@@ -106,15 +121,25 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
           </div>
 
           <div>
-            <span className="badge badge-rls">Application Tracking</span>
+            <span className="badge badge-rls">
+              {isMalayalam ? 'അപേക്ഷ ട്രാക്കിംഗ്' : 'Application Tracking'}
+            </span>
             <h2 style={{ fontSize: '1.375rem', color: 'var(--color-primary)', marginTop: '8px' }}>
-              {currentLang === 'ML' ? 'അപേക്ഷകൾ ഒന്നും കണ്ടെത്തിയില്ല' : 'No Application Submitted Yet'}
+              {isMalayalam ? 'അപേക്ഷകൾ ഒന്നും കണ്ടെത്തിയില്ല' : 'No Application Submitted Yet'}
             </h2>
             <p style={{ color: 'var(--color-on-surface-variant)', fontSize: '0.9375rem', lineHeight: 1.5, marginTop: '6px' }}>
               {user?.email ? (
-                <>Signed in as <strong>{user.email}</strong>. You have not submitted a disaster relief application under this account yet.</>
+                isMalayalam ? (
+                  <><strong>{user.email}</strong> എന്ന അക്കൗണ്ടിൽ ലോഗിൻ ചെയ്തിരിക്കുന്നു. ഈ അക്കൗണ്ടിൽ ഇതുവരെ ദുരിതാശ്വാസ അപേക്ഷ സമർപ്പിച്ചിട്ടില്ല.</>
+                ) : (
+                  <>Signed in as <strong>{user.email}</strong>. You have not submitted a disaster relief application under this account yet.</>
+                )
               ) : (
-                <>Please complete your registration with necessary verification details to begin tracking your relief aid and employment application.</>
+                isMalayalam ? (
+                  <>നിങ്ങളുടെ ദുരിതാശ്വാസ സഹായവും തൊഴിൽ അവസരങ്ങളും ട്രാക്ക് ചെയ്യുന്നതിന് ദയവായി രജിസ്ട്രേഷൻ പൂർത്തിയാക്കുക.</>
+                ) : (
+                  <>Please complete your registration with necessary verification details to begin tracking your relief aid and employment application.</>
+                )
               )}
             </p>
           </div>
@@ -127,7 +152,7 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               style={{ marginTop: '8px', padding: '12px 24px', fontWeight: 700 }}
             >
               <span className="material-symbols-outlined">how_to_reg</span>
-              <span>{currentLang === 'ML' ? 'ഇപ്പോൾ അപേക്ഷിക്കുക' : 'Register My Details Now'}</span>
+              <span>{isMalayalam ? 'ഇപ്പോൾ അപേക്ഷിക്കുക' : 'Register My Details Now'}</span>
             </button>
           )}
         </div>
@@ -171,14 +196,14 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="badge badge-verified" style={{ backgroundColor: '#059669', color: '#fff', fontWeight: 700 }}>
-                    ✓ {currentLang === 'ML' ? 'തൊഴിൽ അനുവദിച്ചു' : 'Official Job Assigned'}
+                    ✓ {isMalayalam ? 'തൊഴിൽ അനുവദിച്ചു' : 'Official Job Assigned'}
                   </span>
                   <span style={{ fontSize: '12px', color: '#047857', fontWeight: 700 }}>
-                    {latestAssignmentNotif?.assignedDate || 'Dispatched Today'}
+                    {latestAssignmentNotif?.assignedDate || (isMalayalam ? 'ഇന്ന് നിയോഗിക്കപ്പെട്ടു' : 'Dispatched Today')}
                   </span>
                 </div>
                 <h2 style={{ fontSize: '1.25rem', color: '#065f46', margin: '4px 0 0 0', fontWeight: 800 }}>
-                  {latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || 'Civil Reconstruction & Rehabilitation Works'}
+                  {latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || (isMalayalam ? 'സിവിൽ പുനർനിർമ്മാണ & പുനരധിവാസ പദ്ധതി' : 'Civil Reconstruction & Rehabilitation Works')}
                 </h2>
               </div>
             </div>
@@ -193,10 +218,10 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
                 fontWeight: 800,
                 color: '#065f46'
               }}>
-                ₹{latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier || 850} / day (DBT Direct)
+                ₹{latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier || 850} {isMalayalam ? '/ ദിവസം (DBT നേരിട്ട്)' : '/ day (DBT Direct)'}
               </span>
 
-              {/* Generate Printable Pass for Assigned Job */}
+              {/* Generate Printable / PDF Pass for Assigned Job */}
               <button
                 type="button"
                 onClick={() => setIsPassModalOpen(true)}
@@ -215,8 +240,8 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
                   cursor: 'pointer'
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>print</span>
-                <span>{currentLang === 'ML' ? 'തൊഴിൽ പാസ്സ് പ്രിന്റ് ചെയ്യുക' : 'Generate Printable Job Pass'}</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>badge</span>
+                <span>{isMalayalam ? 'തൊഴിൽ പാസ്സ് ഡൗൺലോഡ് / പ്രിന്റ്' : 'Generate & Download Job Pass'}</span>
               </button>
             </div>
           </div>
@@ -230,10 +255,28 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
             flexDirection: 'column',
             gap: '8px'
           }}>
+            {/* Worksite Location Highlight */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '13px',
+              color: '#064e3b',
+              backgroundColor: '#ecfdf5',
+              padding: '6px 10px',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid #a7f3d0'
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#047857' }}>location_on</span>
+              <span>
+                <strong>{isMalayalam ? 'തൊഴിൽ സ്ഥലം (Worksite Location):' : 'Assigned Worksite Location:'}</strong> {assignedWorksite}
+              </span>
+            </div>
+
             <div style={{ fontSize: '13px', color: '#1f2937', lineHeight: 1.5 }}>
-              {currentLang === 'ML' ? (
+              {isMalayalam ? (
                 <>
-                  അഭിനന്ദനങ്ങൾ <strong>{beneficiary.name}</strong>! താങ്കൾക്ക് റീജിയണൽ അഡ്മിൻ വഴി തൊഴിൽ അനുവദിച്ചിരിക്കുന്നു. ദിവസവേതനം <strong>₹{latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier || 850}/ദിവസം</strong> നിങ്ങളുടെ ബാങ്ക് അക്കൗണ്ടിലേക്ക് നേരിട്ട് DBT വഴി ലഭിക്കുന്നതാണ്.
+                  അഭിനന്ദനങ്ങൾ <strong>{beneficiary.name}</strong>! താങ്കൾക്ക് റീജിയണൽ അഡ്മിൻ വഴി ഔദ്യോഗികമായി തൊഴിൽ അനുവദിച്ചിരിക്കുന്നു. ദിവസവേതനം <strong>₹{latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier || 850}/ദിവസം</strong> നിങ്ങളുടെ ബാങ്ക് അക്കൗണ്ടിലേക്ക് നേരിട്ട് DBT വഴി ലഭിക്കുന്നതാണ്.
                 </>
               ) : (
                 <>
@@ -254,18 +297,16 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
             }}>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>sms</span>
               <span>
-                <strong>{currentLang === 'ML' ? 'എസ്.എം.എസ് അറിയിപ്പ് അയച്ചു:' : 'SMS Dispatched to:'}</strong> +91 {beneficiary.phone} — {currentLang === 'ML' ? `പ്രിയപ്പെട്ട ${beneficiary.name}, താങ്കൾക്ക് "${latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || 'Civil Project'}" ജോലി അനുവദിച്ചിരിക്കുന്നു.` : `Dear ${beneficiary.name}, you have been assigned to "${latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || 'Civil Project'}".`}
+                <strong>{isMalayalam ? 'എസ്.എം.എസ് അറിയിപ്പ് അയച്ചു:' : 'SMS Dispatched to:'}</strong> +91 {beneficiary.phone} — {isMalayalam ? `പ്രിയപ്പെട്ട ${beneficiary.name}, താങ്കൾക്ക് "${latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || 'Civil Project'}" ജോലി അനുവദിച്ചിരിക്കുന്നു. സ്ഥലം: ${assignedWorksite}` : `Dear ${beneficiary.name}, you have been assigned to "${latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || 'Civil Project'}". Worksite: ${assignedWorksite}`}
               </span>
             </div>
           </div>
         </div>
       )}
 
-
-
       {/* ----------------------------------------------------------------------
        * SECTION 2: WORKER WELCOME BANNER & MULTILINGUAL BAR
-       * Profile dossier for Ramesh K., Aadhaar Bio-Verified stamp, language selector
+       * Profile dossier, Aadhaar Bio-Verified stamp, language selector
        * ---------------------------------------------------------------------- */}
       <div className="card" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-md)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
@@ -309,7 +350,9 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
                 {beneficiary.name}
               </h2>
               <span className="badge badge-verified">
-                {beneficiary.relationshipToAccount ? `${beneficiary.relationshipToAccount}` : 'Self'}
+                {beneficiary.relationshipToAccount 
+                  ? (isMalayalam ? (RELATION_LABELS_ML[beneficiary.relationshipToAccount] || beneficiary.relationshipToAccount) : beneficiary.relationshipToAccount) 
+                  : (isMalayalam ? 'സ്വന്തം' : 'Self')}
               </span>
               <span className="badge badge-rls">
                 {beneficiary.state || 'Kerala'} • {beneficiary.district || 'Wayanad'}
@@ -318,13 +361,15 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginTop: '4px', fontSize: '13px', color: 'var(--color-on-surface-variant)' }}>
               <span style={{ color: 'var(--color-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>holiday_village</span>
-                Camp: {beneficiary.campId}
+                {isMalayalam ? 'ക്യാമ്പ്:' : 'Camp:'} {beneficiary.campId}
               </span>
               <span>•</span>
-              <span className="font-mono">Token: APP-{beneficiary.id}</span>
+              <span className="font-mono">{isMalayalam ? 'ടോക്കൺ:' : 'Token:'} APP-{beneficiary.id}</span>
               <span>•</span>
               <span style={{ color: 'var(--color-tertiary)', fontWeight: 600 }}>
-                ✓ {beneficiary.isBioVerified ? 'Aadhaar Bio-Verified' : 'Verification In-Progress'}
+                ✓ {beneficiary.isBioVerified 
+                  ? (isMalayalam ? 'ആധാർ ബയോ-സ്ഥിരീകരിച്ചു' : 'Aadhaar Bio-Verified') 
+                  : (isMalayalam ? 'പരിശോധന പുരോഗമിക്കുന്നു' : 'Verification In-Progress')}
               </span>
             </div>
           </div>
@@ -355,22 +400,28 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
             </button>
           </div>
 
-          {isAssigned ? (
+          {onNavigateToRegister && (
             <button
-              className="btn btn-primary"
-              onClick={() => setIsPassModalOpen(true)}
+              type="button"
+              className="btn btn-secondary"
+              onClick={onNavigateToRegister}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
-              title="Generate and print physical job deployment pass"
+              title={isMalayalam ? "അപേക്ഷാ വിവരങ്ങൾ മാറ്റുക" : "Edit your submitted application"}
             >
-              <span className="material-symbols-outlined">badge</span>
-              <span>{currentLang === 'ML' ? 'തൊഴിൽ പാസ്സ് പ്രിന്റ് ചെയ്യുക' : 'Print Job Pass'}</span>
+              <span className="material-symbols-outlined">edit_document</span>
+              <span>{isMalayalam ? 'അപേക്ഷ തിരുത്തുക' : 'Edit Application'}</span>
             </button>
-          ) : (
-            <span className="badge" style={{ backgroundColor: 'var(--color-surface-container)', color: 'var(--color-on-surface-variant)', fontSize: '11px', padding: '6px 12px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', marginRight: '4px' }}>hourglass_empty</span>
-              <span>Pass Available Upon Job Assignment</span>
-            </span>
           )}
+
+          <button
+            className="btn btn-primary"
+            onClick={() => setIsPassModalOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
+            title={isMalayalam ? "ഔദ്യോഗിക പാസ്സ് കാണുക / ഡൗൺലോഡ് ചെയ്യുക" : "View and download official pass"}
+          >
+            <span className="material-symbols-outlined">badge</span>
+            <span>{isMalayalam ? 'തൊഴിൽ പാസ്സ്' : 'Print Job Pass'}</span>
+          </button>
         </div>
       </div>
 
@@ -386,12 +437,14 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
         {/* Tracker Header with Application Search */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px' }}>
           <div>
-            <span className="badge badge-rls">Official Aid Pipeline</span>
+            <span className="badge badge-rls">
+              {isMalayalam ? 'ഔദ്യോഗിക ദുരിതാശ്വാസ ഘട്ടങ്ങൾ' : 'Official Aid Pipeline'}
+            </span>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--color-primary)', marginTop: '4px' }}>
-              Citizen Aid &amp; Livelihood Application Tracker
+              {isMalayalam ? 'പൗര ദുരിതാശ്വാസ & തൊഴിൽ അപേക്ഷാ ട്രാക്കർ' : 'Citizen Aid & Livelihood Application Tracker'}
             </h3>
             <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              Tracking Token: <span className="font-mono" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>APP-{beneficiary.id}</span> • Registered: {beneficiary.registeredDate}
+              {isMalayalam ? 'ട്രാക്കിംഗ് ടോക്കൺ:' : 'Tracking Token:'} <span className="font-mono" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>APP-{beneficiary.id}</span> • {isMalayalam ? 'രജിസ്റ്റർ ചെയ്ത തീയതി:' : 'Registered:'} {beneficiary.registeredDate}
             </div>
           </div>
 
@@ -399,15 +452,15 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="badge badge-verified" style={{ fontSize: '11px', padding: '4px 8px' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>verified_user</span>
-              <span>Your Official Application</span>
+              <span>{isMalayalam ? 'നിങ്ങളുടെ ഔദ്യോഗിക അപേക്ഷ' : 'Your Official Application'}</span>
             </span>
           </div>
         </div>
 
-        {/* 4-Step Visual Progress Stepper (Dynamically Computed from Selected Beneficiary) */}
+        {/* 4-Step Visual Progress Stepper */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: 'var(--space-sm)',
           position: 'relative'
         }}>
@@ -415,13 +468,13 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
           <div className="card-inset" style={{ borderTop: '3px solid var(--color-tertiary)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-tertiary)', fontWeight: 700, fontSize: '12px' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check_circle</span>
-              <span>1. Application Filed</span>
+              <span>{isMalayalam ? '1. അപേക്ഷ സമർപ്പിച്ചു' : '1. Application Filed'}</span>
             </div>
             <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '6px' }}>
-              Profile Registered
+              {isMalayalam ? 'പ്രൊഫൈൽ രജിസ്റ്റർ ചെയ്തു' : 'Profile Registered'}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              {beneficiary.registeredDate} • Filed at {beneficiary.campId.split('(')[0]}
+              {beneficiary.registeredDate} • {isMalayalam ? 'ക്യാമ്പ്:' : 'Filed at'} {beneficiary.campId.split('(')[0]}
             </div>
           </div>
 
@@ -431,13 +484,17 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
                 {beneficiary.isBioVerified ? 'check_circle' : 'pending'}
               </span>
-              <span>2. Identity Cleared</span>
+              <span>{isMalayalam ? '2. തിരിച്ചറിയൽ പൂർത്തിയായി' : '2. Identity Cleared'}</span>
             </div>
             <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '6px' }}>
-              {beneficiary.isBioVerified ? 'Aadhaar Bio-Verified' : 'Verification In Progress'}
+              {beneficiary.isBioVerified 
+                ? (isMalayalam ? 'ആധാർ ബയോ-സ്ഥിരീകരിച്ചു' : 'Aadhaar Bio-Verified') 
+                : (isMalayalam ? 'പരിശോധന പുരോഗമിക്കുന്നു' : 'Verification In Progress')}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              {beneficiary.isMedicalFit ? 'Medical Fitness Certified' : 'Medical Review Queued'}
+              {beneficiary.isMedicalFit 
+                ? (isMalayalam ? 'ആരോഗ്യ ഫിറ്റ്നസ് ഉറപ്പാക്കി' : 'Medical Fitness Certified') 
+                : (isMalayalam ? 'മെഡിക്കൽ പരിശോധന കാത്തിരിക്കുന്നു' : 'Medical Review Queued')}
             </div>
           </div>
 
@@ -450,13 +507,17 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
                 {beneficiary.placementStatus === 'Assigned' ? 'task_alt' : 'engineering'}
               </span>
-              <span>3. Livelihood Allotment</span>
+              <span>{isMalayalam ? '3. ഉപജീവന തൊഴിൽ അനുവദിക്കൽ' : '3. Livelihood Allotment'}</span>
             </div>
             <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '6px', color: beneficiary.placementStatus === 'Assigned' ? 'var(--color-tertiary)' : 'var(--color-primary)' }}>
-              {beneficiary.placementStatus === 'Assigned' ? 'Allotted to Civil Works' : 'Standby for Match'}
+              {beneficiary.placementStatus === 'Assigned' 
+                ? (isMalayalam ? 'പുനർനിർമ്മാണ ജോലി ലഭിച്ചു' : 'Allotted to Civil Works') 
+                : (isMalayalam ? 'തൊഴിൽ കണ്ടെത്തുന്നു' : 'Standby for Match')}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              {beneficiary.placementStatus === 'Assigned' ? 'Active Shift • ₹850/day Base Rate' : 'Ranked in upcoming requisition roster'}
+              {beneficiary.placementStatus === 'Assigned' 
+                ? (isMalayalam ? `സ്ഥലം: ${assignedWorksite}` : `Worksite: ${assignedWorksite}`) 
+                : (isMalayalam ? 'അടുത്ത തൊഴിൽ പട്ടികയിൽ ഉൾപ്പെടുത്തിയിട്ടുണ്ട്' : 'Ranked in upcoming requisition roster')}
             </div>
           </div>
 
@@ -464,13 +525,15 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
           <div className="card-inset" style={{ borderTop: `3px solid ${beneficiary.placementStatus === 'Assigned' ? 'var(--color-tertiary)' : 'var(--color-secondary)'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: beneficiary.placementStatus === 'Assigned' ? 'var(--color-tertiary)' : 'var(--color-secondary)', fontWeight: 700, fontSize: '12px' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>payments</span>
-              <span>4. DBT Disbursals</span>
+              <span>{isMalayalam ? '4. നേരിട്ടുള്ള വേതന വിതരണം (DBT)' : '4. DBT Disbursals'}</span>
             </div>
             <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '6px' }}>
-              {beneficiary.placementStatus === 'Assigned' ? 'PFMS Auto-Pay Active' : 'Bank Account Linked'}
+              {beneficiary.placementStatus === 'Assigned' 
+                ? (isMalayalam ? 'PFMS പേയ്മെന്റ് സജീവം' : 'PFMS Auto-Pay Active') 
+                : (isMalayalam ? 'ബാങ്ക് അക്കൗണ്ട് ബന്ധിപ്പിച്ചു' : 'Bank Account Linked')}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              Direct Benefit Transfer to {beneficiary.aadhaarMasked}
+              {isMalayalam ? 'വേതനം ആധാറിലേക്ക്:' : 'Direct Benefit Transfer to'} {beneficiary.aadhaarMasked}
             </div>
           </div>
         </div>
@@ -490,27 +553,42 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
         }}>
           <div>
             <span style={{ fontSize: '11px', textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', fontWeight: 700 }}>
-              Registered Applicant Details
+              {isMalayalam ? 'രജിസ്റ്റർ ചെയ്ത അപേക്ഷകന്റെ വിവരങ്ങൾ' : 'Registered Applicant Details'}
             </span>
             <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-on-surface)', marginTop: '2px' }}>
-              {beneficiary.name} • Contact: +91 {beneficiary.phone} • Calamity: {beneficiary.calamity}
+              {beneficiary.name} • {isMalayalam ? 'ഫോൺ:' : 'Contact:'} +91 {beneficiary.phone} • {isMalayalam ? 'ദുരന്തം:' : 'Calamity:'} {beneficiary.calamity}
             </div>
             <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
-              Camp: {beneficiary.campId} • Skills: {beneficiary.skills.join(', ')} ({beneficiary.experienceYears}y exp)
+              {isMalayalam ? 'ക്യാമ്പ്:' : 'Camp:'} {beneficiary.campId} • {isMalayalam ? 'നൈപുണ്യങ്ങൾ:' : 'Skills:'} {beneficiary.skills.join(', ')} ({beneficiary.experienceYears} {isMalayalam ? 'വർഷ പരിചയം' : 'y exp'})
+              {assignedWorksite && (
+                <> • {isMalayalam ? 'തൊഴിൽ സ്ഥലം:' : 'Worksite:'} <strong>{assignedWorksite}</strong></>
+              )}
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="badge badge-rls">
-              Wage Entitlement: ₹{beneficiary.dailyWageTier}/day
+              {isMalayalam ? `വേതനാവകാശം: ₹${beneficiary.dailyWageTier}/ദിവസം` : `Wage Entitlement: ₹${beneficiary.dailyWageTier}/day`}
             </span>
+            {onNavigateToRegister && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={onNavigateToRegister}
+                title={isMalayalam ? "അപേക്ഷാ വിവരങ്ങൾ മാറ്റുക" : "Edit application details"}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>edit</span>
+                <span>{isMalayalam ? 'അപേക്ഷ തിരുത്തുക' : 'Edit Application'}</span>
+              </button>
+            )}
+
             <button
               className="btn btn-secondary btn-sm"
               onClick={() => setIsPassModalOpen(true)}
-              title="Print your relief pass"
+              title={isMalayalam ? "അപേക്ഷാ പാസ്സ് പ്രിന്റ് ചെയ്യുക" : "Print your relief pass"}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>print</span>
-              <span>Print Application Pass</span>
+              <span>{isMalayalam ? 'അപേക്ഷാ പാസ്സ് പ്രിന്റ്' : 'Print Application Pass'}</span>
             </button>
           </div>
         </div>
@@ -518,7 +596,7 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
 
       {/* ----------------------------------------------------------------------
        * SECTION 3: BENTO WORKSPACE GRID
-       * Left Col: Active Assignment & Wage Ledger | Right Col: Broadcasts & Contacts
+       * Left Col: Job Preferences & Priorities | Right Col: Emergency Camp Officials
        * ---------------------------------------------------------------------- */}
       <div style={{
         display: 'grid',
@@ -528,7 +606,6 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
       }}>
         {/* LEFT COLUMN: JOB PREFERENCES & PRIORITIES (6 Columns) */}
         <div style={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-          {/* Job Priorities & Matching Target Card */}
           <div className="card" style={{ borderLeft: '4px solid var(--color-tertiary)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -536,11 +613,11 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
                   format_list_numbered
                 </span>
                 <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--color-on-surface)' }}>
-                  {currentLang === 'ML' ? 'തൊഴിൽ മുൻഗണനകൾ & യോഗ്യത' : 'Your Job Preferences & Priority Ranking'}
+                  {isMalayalam ? 'തൊഴിൽ മുൻഗണനകൾ & യോഗ്യത' : 'Your Job Preferences & Priority Ranking'}
                 </span>
               </div>
               <span className="badge badge-verified" style={{ fontSize: '11px' }}>
-                {beneficiary.experienceYears} {currentLang === 'ML' ? 'വർഷ പരിചയം' : 'Years Experience'}
+                {beneficiary.experienceYears} {isMalayalam ? 'വർഷ പരിചയം' : 'Years Experience'}
               </span>
             </div>
 
@@ -557,14 +634,14 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span className="badge badge-verified" style={{ fontSize: '11px', padding: '2px 8px', fontWeight: 800 }}>
-                    1st Priority
+                    {isMalayalam ? 'ഒന്നാം മുൻഗണന' : '1st Priority'}
                   </span>
                   <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--color-on-surface)' }}>
                     {beneficiary.jobPriorities?.[0] || beneficiary.skills[0] || 'Masonry'}
                   </span>
                 </div>
                 <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 700 }}>
-                  ✓ Primary Target
+                  {isMalayalam ? '✓ മുഖ്യ തൊഴിൽ' : '✓ Primary Target'}
                 </span>
               </div>
 
@@ -580,14 +657,14 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span className="badge badge-rls" style={{ fontSize: '11px', padding: '2px 8px', fontWeight: 700 }}>
-                    2nd Priority
+                    {isMalayalam ? 'രണ്ടാം മുൻഗണന' : '2nd Priority'}
                   </span>
                   <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--color-on-surface)' }}>
                     {beneficiary.jobPriorities?.[1] || beneficiary.skills[1] || 'Carpentry'}
                   </span>
                 </div>
                 <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
-                  Secondary Choice
+                  {isMalayalam ? 'രണ്ടാം ചോയ്സ്' : 'Secondary Choice'}
                 </span>
               </div>
 
@@ -603,86 +680,53 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span className="badge" style={{ fontSize: '11px', padding: '2px 8px', fontWeight: 700 }}>
-                    3rd Priority
+                    {isMalayalam ? 'മൂന്നാം മുൻഗണന' : '3rd Priority'}
                   </span>
                   <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--color-on-surface)' }}>
                     {beneficiary.jobPriorities?.[2] || beneficiary.skills[2] || 'General Civil Labor'}
                   </span>
                 </div>
                 <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
-                  Alternative Choice
+                  {isMalayalam ? 'മൂന്നാം ചോയ്സ്' : 'Alternative Choice'}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: EMERGENCY BROADCASTS & CONTACTS (6 Columns) */}
+        {/* RIGHT COLUMN: EMERGENCY CONTACTS (6 Columns) */}
+        {/* Notice: Camp Official Broadcasts has been removed as per user instructions */}
         <div style={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-          {/* Official Relief Broadcast Feed */}
-          <div className="card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)' }}>
-                Camp Official Broadcasts
-              </span>
-              <span className="badge badge-flood">Live Channel</span>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div className="card-inset">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="badge badge-landslide" style={{ fontSize: '10px' }}>Urgent Ration Kit</span>
-                  <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Today 11:00 AM</span>
-                </div>
-                <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '4px' }}>
-                  2-Week Dry Ration Kits &amp; Water Purification Tablets
-                </div>
-                <p style={{ fontSize: '12px', marginTop: '2px' }}>
-                  Distribution starting at Meppadi Camp Sector 2 Counter. Bring your Beneficiary Token.
-                </p>
-              </div>
-
-              <div className="card-inset">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="badge badge-verified" style={{ fontSize: '10px' }}>Medical Camp</span>
-                  <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Tomorrow 09:00 AM</span>
-                </div>
-                <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '4px' }}>
-                  Free Tetanus Vaccination &amp; Health Checks
-                </div>
-                <p style={{ fontSize: '12px', marginTop: '2px' }}>
-                  Disaster medical response team mobile van will be stationed at Camp Medical Bay.
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Key Relief Camp Contacts */}
           <div className="card">
             <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)', display: 'block', marginBottom: '12px' }}>
-              Emergency Camp Officials
+              {isMalayalam ? 'ക്യാമ്പ് അടിയന്തര ഉദ്യോഗസ്ഥർ' : 'Emergency Camp Officials'}
             </span>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '13px' }}>Dr. K. Suresh</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Medical Relief Officer</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                    {isMalayalam ? 'മെഡിക്കൽ റിലീഫ് ഓഫീസർ' : 'Medical Relief Officer'}
+                  </div>
                 </div>
                 <a href="tel:9447100221" className="btn btn-secondary btn-sm">
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>call</span>
-                  <span>Call</span>
+                  <span>{isMalayalam ? 'വിളിക്കുക' : 'Call'}</span>
                 </a>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '13px' }}>Vipin Das</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>Shelter Camp Warden</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                    {isMalayalam ? 'ക്യാമ്പ് വാർഡൻ' : 'Shelter Camp Warden'}
+                  </div>
                 </div>
                 <a href="tel:9447100332" className="btn btn-secondary btn-sm">
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>call</span>
-                  <span>Call</span>
+                  <span>{isMalayalam ? 'വിളിക്കുക' : 'Call'}</span>
                 </a>
               </div>
             </div>
@@ -690,17 +734,19 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
         </div>
       </div>
 
-      {/* Official Job Pass Modal */}
+      {/* Official Job & Relief Pass Modal with PDF Download and Worksite Display */}
       <OfflinePassModal
         isOpen={isPassModalOpen}
         onClose={() => setIsPassModalOpen(false)}
         beneficiary={beneficiary}
-        jobDetails={isAssigned ? {
-          jobTitle: latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId,
-          agencyName: latestAssignmentNotif?.agencyName,
-          dailyWage: latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier,
-          assignedDate: latestAssignmentNotif?.assignedDate || beneficiary.registeredDate
-        } : undefined}
+        onShowToast={onShowToast}
+        jobDetails={{
+          jobTitle: latestAssignmentNotif?.jobTitle || beneficiary.assignedProjectId || (isMalayalam ? 'സിവിൽ പുനർനിർമ്മാണ പദ്ധതി' : 'Civil Rehabilitation & Reconstruction'),
+          agencyName: latestAssignmentNotif?.agencyName || (isMalayalam ? 'ജില്ലാ ദുരന്ത നിവാരണ അതോറിറ്റി (DDMA)' : 'District Disaster Management Authority (DDMA)'),
+          dailyWage: latestAssignmentNotif?.dailyWage || beneficiary.dailyWageTier || 850,
+          assignedDate: latestAssignmentNotif?.assignedDate || beneficiary.registeredDate || (isMalayalam ? 'ഔദ്യോഗിക നിയോഗം' : 'Official Deployment'),
+          worksite: assignedWorksite
+        }}
       />
     </div>
   );

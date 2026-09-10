@@ -199,8 +199,92 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
   const { language, setLanguage } = useLanguage();
   const t = TRANSLATIONS[language];
 
-  // If this signed-in user already has submitted an application for himself, enforce single-application limit
-  if (existingBeneficiary) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Essential Form States
+  const [legalName, setLegalName] = useState(() => existingBeneficiary?.name || '');
+  const [phone, setPhone] = useState(() => existingBeneficiary?.phone || '');
+  const [aadhaarNumber, setAadhaarNumber] = useState(() => existingBeneficiary?.aadhaarRaw || existingBeneficiary?.aadhaarMasked || '');
+  
+  // State & District (Kerala only)
+  const selectedState = 'Kerala';
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(() => existingBeneficiary?.district || 'Wayanad');
+
+  // Camp name
+  const [campName, setCampName] = useState(() => existingBeneficiary?.campId || '');
+
+  // Disasters uploaded and declared by Super Admin
+  const [disastersList, setDisastersList] = useState<RegionDisaster[]>(getStoredDisasters);
+  const [selectedDisasterId, setSelectedDisasterId] = useState<string>(() => {
+    const initial = getStoredDisasters();
+    if (existingBeneficiary?.calamityTitle) {
+      const match = initial.find(d => existingBeneficiary.calamityTitle?.includes(d.title));
+      if (match) return match.id;
+    }
+    return initial[0]?.id || 'OTHER';
+  });
+
+  // Keep disasters in sync when Super Admin declares new disasters
+  useEffect(() => {
+    const syncDisasters = () => {
+      const updated = getStoredDisasters();
+      setDisastersList(updated);
+    };
+    window.addEventListener('sahayasetu_disasters_updated', syncDisasters);
+    return () => window.removeEventListener('sahayasetu_disasters_updated', syncDisasters);
+  }, []);
+
+  // When selected district changes, auto-select the disaster matching that district if available
+  useEffect(() => {
+    const matched = disastersList.find(d => 
+      d.regionName.toLowerCase().includes(selectedDistrict.toLowerCase()) ||
+      d.regionId.toLowerCase().includes(selectedDistrict.toLowerCase()) ||
+      d.affectedTaluks.toLowerCase().includes(selectedDistrict.toLowerCase())
+    );
+    if (matched) {
+      setSelectedDisasterId(matched.id);
+    }
+  }, [selectedDistrict, disastersList]);
+
+  // Job Priorities
+  const [priority1, setPriority1] = useState<VocationalSkill>(() => 
+    (existingBeneficiary?.jobPriorities?.[0] || existingBeneficiary?.skills?.[0] || 'Masonry') as VocationalSkill
+  );
+  const [priority2, setPriority2] = useState<VocationalSkill>(() => 
+    (existingBeneficiary?.jobPriorities?.[1] || existingBeneficiary?.skills?.[1] || 'Carpentry') as VocationalSkill
+  );
+  const [priority3, setPriority3] = useState<VocationalSkill>(() => 
+    (existingBeneficiary?.jobPriorities?.[2] || existingBeneficiary?.skills?.[2] || 'General Civil Labor') as VocationalSkill
+  );
+  const [experienceYears, setExperienceYears] = useState<number>(() => existingBeneficiary?.experienceYears ?? 5);
+
+  // Bank & Emergency Contact
+  const [bankAccount, setBankAccount] = useState(() => existingBeneficiary?.bankAccount || '');
+  const [bankIfsc, setBankIfsc] = useState(() => existingBeneficiary?.bankIfsc || '');
+  const [emergencyContact, setEmergencyContact] = useState(() => existingBeneficiary?.emergencyContact || '');
+
+  // Synchronize form with existingBeneficiary when it changes or when user logs in
+  useEffect(() => {
+    if (existingBeneficiary) {
+      setLegalName(existingBeneficiary.name);
+      setPhone(existingBeneficiary.phone);
+      setAadhaarNumber(existingBeneficiary.aadhaarRaw || existingBeneficiary.aadhaarMasked || '');
+      setSelectedDistrict(existingBeneficiary.district || 'Wayanad');
+      setCampName(existingBeneficiary.campId || '');
+      if (existingBeneficiary.jobPriorities?.[0]) setPriority1(existingBeneficiary.jobPriorities[0] as VocationalSkill);
+      if (existingBeneficiary.jobPriorities?.[1]) setPriority2(existingBeneficiary.jobPriorities[1] as VocationalSkill);
+      if (existingBeneficiary.jobPriorities?.[2]) setPriority3(existingBeneficiary.jobPriorities[2] as VocationalSkill);
+      if (existingBeneficiary.experienceYears !== undefined) setExperienceYears(existingBeneficiary.experienceYears);
+      setBankAccount(existingBeneficiary.bankAccount || '');
+      setBankIfsc(existingBeneficiary.bankIfsc || '');
+      setEmergencyContact(existingBeneficiary.emergencyContact || '');
+    } else if (user && !legalName) {
+      setLegalName(user.fullName || '');
+    }
+  }, [existingBeneficiary, user]);
+
+  // If user already has an application and is NOT in editing mode, show summary card with Edit option
+  if (existingBeneficiary && !isEditing) {
     return (
       <div style={{
         display: 'flex',
@@ -235,18 +319,18 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
           </div>
 
           <span className="badge badge-verified" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {language === 'ML' ? 'അപേക്ഷ രജിസ്റ്റർ ചെയ്തു കഴിഞ്ഞു' : 'Application Already Registered'}
+            {language === 'ML' ? 'അപേക്ഷ രജിസ്റ്റർ ചെയ്തു കഴിഞ്ഞു' : 'Application Active'}
           </span>
 
           <h2 style={{ fontSize: '1.5rem', color: 'var(--color-primary)', marginTop: '10px', fontWeight: 800 }}>
-            {language === 'ML' ? 'താങ്കൾ ഇതിനകം അപേക്ഷ സമർപ്പിച്ചിട്ടുണ്ട്' : 'You Have Already Submitted Your Application'}
+            {language === 'ML' ? 'താങ്കളുടെ ദുരിതാശ്വാസ അപേക്ഷ' : 'Your Relief & Job Application'}
           </h2>
 
           <p style={{ color: 'var(--color-on-surface-variant)', fontSize: '0.9375rem', marginTop: '6px', lineHeight: 1.5 }}>
             {language === 'ML' ? (
-              <>ലോഗിൻ ചെയ്തിരിക്കുന്ന അക്കൗണ്ട്: <strong>{user?.email}</strong>. ഒരു അക്കൗണ്ടിൽ നിന്ന് ഒരാൾക്ക് മാത്രമേ അപേക്ഷിക്കാൻ സാധിക്കുകയുള്ളൂ.</>
+              <>ലോഗിൻ ചെയ്തിരിക്കുന്ന അക്കൗണ്ട്: <strong>{user?.email}</strong>. നിങ്ങൾക്ക് സമർപ്പിച്ച വിവരങ്ങൾ തിരുത്താനും പുതുക്കാനും സാധിക്കും.</>
             ) : (
-              <>Signed in as <strong>{user?.email}</strong>. Each signed-in citizen is permitted exactly one application for themselves.</>
+              <>Signed in as <strong>{user?.email}</strong>. You can review your submitted details, edit any information, or track your live status.</>
             )}
           </p>
 
@@ -286,84 +370,37 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onNavigateToPortal}
-            className="btn btn-primary btn-touch"
-            style={{ width: '100%', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', padding: '14px', borderRadius: 'var(--radius-md)' }}
-          >
-            <span className="material-symbols-outlined">track_changes</span>
-            <span>{language === 'ML' ? 'അപേക്ഷാ സ്ഥിതി ട്രാക്ക് ചെയ്യുക' : 'Track My Application Status'}</span>
-          </button>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="btn btn-primary btn-touch"
+              style={{ flex: 1, minWidth: '180px', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', padding: '12px 18px', borderRadius: 'var(--radius-md)' }}
+            >
+              <span className="material-symbols-outlined">edit_document</span>
+              <span>{language === 'ML' ? 'അപേക്ഷ തിരുത്തുക' : 'Edit Application'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onNavigateToPortal}
+              className="btn btn-secondary btn-touch"
+              style={{ flex: 1, minWidth: '180px', justifyContent: 'center', fontWeight: 700, fontSize: '0.95rem', padding: '12px 18px', borderRadius: 'var(--radius-md)' }}
+            >
+              <span className="material-symbols-outlined">track_changes</span>
+              <span>{language === 'ML' ? 'അപേക്ഷാ സ്ഥിതി ട്രാക്ക് ചെയ്യുക' : 'Track Status'}</span>
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Essential Form States
-  const [legalName, setLegalName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [aadhaarNumber, setAadhaarNumber] = useState('');
-  
-  // State & District (Kerala only)
-  const selectedState = 'Kerala';
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('Wayanad');
-
-  // Camp name starts completely blank as requested
-  const [campName, setCampName] = useState('');
-
-  // Disasters uploaded and declared by Super Admin
-  const [disastersList, setDisastersList] = useState<RegionDisaster[]>(getStoredDisasters);
-  const [selectedDisasterId, setSelectedDisasterId] = useState<string>(() => {
-    const initial = getStoredDisasters();
-    return initial[0]?.id || 'OTHER';
-  });
-
-  // Keep disasters in sync when Super Admin declares new disasters
-  useEffect(() => {
-    const syncDisasters = () => {
-      const updated = getStoredDisasters();
-      setDisastersList(updated);
-    };
-    window.addEventListener('sahayasetu_disasters_updated', syncDisasters);
-    return () => window.removeEventListener('sahayasetu_disasters_updated', syncDisasters);
-  }, []);
-
-  // When selected district changes, auto-select the disaster matching that district if available
-  useEffect(() => {
-    const matched = disastersList.find(d => 
-      d.regionName.toLowerCase().includes(selectedDistrict.toLowerCase()) ||
-      d.regionId.toLowerCase().includes(selectedDistrict.toLowerCase()) ||
-      d.affectedTaluks.toLowerCase().includes(selectedDistrict.toLowerCase())
-    );
-    if (matched) {
-      setSelectedDisasterId(matched.id);
-    }
-  }, [selectedDistrict, disastersList]);
-
-  // Job Priorities
-  const [priority1, setPriority1] = useState<VocationalSkill>('Masonry');
-  const [priority2, setPriority2] = useState<VocationalSkill>('Carpentry');
-  const [priority3, setPriority3] = useState<VocationalSkill>('General Civil Labor');
-  const [experienceYears, setExperienceYears] = useState<number>(5);
-
-  // Bank & Emergency Contact
-  const [bankAccount, setBankAccount] = useState('');
-  const [bankIfsc, setBankIfsc] = useState('');
-  const [emergencyContact, setEmergencyContact] = useState('');
-
-  // Auto-fill applicant name from Google user on first load
-  useEffect(() => {
-    if (user && !legalName) {
-      setLegalName(user.fullName || '');
-    }
-  }, [user]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      onShowToast('Authentication Required', 'Please sign in with Google.', 'warning');
+      onShowToast('Authentication Required', 'Please sign in with Google or Test User.', 'warning');
       return;
     }
 
@@ -380,6 +417,41 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
     const chosenDisaster = disastersList.find(d => d.id === selectedDisasterId);
     const calamityType = chosenDisaster?.disasterType || 'Landslide';
     const calamityTitle = chosenDisaster ? `${chosenDisaster.regionName}: ${chosenDisaster.title}` : 'Kerala Flood/Landslide Relief';
+
+    if (existingBeneficiary) {
+      // UPDATE EXISTING BENEFICIARY APPLICATION
+      const updatedBeneficiary: Beneficiary = {
+        ...existingBeneficiary,
+        name: legalName.trim(),
+        phone: phone.trim(),
+        aadhaarMasked: aadhaarNumber.length >= 4 
+          ? `•••• •••• ${aadhaarNumber.replace(/\s+/g, '').slice(-4)}` 
+          : existingBeneficiary.aadhaarMasked,
+        aadhaarRaw: aadhaarNumber.trim(),
+        district: selectedDistrict,
+        districtId: KERALA_DISTRICT_CODES[selectedDistrict] || existingBeneficiary.districtId,
+        campId: campName.trim() || existingBeneficiary.campId,
+        calamity: calamityType,
+        calamityTitle: calamityTitle,
+        skills: Array.from(new Set([priority1, priority2, priority3])),
+        jobPriorities: [priority1, priority2, priority3],
+        experienceYears,
+        emergencyContact: emergencyContact.trim() || existingBeneficiary.emergencyContact,
+        bankAccount: bankAccount.trim() || existingBeneficiary.bankAccount,
+        bankIfsc: bankIfsc.trim() || existingBeneficiary.bankIfsc
+      };
+
+      onRegisterCitizen(updatedBeneficiary);
+
+      const message = language === 'ML'
+        ? `${updatedBeneficiary.name} ൻ്റെ അപേക്ഷ വിജയകരമായി പുതുക്കി.`
+        : `Application details for ${updatedBeneficiary.name} have been updated.`;
+
+      onShowToast('Application Updated', message, 'success');
+      setIsEditing(false);
+      onNavigateToPortal();
+      return;
+    }
 
     const newBeneficiary: Beneficiary = {
       id: `BEN-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -487,6 +559,46 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
       }}>
         {/* Accent Bar */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', backgroundColor: 'var(--color-primary)' }} />
+
+        {/* If Editing Mode Banner */}
+        {existingBeneficiary && isEditing && (
+          <div style={{
+            backgroundColor: '#eff6ff',
+            border: '2px solid #3b82f6',
+            borderRadius: 'var(--radius-md)',
+            padding: '12px 16px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="material-symbols-outlined" style={{ color: '#2563eb', fontSize: '24px' }}>edit_note</span>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="badge badge-rls font-mono" style={{ fontWeight: 800 }}>
+                    APP-{existingBeneficiary.id}
+                  </span>
+                  <strong style={{ fontSize: '13px', color: '#1e40af' }}>
+                    {language === 'ML' ? 'അപേക്ഷ എഡിറ്റ് ചെയ്യുന്നു' : 'Editing Submitted Application'}
+                  </strong>
+                </div>
+                <p style={{ margin: '3px 0 0 0', fontSize: '12px', color: '#1d4ed8' }}>
+                  {language === 'ML' ? 'വിവരങ്ങൾ തിരുത്തിയ ശേഷം താഴെയുള്ള ബട്ടൺ അമർത്തി സേവ് ചെയ്യുക.' : 'Update any personal or vocational information and save changes.'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setIsEditing(false)}
+              style={{ fontWeight: 700 }}
+            >
+              {language === 'ML' ? 'റദ്ദാക്കുക' : 'Cancel'}
+            </button>
+          </div>
+        )}
 
         {/* User Account Info Bar */}
         <div style={{
@@ -793,8 +905,14 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
               className="btn btn-primary btn-touch"
               style={{ width: '100%', fontSize: '1.0625rem', padding: '14px 20px', fontWeight: 800 }}
             >
-              <span className="material-symbols-outlined">how_to_reg</span>
-              <span>{t.submitBtn}</span>
+              <span className="material-symbols-outlined">
+                {existingBeneficiary ? 'save' : 'how_to_reg'}
+              </span>
+              <span>
+                {existingBeneficiary 
+                  ? (language === 'ML' ? 'മാറ്റങ്ങൾ സേവ് ചെയ്യുക & അപേക്ഷ പുതുക്കുക' : 'Save Changes & Update Application')
+                  : t.submitBtn}
+              </span>
             </button>
           </div>
 

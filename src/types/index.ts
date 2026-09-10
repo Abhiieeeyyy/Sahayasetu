@@ -160,6 +160,8 @@ export interface Beneficiary {
   authUserId?: string;           // Supabase auth user UUID
   authEmail?: string;            // Authenticated Google account email
   authAvatarUrl?: string;        // Google profile photo URL
+  assignedWorksite?: string;     // Specific worksite location/address of assigned project
+  worksite?: string;             // Worksite location or address
 }
 
 // ----------------------------------------------------------------------------
@@ -190,6 +192,7 @@ export interface JobRequisition {
   status: 'Open' | 'Fulfilling' | 'Completed'; // Requisition status
   districtId?: string;           // District jurisdiction code (e.g. 'KL-WYD-2024')
   districtName?: string;         // Human-readable district title
+  worksite?: string;             // Specific worksite location / address
   postedByAdminId?: string;      // ID of the regional admin who created this job
   postedByAdminName?: string;    // Name of the regional admin
 }

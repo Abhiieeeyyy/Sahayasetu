@@ -20,6 +20,7 @@ export interface CitizenNotification {
   jobTitle: string;
   agencyName: string;
   dailyWage: number;
+  worksite?: string;
   districtName: string;
   assignedDate: string;
   timestamp: number;

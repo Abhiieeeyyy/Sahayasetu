@@ -12,6 +12,7 @@
 import React, { useState } from 'react';
 import { RegistrationLanguage } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 
 interface GoogleSignInViewProps {
@@ -36,6 +37,12 @@ const TRANSLATIONS: Record<RegistrationLanguage, {
   emailPlaceholder: string;
   cancelBtn: string;
   continueBtn: string;
+  testDivider: string;
+  testPrompt: string;
+  testNameLabel: string;
+  testEmailLabel: string;
+  testSubmitBtn: string;
+  quickTestChipLabel: string;
 }> = {
   EN: {
     languageLabel: 'Select Language / ഭാഷ / மொழி:',
@@ -53,7 +60,13 @@ const TRANSLATIONS: Record<RegistrationLanguage, {
     namePlaceholder: 'Your Full Name (e.g., Ananya Nair)',
     emailPlaceholder: 'your.email@gmail.com',
     cancelBtn: 'Cancel',
-    continueBtn: 'Sign In with Account'
+    continueBtn: 'Sign In with Account',
+    testDivider: 'OR LOGIN WITH TEST USER CREDENTIALS',
+    testPrompt: 'Development & Offline Testing: Sign in using test name and email address',
+    testNameLabel: 'Full Legal Name',
+    testEmailLabel: 'Email Address',
+    testSubmitBtn: 'Sign In with Test Credentials',
+    quickTestChipLabel: 'Quick Presets:'
   },
   ML: {
     languageLabel: 'ഭാഷ തിരഞ്ഞെടുക്കുക / Select Language:',
@@ -71,7 +84,13 @@ const TRANSLATIONS: Record<RegistrationLanguage, {
     namePlaceholder: 'നിങ്ങളുടെ പേര്',
     emailPlaceholder: 'നിങ്ങളുടെ.ഇമെയിൽ@gmail.com',
     cancelBtn: 'റദ്ദാക്കുക',
-    continueBtn: 'സൈൻ ഇൻ ചെയ്യുക'
+    continueBtn: 'സൈൻ ഇൻ ചെയ്യുക',
+    testDivider: 'അല്ലെങ്കിൽ ടെസ്റ്റ് വിവരങ്ങൾ നൽകി ലോഗിൻ ചെയ്യുക',
+    testPrompt: 'ടെസ്റ്റിംഗിനായി പേരും ഇമെയിൽ വിലാസവും നൽകി പ്രവേശിക്കുക:',
+    testNameLabel: 'പൂർണ്ണ പേര്',
+    testEmailLabel: 'ഇമെയിൽ വിലാസം',
+    testSubmitBtn: 'ടെസ്റ്റ് വിവരങ്ങൾ നൽകി പ്രവേശിക്കുക',
+    quickTestChipLabel: 'വേഗത്തിലുള്ള ചോയ്‌സുകൾ:'
   }
 };
 
@@ -80,11 +99,11 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
   onSignedIn
 }) => {
   const { signInWithGoogle, signInWithCustomGoogle, isLoading } = useAuth();
-  const [currentLang, setCurrentLang] = useState<RegistrationLanguage>('EN');
-  const [showAccountModal, setShowAccountModal] = useState(false);
+  const { language: currentLang, setLanguage: setCurrentLang } = useLanguage();
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [customName, setCustomName] = useState('');
-  const [customEmail, setCustomEmail] = useState('');
+  const [testName, setTestName] = useState('Abhinav P');
+  const [testEmail, setTestEmail] = useState('abhinavparayanchola136@gmail.com');
+  const [isSubmittingTest, setIsSubmittingTest] = useState(false);
 
   const t = TRANSLATIONS[currentLang];
 
@@ -101,15 +120,33 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
     }
   };
 
-  const handleCustomSubmit = async (e: React.FormEvent) => {
+  const handleTestUserLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalName = customName.trim() || 'Citizen Applicant';
-    const finalEmail = customEmail.trim() || 'citizen.applicant@gmail.com';
+    if (!testName.trim() || !testEmail.trim()) {
+      onShowToast(
+        currentLang === 'ML' ? 'വിവരങ്ങൾ അപൂർണ്ണമാണ്' : 'Incomplete Details',
+        currentLang === 'ML' ? 'ദയവായി പേരും ഇമെയിൽ വിലാസവും നൽകുക.' : 'Please provide both your name and email address.',
+        'warning'
+      );
+      return;
+    }
 
-    await signInWithCustomGoogle(finalName, finalEmail);
-    setShowAccountModal(false);
-    onShowToast('Account Authenticated', `Signed in as ${finalName} (${finalEmail})`, 'success');
-    if (onSignedIn) onSignedIn();
+    setIsSubmittingTest(true);
+    try {
+      await signInWithCustomGoogle(testName.trim(), testEmail.trim());
+      onShowToast(
+        currentLang === 'ML' ? 'ടെസ്റ്റ് പ്രവേശനം വിജയകരം' : 'Signed In as Test User',
+        currentLang === 'ML' ? `${testName.trim()} ആയി ലോഗിൻ ചെയ്തു.` : `Signed in as ${testName.trim()} (${testEmail.trim()}).`,
+        'success'
+      );
+      if (onSignedIn) {
+        onSignedIn();
+      }
+    } catch (err: any) {
+      onShowToast('Sign-In Error', err?.message || 'Could not authenticate test user.', 'error');
+    } finally {
+      setIsSubmittingTest(false);
+    }
   };
 
   return (
@@ -266,191 +303,125 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
             <span>{isRedirecting ? 'Redirecting to Google...' : t.googleBtn}</span>
           </button>
 
-          {/* Quick Select Alternative for 100% Guaranteed Sign-In */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            margin: '2px 0'
-          }}>
+          <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', textAlign: 'center', marginTop: '4px' }}>
+            {t.securityNotice}
+          </span>
+
+          {/* OR DIVIDER */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '6px 0 2px 0' }}>
             <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-outline-variant)' }} />
-            <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-on-surface-variant)', letterSpacing: '0.05em' }}>
-              Or Sign In With Verified Google Profile
+            <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--color-on-surface-variant)', letterSpacing: '0.04em' }}>
+              {t.testDivider}
             </span>
             <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-outline-variant)' }} />
           </div>
 
-          {/* Abhinav P - Real Verified Google Account 1-Click */}
-          <button
-            type="button"
-            onClick={async () => {
-              await signInWithCustomGoogle('Abhinav P', 'abhinavparayanchola136@gmail.com');
-              onShowToast('Signed In with Google', 'Authenticated as Abhinav P (abhinavparayanchola136@gmail.com)', 'success');
-              if (onSignedIn) onSignedIn();
-            }}
-            className="btn btn-ghost"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '10px 14px',
-              border: '2px solid #22c55e',
-              backgroundColor: '#f0fdf4',
-              borderRadius: 'var(--radius-lg)',
-              textAlign: 'left',
-              justifyContent: 'flex-start',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            title="Instant 1-Click Sign-In as Abhinav P"
-          >
-            <img
-              src="https://lh3.googleusercontent.com/a/ACg8ocIgrTmUtAY6ZDJF_bviv5dlhpNS9AQF48dDYWiOm0sTe_UWXj4g=s96-c"
-              alt="Abhinav P"
-              style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid #16a34a' }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://api.dicebear.com/7.x/initials/svg?seed=Abhinav%20P';
-              }}
-            />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#15803d' }}>Abhinav P</span>
-                <span className="badge" style={{ backgroundColor: '#dcfce7', color: '#166534', fontSize: '10px', padding: '1px 6px' }}>Google Verified</span>
-              </div>
-              <span style={{ fontSize: '11px', color: '#166534' }}>abhinavparayanchola136@gmail.com</span>
+          {/* TEST USER LOGIN FORM */}
+          <form onSubmit={handleTestUserLogin} style={{
+            backgroundColor: 'var(--color-surface-low)',
+            border: '1px solid var(--color-outline-variant)',
+            borderRadius: 'var(--radius-md)',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            textAlign: 'left'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>science</span>
+              <span>{t.testPrompt}</span>
             </div>
-            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#16a34a' }}>arrow_forward</span>
-          </button>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-on-surface)', display: 'block', marginBottom: '3px' }}>
+                {t.testNameLabel} *
+              </label>
+              <input
+                className="input-field"
+                type="text"
+                value={testName}
+                onChange={(e) => setTestName(e.target.value)}
+                placeholder={t.namePlaceholder}
+                style={{ fontSize: '13px', padding: '8px 12px' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-on-surface)', display: 'block', marginBottom: '3px' }}>
+                {t.testEmailLabel} *
+              </label>
+              <input
+                className="input-field font-mono"
+                type="email"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                placeholder={t.emailPlaceholder}
+                style={{ fontSize: '13px', padding: '8px 12px' }}
+                required
+              />
+            </div>
+
+            {/* Quick Presets */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', fontWeight: 600 }}>
+                {t.quickTestChipLabel}
+              </span>
+              <button
+                type="button"
+                className="badge"
+                style={{ cursor: 'pointer', border: '1px solid var(--color-outline-variant)', backgroundColor: 'var(--color-surface-lowest)', color: 'var(--color-primary)' }}
+                onClick={() => {
+                  setTestName('Abhinav P');
+                  setTestEmail('abhinavparayanchola136@gmail.com');
+                }}
+              >
+                Abhinav P
+              </button>
+              <button
+                type="button"
+                className="badge"
+                style={{ cursor: 'pointer', border: '1px solid var(--color-outline-variant)', backgroundColor: 'var(--color-surface-lowest)', color: 'var(--color-primary)' }}
+                onClick={() => {
+                  setTestName('Ananya Nair');
+                  setTestEmail('ananya.nair@gmail.com');
+                }}
+              >
+                Ananya Nair
+              </button>
+              <button
+                type="button"
+                className="badge"
+                style={{ cursor: 'pointer', border: '1px solid var(--color-outline-variant)', backgroundColor: 'var(--color-surface-lowest)', color: 'var(--color-primary)' }}
+                onClick={() => {
+                  setTestName('Rahul Sharma');
+                  setTestEmail('rahul.sharma@gmail.com');
+                }}
+              >
+                Rahul Sharma
+              </button>
+            </div>
+
             <button
-              type="button"
-              onClick={async () => {
-                await signInWithCustomGoogle('Ananya Nair', 'ananya.nair@gmail.com');
-                onShowToast('Signed In with Google', 'Authenticated as Ananya Nair (ananya.nair@gmail.com)', 'success');
-                if (onSignedIn) onSignedIn();
-              }}
-              className="btn btn-ghost"
+              type="submit"
+              className="btn btn-secondary btn-touch"
+              disabled={isLoading || isSubmittingTest}
               style={{
+                width: '100%',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '8px',
-                padding: '8px 10px',
-                border: '1px solid var(--color-outline-variant)',
-                backgroundColor: 'var(--color-surface-lowest)',
-                borderRadius: 'var(--radius-md)',
-                textAlign: 'left',
-                justifyContent: 'flex-start'
+                fontWeight: 800,
+                fontSize: '13px',
+                padding: '10px',
+                marginTop: '4px'
               }}
-              title="Instant 1-Click Google Sign-In"
             >
-              <img
-                src="https://api.dicebear.com/7.x/initials/svg?seed=Ananya%20Nair"
-                alt="Ananya"
-                style={{ width: '28px', height: '28px', borderRadius: '50%' }}
-              />
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, overflow: 'hidden' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-on-surface)' }}>Ananya Nair</span>
-                <span style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', textOverflow: 'ellipsis', overflow: 'hidden' }}>@gmail.com</span>
-              </div>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>login</span>
+              <span>{isSubmittingTest ? (currentLang === 'ML' ? 'ലോഗിൻ ചെയ്യുന്നു...' : 'Signing in...') : t.testSubmitBtn}</span>
             </button>
-
-            <button
-              type="button"
-              onClick={async () => {
-                await signInWithCustomGoogle('Rahul Sharma', 'rahul.sharma@gmail.com');
-                onShowToast('Signed In with Google', 'Authenticated as Rahul Sharma (rahul.sharma@gmail.com)', 'success');
-                if (onSignedIn) onSignedIn();
-              }}
-              className="btn btn-ghost"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 10px',
-                border: '1px solid var(--color-outline-variant)',
-                backgroundColor: 'var(--color-surface-lowest)',
-                borderRadius: 'var(--radius-md)',
-                textAlign: 'left',
-                justifyContent: 'flex-start'
-              }}
-              title="Instant 1-Click Google Sign-In"
-            >
-              <img
-                src="https://api.dicebear.com/7.x/initials/svg?seed=Rahul%20Sharma"
-                alt="Rahul"
-                style={{ width: '28px', height: '28px', borderRadius: '50%' }}
-              />
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, overflow: 'hidden' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-on-surface)' }}>Rahul Sharma</span>
-                <span style={{ fontSize: '10px', color: 'var(--color-on-surface-variant)', textOverflow: 'ellipsis', overflow: 'hidden' }}>@gmail.com</span>
-              </div>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={() => setShowAccountModal(true)}
-            style={{
-              fontSize: '12px',
-              color: 'var(--color-primary)',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px'
-            }}
-            title="Sign in with your own custom Google email address"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>person_add</span>
-            <span>Use another Google Account...</span>
-          </button>
-
-          <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
-            {t.securityNotice}
-          </span>
-        </div>
-
-        {/* Relief Officer Quick Access */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          padding: '8px 16px',
-          backgroundColor: 'var(--color-surface-low)',
-          borderRadius: 'var(--radius-full)',
-          border: '1px solid var(--color-outline-variant)',
-          fontSize: '12px',
-          color: 'var(--color-on-surface-variant)'
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--color-secondary)' }}>admin_panel_settings</span>
-          <span style={{ fontWeight: 600 }}>Relief Official / Admin?</span>
-          <a
-            href="/regionaladmin"
-            onClick={(e) => {
-              e.preventDefault();
-              window.history.pushState({}, '', '/regionaladmin');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }}
-            style={{ color: 'var(--color-secondary)', fontWeight: 700, textDecoration: 'none' }}
-          >
-            Regional Admin Portal &rarr;
-          </a>
-          <span>•</span>
-          <a
-            href="/superadmin"
-            onClick={(e) => {
-              e.preventDefault();
-              window.history.pushState({}, '', '/superadmin');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }}
-            style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}
-          >
-            Super Admin Command &rarr;
-          </a>
+          </form>
         </div>
 
         {/* Feature Preview Callout */}
@@ -487,89 +458,7 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
         </div>
       </div>
 
-      {/* ----------------------------------------------------------------------
-       * 3. GOOGLE ACCOUNT CREDENTIALS DIALOG (FOR CLEAN DEMO/TESTING)
-       * ---------------------------------------------------------------------- */}
-      {showAccountModal && (
-        <div className="modal-backdrop" onClick={() => setShowAccountModal(false)}>
-          <div className="modal-dialog" onClick={e => e.stopPropagation()} style={{ maxWidth: '440px' }}>
-            <div className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="20" height="20" viewBox="0 0 48 48">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                <h2 style={{ fontSize: '1.125rem', color: 'var(--color-primary)', margin: 0 }}>
-                  Sign In with Google
-                </h2>
-              </div>
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={() => setShowAccountModal(false)}
-                style={{ minHeight: '32px', width: '32px', padding: 0 }}
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
 
-            <form onSubmit={handleCustomSubmit}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: 'var(--space-md)' }}>
-                <p style={{ fontSize: '13px', color: 'var(--color-on-surface-variant)', margin: 0 }}>
-                  {t.customPrompt}
-                </p>
-
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-on-surface)', display: 'block', marginBottom: '4px' }}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder={t.namePlaceholder}
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-on-surface)', display: 'block', marginBottom: '4px' }}>
-                    Google Email
-                  </label>
-                  <input
-                    type="email"
-                    className="input-field"
-                    placeholder={t.emailPlaceholder}
-                    value={customEmail}
-                    onChange={(e) => setCustomEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', padding: '12px var(--space-md)' }}>
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  onClick={() => setShowAccountModal(false)}
-                >
-                  {t.cancelBtn}
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>login</span>
-                  <span>{t.continueBtn}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

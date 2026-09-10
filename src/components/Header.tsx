@@ -131,119 +131,25 @@ export const Header: React.FC<HeaderProps> = ({
        * SECTION 2: ACTIONS, SOS HELPLINE & USER PROFILE AT TOP RIGHT END
        * ---------------------------------------------------------------------- */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-        {/* Regional Admin Actions & Identity */}
-        {currentRole === 'regional-admin' && (
+
+        {/* Controls when in super admin mode */}
+        {currentRole === 'super-admin' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {activeRegionalAdmin ? (
-              <>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '4px 12px',
-                  backgroundColor: '#eff6ff',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid #bfdbfe'
-                }}>
-                  <div style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--color-secondary)',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>badge</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-secondary)' }}>
-                      {activeRegionalAdmin.name}
-                    </span>
-                    <span style={{ fontSize: '10px', color: '#1e40af' }}>
-                      {activeRegionalAdmin.districtName.split('(')[0].trim()} ({activeRegionalAdmin.officerCredentialId || activeRegionalAdmin.districtId})
-                    </span>
-                  </div>
-                </div>
-
-                {onOpenEditCredentials && (
-                  <button
-                    type="button"
-                    onClick={onOpenEditCredentials}
-                    className="btn btn-sm btn-secondary"
-                    style={{ fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}
-                    title="Update your login password and credentials"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>key</span>
-                    <span>Edit Credentials</span>
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={onRegionalAdminLogout}
-                  className="btn btn-sm btn-ghost"
-                  style={{ fontSize: '12px', fontWeight: 700, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '4px' }}
-                  title="Log out of Regional Admin account"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>logout</span>
-                  <span>Logout</span>
-                </button>
-              </>
-            ) : (
+            {isSuperAdminAuthenticated ? (
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
                 padding: '4px 10px',
-                backgroundColor: '#fef2f2',
+                backgroundColor: 'var(--color-surface-container)',
                 borderRadius: 'var(--radius-full)',
-                border: '1px solid #fecaca',
-                fontSize: '11px',
-                color: '#b91c1c',
-                fontWeight: 700
+                border: '1px solid var(--color-primary)'
               }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
-                <span>Regional Admin: Login Required</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--color-primary)' }}>admin_panel_settings</span>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)' }}>
+                  Super Admin Active
+                </span>
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Exit link and controls when in super admin mode */}
-        {currentRole === 'super-admin' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {isSuperAdminAuthenticated ? (
-              <>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 10px',
-                  backgroundColor: 'var(--color-surface-container)',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-primary)'
-                }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--color-primary)' }}>admin_panel_settings</span>
-                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)' }}>
-                    Super Admin Active
-                  </span>
-                </div>
-
-                {onSuperAdminLogout && (
-                  <button
-                    type="button"
-                    onClick={onSuperAdminLogout}
-                    className="btn btn-sm btn-ghost"
-                    style={{ fontSize: '12px', fontWeight: 700, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    title="Log out of Super Admin session"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>logout</span>
-                    <span>Logout</span>
-                  </button>
-                )}
-              </>
             ) : (
               <div style={{
                 display: 'flex',
@@ -261,105 +167,12 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Super Admin: Login Required</span>
               </div>
             )}
-
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-ghost"
-              style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-              title="Exit Super Admin and return to Citizen Portal"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
-              <span>Citizen Portal</span>
-            </a>
-            <a
-              href="/regionaladmin"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/regionaladmin');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-secondary"
-              style={{ fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-              title="Inspect Regional Admin Portal"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>badge</span>
-              <span>Regional Admin</span>
-            </a>
           </div>
         )}
 
-        {/* Portal Quick Switch for Officials (When on Citizen Portal) */}
-        {currentRole === 'citizen-user' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <a
-              href="/regionaladmin"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/regionaladmin');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-secondary"
-              style={{ fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-              title="Regional Relief Officer Sign-In"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>badge</span>
-              <span>Regional Admin</span>
-            </a>
-            <a
-              href="/superadmin"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/superadmin');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-ghost"
-              style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--color-outline-variant)', textDecoration: 'none' }}
-              title="Statewide Super Admin Command"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>admin_panel_settings</span>
-              <span>Super Admin</span>
-            </a>
-          </div>
-        )}
 
-        {/* Regional Admin Header Controls */}
-        {currentRole === 'regional-admin' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-ghost"
-              style={{ fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-              title="Return to Citizen Portal"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>arrow_back</span>
-              <span>Citizen Portal</span>
-            </a>
-            <a
-              href="/superadmin"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/superadmin');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="btn btn-sm btn-ghost"
-              style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--color-outline-variant)', textDecoration: 'none' }}
-              title="Super Admin Statewide Command"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>admin_panel_settings</span>
-              <span>Super Admin</span>
-            </a>
-          </div>
-        )}
+
+
 
         {/* Supabase Live Cloud Sync Button (Only visible for Admins, hidden for Citizen End-Users) */}
         {currentRole !== 'citizen-user' && onRefreshCloud && (

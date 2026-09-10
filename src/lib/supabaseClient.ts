@@ -34,10 +34,19 @@ export const isSupabaseConfigured = Boolean(
   !SUPABASE_ANON_KEY.includes('demo-placeholder')
 );
 
-// Instantiate Supabase client
+// Instantiate Supabase client with PKCE flow and robust session persistence for hosted sites
 export const supabase: SupabaseClient = createClient(
   SUPABASE_URL || 'https://placeholder.supabase.co',
-  SUPABASE_ANON_KEY || 'placeholder'
+  SUPABASE_ANON_KEY || 'placeholder',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      storage: window.localStorage
+    }
+  }
 );
 
 export interface GoogleUserProfile {
@@ -56,7 +65,8 @@ export const LOCAL_STORAGE_USER_KEY = 'sahayasetu_google_user';
  */
 export const signInWithGoogle = async (): Promise<void> => {
   if (isSupabaseConfigured) {
-    const redirectUrl = window.location.origin;
+    // Determine the exact clean origin / redirect target without trailing slash
+    const redirectUrl = `${window.location.origin}${window.location.pathname}`.replace(/\/+$/, '') || window.location.origin;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

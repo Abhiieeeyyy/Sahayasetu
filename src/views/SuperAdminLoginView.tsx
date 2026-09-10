@@ -7,10 +7,6 @@
  * Dedicated gatekeeper workstation for statewide disaster command governance.
  * Protects statewide cross-district telemetry, disaster declarations,
  * officer provisioning, and data purges.
- * 
- * Credentials Required:
- * - Username: superadmin
- * - Password: Admin@123
  */
 
 import React, { useState } from 'react';
@@ -80,11 +76,6 @@ export const SuperAdminLoginView: React.FC<SuperAdminLoginViewProps> = ({
     }
   };
 
-  const handleQuickFill = () => {
-    setUsername(SUPERADMIN_USERNAME);
-    setPassword(SUPERADMIN_PASSWORD);
-    setErrorMsg(null);
-  };
 
   return (
     <div style={{
@@ -211,7 +202,7 @@ export const SuperAdminLoginView: React.FC<SuperAdminLoginViewProps> = ({
               <input
                 type="text"
                 className="input-field font-mono"
-                placeholder="superadmin"
+                placeholder="Enter master username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -293,30 +284,6 @@ export const SuperAdminLoginView: React.FC<SuperAdminLoginViewProps> = ({
           </button>
         </form>
 
-        {/* 1-Click Fill Helper for Evaluator */}
-        <div style={{
-          marginTop: '16px',
-          padding: '12px 14px',
-          backgroundColor: 'var(--color-surface-low)',
-          borderRadius: 'var(--radius-md)',
-          border: '1px dashed var(--color-outline-variant)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '8px'
-        }}>
-          <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
-            <strong>Demo Credentials:</strong> <span className="font-mono" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>superadmin</span> / <span className="font-mono" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>Admin@123</span>
-          </div>
-          <button
-            type="button"
-            onClick={handleQuickFill}
-            className="btn btn-sm btn-secondary"
-            style={{ fontSize: '11px', padding: '4px 8px', minHeight: 'auto', fontWeight: 700 }}
-          >
-            Auto-Fill
-          </button>
-        </div>
       </div>
     </div>
   );

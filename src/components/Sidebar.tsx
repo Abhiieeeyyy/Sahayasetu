@@ -361,54 +361,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
               </nav>
             )}
-
-            {/* Quick Links to Official Admin Portals */}
-            <div style={{
-              marginTop: '16px',
-              paddingTop: '12px',
-              borderTop: '1px solid var(--color-outline-variant)'
-            }}>
-              <span style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                color: 'var(--color-on-surface-variant)',
-                paddingLeft: '8px',
-                display: 'block',
-                marginBottom: '6px'
-              }}>
-                Official Portals
-              </span>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <a
-                  href="/regionaladmin"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.history.pushState({}, '', '/regionaladmin');
-                    window.dispatchEvent(new PopStateEvent('popstate'));
-                  }}
-                  className="btn btn-ghost"
-                  style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left', fontSize: '12px', padding: '6px 10px', textDecoration: 'none' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--color-secondary)' }}>badge</span>
-                  <span>Regional Admin Portal</span>
-                </a>
-                <a
-                  href="/superadmin"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.history.pushState({}, '', '/superadmin');
-                    window.dispatchEvent(new PopStateEvent('popstate'));
-                  }}
-                  className="btn btn-ghost"
-                  style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left', fontSize: '12px', padding: '6px 10px', textDecoration: 'none' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--color-primary)' }}>admin_panel_settings</span>
-                  <span>Super Admin Command</span>
-                </a>
-              </nav>
-            </div>
           </div>
         )}
       </div>

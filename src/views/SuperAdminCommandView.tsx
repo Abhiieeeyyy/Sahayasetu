@@ -339,24 +339,40 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
     });
   }, [districts, beneficiaries, disasters]);
 
-  // Aggregate totals
+  // Aggregate totals computed dynamically based on the selected region filter
   const aggregateMetrics = useMemo(() => {
-    const totalIntake = beneficiaries.length;
-    const totalPlaced = beneficiaries.filter(b => b.placementStatus === 'Assigned').length;
-    const totalBioVerified = beneficiaries.filter(b => b.isBioVerified).length;
-    const totalDbtLinked = beneficiaries.filter(b => b.dbtLinked || b.bankAccount).length;
-    const activeDisastersTotal = disasters.filter(d => d.status !== 'Resolved').length;
+    const isFiltered = analysisRegionFilter !== 'ALL';
+    const targetBeneficiaries = isFiltered
+      ? beneficiaries.filter(b => b.districtId === analysisRegionFilter)
+      : beneficiaries;
+    const targetDisasters = isFiltered
+      ? disasters.filter(d => d.regionId === analysisRegionFilter)
+      : disasters;
+
+    const selectedDistrict = isFiltered
+      ? districts.find(d => d.districtCode === analysisRegionFilter)
+      : null;
+
+    const totalIntake = targetBeneficiaries.length;
+    const totalPlaced = targetBeneficiaries.filter(b => b.placementStatus === 'Assigned').length;
+    const totalBioVerified = targetBeneficiaries.filter(b => b.isBioVerified).length;
+    const totalDbtLinked = targetBeneficiaries.filter(b => b.dbtLinked || b.bankAccount).length;
+    const activeDisastersTotal = targetDisasters.filter(d => d.status !== 'Resolved').length;
     const totalPlacementRate = totalIntake > 0 ? Math.round((totalPlaced / totalIntake) * 100) : 0;
     
     return {
+      isFiltered,
+      selectedDistrict,
+      regionName: selectedDistrict ? selectedDistrict.districtName.split('(')[0].trim() : analysisRegionFilter,
       totalIntake,
       totalPlaced,
       totalBioVerified,
       totalDbtLinked,
       activeDisastersTotal,
+      totalDisasters: targetDisasters.length,
       totalPlacementRate
     };
-  }, [beneficiaries, disasters]);
+  }, [beneficiaries, disasters, analysisRegionFilter, districts]);
 
   // Filtered district metrics for Tab 2
   const displayedRegionalMetrics = useMemo(() => {
@@ -441,6 +457,7 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
   // MODULE 5: ADDING & MANAGING DISASTERS STATE
   // --------------------------------------------------------------------------
   const [isAddDisasterModalOpen, setIsAddDisasterModalOpen] = useState(false);
+  const [editingDisaster, setEditingDisaster] = useState<RegionDisaster | null>(null);
   const [disasterFilterRegion, setDisasterFilterRegion] = useState('ALL');
 
   // Form fields for new disaster
@@ -498,6 +515,43 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
     setDisasterAffectedTaluks('');
     setDisasterDirectives('');
     setIsAddDisasterModalOpen(false);
+  };
+
+  const handleStartEditDisaster = (disaster: RegionDisaster) => {
+    setEditingDisaster({ ...disaster });
+  };
+
+  const handleSaveEditedDisaster = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDisaster) return;
+
+    if (!editingDisaster.title.trim()) {
+      onShowToast('Validation Incomplete', 'Disaster incident title cannot be empty.', 'warning');
+      return;
+    }
+
+    const matchedDistrict = districts.find(d => d.districtCode === editingDisaster.regionId);
+    const updatedDisaster: RegionDisaster = {
+      ...editingDisaster,
+      title: editingDisaster.title.trim(),
+      regionName: matchedDistrict?.districtName || editingDisaster.regionName,
+      affectedTaluks: editingDisaster.affectedTaluks?.trim() || 'Key Emergency Corridors',
+      estimatedAffected: Number(editingDisaster.estimatedAffected) || 0,
+      reliefCampsCount: Number(editingDisaster.reliefCampsCount) || 0,
+      emergencyDirectives: editingDisaster.emergencyDirectives?.trim() || ''
+    };
+
+    setDisasters(prev => prev.map(d => d.id === updatedDisaster.id ? updatedDisaster : d));
+
+    if (onUpdateDistrict && matchedDistrict) {
+      onUpdateDistrict({
+        ...matchedDistrict,
+        calamitySeverity: updatedDisaster.severity
+      });
+    }
+
+    onShowToast('Disaster Updated', `Disaster record "${updatedDisaster.title}" updated successfully.`, 'success');
+    setEditingDisaster(null);
   };
 
   const handleUpdateDisasterStatus = (disasterId: string, nextStatus: RegionDisaster['status']) => {
@@ -1048,10 +1102,18 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
           <div className="grid-4">
             {/* Card 1: Displaced Population / Intake */}
             <div className="card">
-              <span className="kpi-title">Total Registered Displaced</span>
+              <span className="kpi-title">
+                {aggregateMetrics.isFiltered
+                  ? `${aggregateMetrics.regionName} Displaced`
+                  : 'Total Registered Displaced'}
+              </span>
               <div className="kpi-value tabular-nums">{aggregateMetrics.totalIntake.toLocaleString()}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
-                <span>Across {districts.length} Regions</span>
+                <span>
+                  {aggregateMetrics.isFiltered
+                    ? `${aggregateMetrics.regionName} Corridor`
+                    : `Across ${districts.length} Regions`}
+                </span>
                 <span style={{ color: 'var(--color-tertiary)', fontWeight: 700 }}>Active Roster</span>
               </div>
             </div>
@@ -1064,7 +1126,7 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
               </div>
               <div style={{ marginTop: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 700, color: 'var(--color-tertiary)' }}>
-                  <span>Statewide Placement Rate</span>
+                  <span>{aggregateMetrics.isFiltered ? `${analysisRegionFilter} Placement Rate` : 'Statewide Placement Rate'}</span>
                   <span>{aggregateMetrics.totalPlacementRate}%</span>
                 </div>
                 <div className="kpi-meter" style={{ marginTop: '4px' }}>
@@ -1094,8 +1156,10 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
                 {aggregateMetrics.activeDisastersTotal} Active
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
-                <span style={{ color: 'var(--color-secondary)', fontWeight: 700 }}>NDMA Response</span>
-                <span>{disasters.length} Recorded</span>
+                <span style={{ color: 'var(--color-secondary)', fontWeight: 700 }}>
+                  {aggregateMetrics.isFiltered ? (aggregateMetrics.selectedDistrict?.calamitySeverity || 'Jurisdiction Zone') : 'NDMA Response'}
+                </span>
+                <span>{aggregateMetrics.totalDisasters} Recorded</span>
               </div>
             </div>
           </div>
@@ -1754,14 +1818,35 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
                       </select>
                     </div>
 
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => handleDeleteDisaster(disaster.id)}
-                      title="Remove disaster log"
-                      style={{ color: 'var(--color-error)', padding: '4px 8px' }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => handleStartEditDisaster(disaster)}
+                        title="Edit disaster details"
+                        style={{
+                          color: 'var(--color-primary)',
+                          padding: '4px 10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          backgroundColor: 'var(--color-surface-container)',
+                          border: '1px solid var(--color-outline-variant)'
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>edit</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600 }}>Edit</span>
+                      </button>
+
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => handleDeleteDisaster(disaster.id)}
+                        title="Remove disaster log"
+                        style={{ color: 'var(--color-error)', padding: '4px 8px' }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -1936,6 +2021,188 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
                     <button type="submit" className="btn btn-primary">
                       <span className="material-symbols-outlined">add_alert</span>
                       <span>Declare &amp; Log Disaster</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+          {/* EDIT DISASTER MODAL */}
+          {editingDisaster && (
+            <div className="modal-backdrop" onClick={() => setEditingDisaster(null)}>
+              <div className="modal-dialog" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--color-primary)' }}>
+                      edit_note
+                    </span>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="badge badge-rls font-mono">{editingDisaster.id}</span>
+                        <span className="badge" style={{ backgroundColor: 'var(--color-surface-container)', color: 'var(--color-on-surface)' }}>
+                          Edit Disaster Record
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '1.25rem', marginTop: '2px', color: 'var(--color-primary)' }}>
+                        Update Disaster Details
+                      </h3>
+                    </div>
+                  </div>
+
+                  <button className="btn btn-ghost" onClick={() => setEditingDisaster(null)} style={{ minHeight: '32px', width: '32px', padding: 0 }}>
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveEditedDisaster}>
+                  <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Target Region / District *
+                      </label>
+                      <select
+                        className="input-field"
+                        value={editingDisaster.regionId}
+                        onChange={(e) => setEditingDisaster({ ...editingDisaster, regionId: e.target.value })}
+                        required
+                      >
+                        {districts.map(d => (
+                          <option key={d.districtCode} value={d.districtCode}>
+                            {d.districtCode} — {d.districtName} ({d.stateName})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Disaster Incident Title *
+                      </label>
+                      <input
+                        className="input-field"
+                        placeholder="e.g. Chooralmala Landslide & Flash Inundation"
+                        value={editingDisaster.title}
+                        onChange={(e) => setEditingDisaster({ ...editingDisaster, title: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
+                      <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                          Calamity / Disaster Type *
+                        </label>
+                        <select
+                          className="input-field"
+                          value={editingDisaster.disasterType}
+                          onChange={(e) => setEditingDisaster({ ...editingDisaster, disasterType: e.target.value as RegionDisaster['disasterType'] })}
+                        >
+                          <option value="Landslide">Landslide</option>
+                          <option value="Flood">Flood</option>
+                          <option value="Flash Flood">Flash Flood</option>
+                          <option value="Cyclone">Cyclone</option>
+                          <option value="Cloudburst">Cloudburst</option>
+                          <option value="Earthquake">Earthquake</option>
+                          <option value="Coastal Surge">Coastal Surge</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                          Severity Classification *
+                        </label>
+                        <select
+                          className="input-field"
+                          value={editingDisaster.severity}
+                          onChange={(e) => setEditingDisaster({ ...editingDisaster, severity: e.target.value as RegionDisaster['severity'] })}
+                        >
+                          <option value="Extreme Tier-1">Extreme Tier-1 (SOS Critical)</option>
+                          <option value="High Tier-2">High Tier-2 (Orange Alert)</option>
+                          <option value="Moderate Tier-3">Moderate Tier-3 (Yellow Alert)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Affected Taluks / Panchayats / Corridors *
+                      </label>
+                      <input
+                        className="input-field"
+                        placeholder="e.g. Meppadi, Chooralmala, Mundakkai Sector 2"
+                        value={editingDisaster.affectedTaluks}
+                        onChange={(e) => setEditingDisaster({ ...editingDisaster, affectedTaluks: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
+                      <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                          Estimated Displaced Population
+                        </label>
+                        <input
+                          type="number"
+                          className="input-field font-mono"
+                          value={editingDisaster.estimatedAffected}
+                          onChange={(e) => setEditingDisaster({ ...editingDisaster, estimatedAffected: Number(e.target.value) })}
+                          min={0}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                          Active Relief Camps Opened
+                        </label>
+                        <input
+                          type="number"
+                          className="input-field font-mono"
+                          value={editingDisaster.reliefCampsCount}
+                          onChange={(e) => setEditingDisaster({ ...editingDisaster, reliefCampsCount: Number(e.target.value) })}
+                          min={0}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Operational Status
+                      </label>
+                      <select
+                        className="input-field"
+                        value={editingDisaster.status}
+                        onChange={(e) => setEditingDisaster({ ...editingDisaster, status: e.target.value as RegionDisaster['status'] })}
+                      >
+                        <option value="Active Emergency">Active Emergency</option>
+                        <option value="Relief & Rescue">Relief & Rescue</option>
+                        <option value="Rehabilitation">Rehabilitation</option>
+                        <option value="Recovery Phase">Recovery Phase</option>
+                        <option value="Monitoring">Monitoring</option>
+                        <option value="Resolved">Resolved</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        Emergency Directives / NDRF Deployment Notes
+                      </label>
+                      <textarea
+                        className="input-field"
+                        placeholder="e.g. NDRF Sector 4 mobilized. Drone geo-mapping underway. Highway 85 transit restricted."
+                        rows={3}
+                        value={editingDisaster.emergencyDirectives || ''}
+                        onChange={(e) => setEditingDisaster({ ...editingDisaster, emergencyDirectives: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)' }}>
+                    <button type="button" className="btn btn-ghost" onClick={() => setEditingDisaster(null)}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      <span className="material-symbols-outlined">save</span>
+                      <span>Save Changes</span>
                     </button>
                   </div>
                 </form>

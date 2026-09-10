@@ -71,7 +71,8 @@ export const PostNeedModal: React.FC<PostNeedModalProps> = ({
       id: `REQ-${districtCode}-${Math.floor(100 + Math.random() * 900)}`,
       title: title.trim(),
       agency,
-      sectorLocation,
+      sectorLocation: sectorLocation.trim(),
+      worksite: sectorLocation.trim(),
       priority,
       requiredSkills: [requiredSkill],
       requiredCount: Number(requiredCount) || 5,
@@ -140,10 +141,11 @@ export const PostNeedModal: React.FC<PostNeedModalProps> = ({
               </div>
               <div>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-on-surface)', display: 'block', marginBottom: '4px' }}>
-                  Sector Worksite Location
+                  Worksite Location / Address *
                 </label>
                 <input
                   className="input-field"
+                  placeholder="e.g., Chooralmala Sector 2 Riverbank Worksite"
                   value={sectorLocation}
                   onChange={(e) => setSectorLocation(e.target.value)}
                   required

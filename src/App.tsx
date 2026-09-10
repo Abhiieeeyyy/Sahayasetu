@@ -699,10 +699,13 @@ export const App: React.FC = () => {
   // ENTITY ACTIONS
   // Interactive operations connecting components
   // --------------------------------------------------------------------------
-  // Add new beneficiary from intake drawer or registration
+  // Add or update beneficiary from intake drawer or registration
   const handleAddBeneficiary = (newBen: Beneficiary) => {
     setBeneficiaries(prev => {
-      const updated = [newBen, ...prev];
+      const exists = prev.some(b => b.id === newBen.id);
+      const updated = exists 
+        ? prev.map(b => b.id === newBen.id ? newBen : b)
+        : [newBen, ...prev];
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
       } catch {}
@@ -760,7 +763,8 @@ export const App: React.FC = () => {
           return {
             ...b,
             placementStatus: 'Assigned' as const,
-            assignedProjectId: matchedReq?.title || reqId
+            assignedProjectId: matchedReq?.title || reqId,
+            assignedWorksite: matchedReq?.sectorLocation || matchedReq?.worksite
           };
         }
         return b;
@@ -775,7 +779,8 @@ export const App: React.FC = () => {
       persistBeneficiary({
         ...matchedBen,
         placementStatus: 'Assigned',
-        assignedProjectId: matchedReq?.title || reqId
+        assignedProjectId: matchedReq?.title || reqId,
+        assignedWorksite: matchedReq?.sectorLocation || matchedReq?.worksite
       }, matchedBen.authUserId);
     }
 
