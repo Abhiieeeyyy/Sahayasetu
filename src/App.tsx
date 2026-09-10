@@ -47,6 +47,7 @@ import { UserRegistrationView } from './views/UserRegistrationView';
 import { CitizenDashboardView } from './views/CitizenDashboardView';
 import { GoogleSignInView } from './views/GoogleSignInView';
 import { RegionalAdminLoginView } from './views/RegionalAdminLoginView';
+import { SuperAdminLoginView, isSuperAdminLoggedIn, setSuperAdminLoggedIn } from './views/SuperAdminLoginView';
 import { LanguageSelectionModal } from './components/LanguageSelectionModal';
 import { RegionalAdminLoginModal } from './components/RegionalAdminLoginModal';
 import { EditRegionalAdminCredentialsModal } from './components/EditRegionalAdminCredentialsModal';
@@ -426,6 +427,9 @@ export const App: React.FC = () => {
   const [currentRole, setCurrentRole] = useState<UserRole>(initialRoute.role);
   const [activeRegionalAdmin, setActiveRegionalAdminState] = useState<RegionalAdminAccount | null>(() => {
     return getActiveRegionalAdmin();
+  });
+  const [isSuperAdminAuthenticated, setIsSuperAdminAuthenticated] = useState<boolean>(() => {
+    return isSuperAdminLoggedIn();
   });
   const [isRegionalAdminLoginModalOpen, setIsRegionalAdminLoginModalOpen] = useState<boolean>(false);
   const [isEditCredentialsModalOpen, setIsEditCredentialsModalOpen] = useState<boolean>(false);
@@ -853,6 +857,24 @@ export const App: React.FC = () => {
     showToast('Logged Out', 'Regional Administrator session ended.', 'info');
   };
 
+  // Super Admin login handler
+  const handleSuperAdminLogin = () => {
+    setIsSuperAdminAuthenticated(true);
+    setSuperAdminLoggedIn(true);
+    setCurrentRole('super-admin');
+    setActiveTab('super-admin');
+    window.history.replaceState({}, '', '/superadmin');
+  };
+
+  // Super Admin logout handler
+  const handleSuperAdminLogout = () => {
+    setIsSuperAdminAuthenticated(false);
+    setSuperAdminLoggedIn(false);
+    setCurrentRole('super-admin');
+    window.history.replaceState({}, '', '/superadmin');
+    showToast('Logged Out', 'Super Administrator session ended.', 'info');
+  };
+
   // Regional Admin credentials update handler
   const handleCredentialsUpdated = (updatedAdmin: RegionalAdminAccount) => {
     setActiveRegionalAdminState(updatedAdmin);
@@ -906,6 +928,8 @@ export const App: React.FC = () => {
         onRegionalAdminLogout={handleRegionalAdminLogout}
         onRefreshCloud={() => syncWithSupabase(false)}
         isCloudSyncing={isCloudSyncing}
+        isSuperAdminAuthenticated={isSuperAdminAuthenticated}
+        onSuperAdminLogout={handleSuperAdminLogout}
       />
 
       {/* ----------------------------------------------------------------------
@@ -921,6 +945,8 @@ export const App: React.FC = () => {
           activeRegionalAdmin={activeRegionalAdmin}
           onOpenEditCredentials={() => setIsEditCredentialsModalOpen(true)}
           onRegionalAdminLogout={handleRegionalAdminLogout}
+          isSuperAdminAuthenticated={isSuperAdminAuthenticated}
+          onSuperAdminLogout={handleSuperAdminLogout}
         />
 
         {/* Main Workstation Workspace Area */}
@@ -1001,56 +1027,65 @@ export const App: React.FC = () => {
               </>
             )}
 
-            {/* 3. Super Admin Perspective: Has ALL access */}
+            {/* 3. Super Admin Perspective: Protected behind master credentials */}
             {currentRole === 'super-admin' && (
               <>
-                {/* View 1: Statewide Command Center */}
-                {activeTab === 'super-admin' && (
-                  <SuperAdminCommandView
-                    districts={districts}
-                    beneficiaries={beneficiaries}
-                    onAddDistrict={handleAddDistrict}
-                    onUpdateDistrict={handleUpdateDistrict}
-                    onUpdateBeneficiary={handleUpdateBeneficiary}
-                    onPurgeAllBeneficiaries={handlePurgeAllBeneficiaries}
-                    onDeleteBeneficiary={handleDeleteBeneficiary}
+                {!isSuperAdminAuthenticated ? (
+                  <SuperAdminLoginView
+                    onLoginSuccess={handleSuperAdminLogin}
                     onShowToast={showToast}
                   />
-                )}
+                ) : (
+                  <>
+                    {/* View 1: Statewide Command Center */}
+                    {activeTab === 'super-admin' && (
+                      <SuperAdminCommandView
+                        districts={districts}
+                        beneficiaries={beneficiaries}
+                        onAddDistrict={handleAddDistrict}
+                        onUpdateDistrict={handleUpdateDistrict}
+                        onUpdateBeneficiary={handleUpdateBeneficiary}
+                        onPurgeAllBeneficiaries={handlePurgeAllBeneficiaries}
+                        onDeleteBeneficiary={handleDeleteBeneficiary}
+                        onShowToast={showToast}
+                      />
+                    )}
 
-                {/* View 2: Global Roster across all districts */}
-                {activeTab === 'beneficiary-intake' && (
-                  <BeneficiaryIntakeView
-                    beneficiaries={beneficiaries}
-                    onAddBeneficiary={handleAddBeneficiary}
-                    onDeployBeneficiary={handleDeployBeneficiary}
-                    onDeleteBeneficiary={handleDeleteBeneficiary}
-                    onShowToast={showToast}
-                    isOfflineMode={isOfflineMode}
-                    currentRole={currentRole}
-                    activeRegionalAdmin={activeRegionalAdmin}
-                    onOpenEditCredentials={() => setIsEditCredentialsModalOpen(true)}
-                  />
-                )}
+                    {/* View 2: Global Roster across all districts */}
+                    {activeTab === 'beneficiary-intake' && (
+                      <BeneficiaryIntakeView
+                        beneficiaries={beneficiaries}
+                        onAddBeneficiary={handleAddBeneficiary}
+                        onDeployBeneficiary={handleDeployBeneficiary}
+                        onDeleteBeneficiary={handleDeleteBeneficiary}
+                        onShowToast={showToast}
+                        isOfflineMode={isOfflineMode}
+                        currentRole={currentRole}
+                        activeRegionalAdmin={activeRegionalAdmin}
+                        onOpenEditCredentials={() => setIsEditCredentialsModalOpen(true)}
+                      />
+                    )}
 
-                {/* View 3: Statewide Dispatch & Skill Matching */}
-                {activeTab === 'skill-matching' && (
-                  <SkillMatchingView
-                    requisitions={requisitions}
-                    beneficiaries={beneficiaries}
-                    onAddRequisition={handleAddRequisition}
-                    onDispatchCandidate={handleDispatchCandidate}
-                    onShowToast={showToast}
-                  />
-                )}
+                    {/* View 3: Statewide Dispatch & Skill Matching */}
+                    {activeTab === 'skill-matching' && (
+                      <SkillMatchingView
+                        requisitions={requisitions}
+                        beneficiaries={beneficiaries}
+                        onAddRequisition={handleAddRequisition}
+                        onDispatchCandidate={handleDispatchCandidate}
+                        onShowToast={showToast}
+                      />
+                    )}
 
-                {/* View 5: Citizen Registration Form */}
-                {activeTab === 'registration' && (
-                  <UserRegistrationView
-                    onRegisterCitizen={handleAddBeneficiary}
-                    onShowToast={showToast}
-                    onNavigateToPortal={() => setActiveTab('self-portal')}
-                  />
+                    {/* View 5: Citizen Registration Form */}
+                    {activeTab === 'registration' && (
+                      <UserRegistrationView
+                        onRegisterCitizen={handleAddBeneficiary}
+                        onShowToast={showToast}
+                        onNavigateToPortal={() => setActiveTab('self-portal')}
+                      />
+                    )}
+                  </>
                 )}
               </>
             )}

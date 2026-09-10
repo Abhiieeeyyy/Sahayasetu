@@ -27,6 +27,8 @@ interface SidebarProps {
   activeRegionalAdmin?: RegionalAdminAccount | null;
   onOpenEditCredentials?: () => void;
   onRegionalAdminLogout?: () => void;
+  isSuperAdminAuthenticated?: boolean;
+  onSuperAdminLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -35,7 +37,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentRole,
   activeRegionalAdmin,
   onOpenEditCredentials,
-  onRegionalAdminLogout
+  onRegionalAdminLogout,
+  isSuperAdminAuthenticated = false,
+  onSuperAdminLogout
 }) => {
   const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
@@ -189,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* SUPER ADMIN SIDEBAR: Has ALL the access */}
+        {/* SUPER ADMIN SIDEBAR: Protected behind master credentials */}
         {currentRole === 'super-admin' && (
           <div>
             <div style={{
@@ -211,34 +215,78 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </span>
             </div>
             
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <button
-                onClick={() => onSelectTab('super-admin')}
-                className={`btn ${activeTab === 'super-admin' ? 'btn-primary' : 'btn-ghost'}`}
-                style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
-                <span>Command Center</span>
-              </button>
+            {!isSuperAdminAuthenticated ? (
+              <div style={{
+                padding: '16px 12px',
+                backgroundColor: 'var(--color-surface-low)',
+                border: '1px solid var(--color-outline-variant)',
+                borderRadius: 'var(--radius-md)',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-surface-container)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px auto',
+                  color: 'var(--color-primary)'
+                }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>admin_panel_settings</span>
+                </div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-on-surface)', marginBottom: '4px' }}>
+                  Master Login Required
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', lineHeight: 1.4 }}>
+                  Please enter master username and password to unlock statewide command.
+                </div>
+              </div>
+            ) : (
+              <div>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <button
+                    onClick={() => onSelectTab('super-admin')}
+                    className={`btn ${activeTab === 'super-admin' ? 'btn-primary' : 'btn-ghost'}`}
+                    style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
+                    <span>Command Center</span>
+                  </button>
 
-              <button
-                onClick={() => onSelectTab('beneficiary-intake')}
-                className={`btn ${activeTab === 'beneficiary-intake' ? 'btn-primary' : 'btn-ghost'}`}
-                style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>how_to_reg</span>
-                <span>All Districts Roster</span>
-              </button>
+                  <button
+                    onClick={() => onSelectTab('beneficiary-intake')}
+                    className={`btn ${activeTab === 'beneficiary-intake' ? 'btn-primary' : 'btn-ghost'}`}
+                    style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>how_to_reg</span>
+                    <span>All Districts Roster</span>
+                  </button>
 
-              <button
-                onClick={() => onSelectTab('skill-matching')}
-                className={`btn ${activeTab === 'skill-matching' ? 'btn-primary' : 'btn-ghost'}`}
-                style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>hub</span>
-                <span>Statewide Dispatch</span>
-              </button>
-            </nav>
+                  <button
+                    onClick={() => onSelectTab('skill-matching')}
+                    className={`btn ${activeTab === 'skill-matching' ? 'btn-primary' : 'btn-ghost'}`}
+                    style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>hub</span>
+                    <span>Statewide Dispatch</span>
+                  </button>
+
+                  {onSuperAdminLogout && (
+                    <button
+                      type="button"
+                      onClick={onSuperAdminLogout}
+                      className="btn btn-ghost"
+                      style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left', fontSize: '13px', color: '#b91c1c', marginTop: '6px' }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#b91c1c' }}>logout</span>
+                      <span>Super Admin Logout</span>
+                    </button>
+                  )}
+                </nav>
+              </div>
+            )}
           </div>
         )}
 

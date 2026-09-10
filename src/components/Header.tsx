@@ -35,6 +35,8 @@ interface HeaderProps {
   onSwitchToRegionalAdmin?: () => void;
   onRefreshCloud?: () => void;
   isCloudSyncing?: boolean;
+  isSuperAdminAuthenticated?: boolean;
+  onSuperAdminLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -46,7 +48,9 @@ export const Header: React.FC<HeaderProps> = ({
   onRegionalAdminLogout,
   onSwitchToRegionalAdmin,
   onRefreshCloud,
-  isCloudSyncing = false
+  isCloudSyncing = false,
+  isSuperAdminAuthenticated = false,
+  onSuperAdminLogout
 }) => {
   const { user, isAuthenticated, signOut } = useAuth();
 
@@ -207,9 +211,57 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         )}
 
-        {/* Exit link when in super admin mode */}
+        {/* Exit link and controls when in super admin mode */}
         {currentRole === 'super-admin' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isSuperAdminAuthenticated ? (
+              <>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '4px 10px',
+                  backgroundColor: 'var(--color-surface-container)',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid var(--color-primary)'
+                }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--color-primary)' }}>admin_panel_settings</span>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-primary)' }}>
+                    Super Admin Active
+                  </span>
+                </div>
+
+                {onSuperAdminLogout && (
+                  <button
+                    type="button"
+                    onClick={onSuperAdminLogout}
+                    className="btn btn-sm btn-ghost"
+                    style={{ fontSize: '12px', fontWeight: 700, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    title="Log out of Super Admin session"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>logout</span>
+                    <span>Logout</span>
+                  </button>
+                )}
+              </>
+            ) : (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '4px 10px',
+                backgroundColor: '#fef2f2',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid #fecaca',
+                fontSize: '11px',
+                color: '#b91c1c',
+                fontWeight: 700
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
+                <span>Super Admin: Login Required</span>
+              </div>
+            )}
+
             <a
               href="/"
               onClick={(e) => {
