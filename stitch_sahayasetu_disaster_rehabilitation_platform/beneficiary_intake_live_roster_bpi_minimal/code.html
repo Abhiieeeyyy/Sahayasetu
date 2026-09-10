@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SahayaSetu - Disaster Recovery &amp; Skill-Matching Platform</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,300..500,0..1,-25..0" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "canvas": "#f9fafb",
+            "border-subtle": "#e5e7eb",
+            "border-light": "#f1f3f5",
+            "text-main": "#111827",
+            "text-muted": "#6b7280",
+            "text-subtle": "#9ca3af",
+            "brand-primary": "#0f3a47",
+            "brand-light": "#eef6f9",
+            "status-teal": "#0d9488",
+            "status-amber": "#d97706",
+            "status-rose": "#e11d48",
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-canvas font-sans text-text-main antialiased selection:bg-brand-primary selection:text-white">
+<!-- Minimalist Refined Top Navigation Header -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border-subtle/80">
+<div class="h-16 w-full px-6 flex items-center justify-between">
+<!-- Brand & Regional Context -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="SahayaSetu" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1USZ63cySY-MMK0NyO5MFO7jURd68UnHsmUzJVRl5jRJ6_-qOBGJCWW7gYCMBPqsXcXkc7_UuEE2Dcwode0ic6gEA_0UMTXCgme8epx9OsrepqyBaOcBBrltryWEoLw3GqHrBC1GrdT1I7rbslvdk4CEoBDFInQGZF_vsy9pvh36Qq9kYFCbHfI9-6-z2LxI8qcQ3lR-PrTNOVw6iphhR71wnpMKnPHtCRtTzngQaEQBFGxV4KNLuBL"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-[15px] tracking-tight text-text-main">SahayaSetu</span>
+<span class="text-[11px] font-mono text-text-subtle">v2.4</span>
+</div>
+</div>
+</div>
+<div class="hidden lg:flex items-center gap-2 pl-4 border-l border-border-subtle text-xs text-text-muted">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+<span class="font-mono text-text-main">KL-WYD-2024</span>
+<span class="text-text-subtle">·</span>
+<span>Wayanad Relief Command</span>
+</div>
+</div>
+<!-- Center Navigation Tabs -->
+<nav class="hidden md:flex items-center gap-1 bg-gray-50/80 p-1 rounded-lg border border-border-subtle/60 text-xs">
+<a aria-current="page" class="px-3 py-1.5 rounded-md bg-white text-brand-primary font-medium shadow-xs border border-border-subtle/50" data-path="beneficiary-intake-and-roster" href="#">Intake &amp; Roster</a>
+<a class="px-3 py-1.5 rounded-md text-text-muted hover:text-text-main hover:bg-white/60 transition-colors" data-path="skill-matching-and-jobs" href="#">Skill &amp; Dispatch</a>
+<a class="px-3 py-1.5 rounded-md text-text-muted hover:text-text-main hover:bg-white/60 transition-colors" data-path="super-admin-command" href="#">Command Center</a>
+<a class="px-3 py-1.5 rounded-md text-text-muted hover:text-text-main hover:bg-white/60 transition-colors" data-path="beneficiary-self-portal" href="#">Self-Portal</a>
+</nav>
+<!-- Header Actions & Minimal Indicators -->
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 text-xs text-text-muted px-2.5 py-1 rounded-md bg-gray-50 border border-border-subtle/60">
+<span class="w-2 h-2 rounded-full bg-status-teal"></span>
+<span class="font-mono text-[11px]">Synced · 42ms</span>
+</div>
+<a class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-status-rose bg-rose-50 border border-rose-100 hover:bg-rose-100/70 px-2.5 py-1 rounded-md transition-colors" href="tel:1077">
+<span class="material-symbols-outlined text-[15px]">sos</span>
+<span>1077</span>
+</a>
+<div class="flex items-center gap-2.5 pl-2 border-l border-border-subtle/60">
+<img alt="Profile" class="w-7 h-7 rounded-full object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida/AEtjO1Vu5QvIehAURJ_rU1rJxflunIUcdFZB4bnfqfeX-VjD8Hwajqz2Xuo-2Ia2ldELhrPnVCqmADMUFmBBmz8qTtxUbJfsns4zq1Xlxbpl-aiNjBXTr0F9d7xtog34nsREDuTMDzQiZ_VZKxVhcVoBtUPR2HxMDUNHmae2Tx4dKB9uQYfqcWgypBKovzUcb8hfqBt0WDNV_Zev4dZK0vu-HFaIrClO8-w1EIhHfU7pbPZhGnWelf-c8czc"/>
+<span class="hidden xl:inline-block text-xs font-medium text-text-main">Priya S.</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Minimal Sidebar -->
+<aside class="fixed left-0 top-16 bottom-0 w-60 bg-white border-r border-border-subtle hidden md:flex flex-col justify-between p-4 z-40">
+<div class="flex flex-col gap-5">
+<div class="px-2 pt-1 text-[11px] font-mono uppercase tracking-wider text-text-subtle font-medium">Field Operations</div>
+<nav class="flex flex-col gap-0.5">
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-100/80 text-brand-primary font-medium text-xs transition-colors" data-path="beneficiary-intake-and-roster" href="#">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Intake &amp; Roster</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-text-muted hover:text-text-main hover:bg-gray-50 font-medium text-xs transition-colors" data-path="skill-matching-and-jobs" href="#">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+<span>Skill &amp; Dispatch</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-text-muted hover:text-text-main hover:bg-gray-50 font-medium text-xs transition-colors" data-path="super-admin-command" href="#">
+<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+<span>Command Center</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-text-muted hover:text-text-main hover:bg-gray-50 font-medium text-xs transition-colors" data-path="beneficiary-self-portal" href="#">
+<span class="material-symbols-outlined text-[18px]">person_apron</span>
+<span>Relief Self-Portal</span>
+</a>
+</nav>
+</div>
+<!-- Minimal System Health Badge -->
+<div class="p-3 rounded-lg border border-border-subtle bg-canvas text-xs">
+<div class="flex items-center justify-between text-[11px] text-text-muted mb-1.5">
+<span>Offline Cache</span>
+<span class="font-mono text-status-teal font-medium">Synced</span>
+</div>
+<div class="w-full bg-gray-200 h-1 rounded-full overflow-hidden">
+<div class="bg-status-teal h-full w-full"></div>
+</div>
+<span class="block mt-2 text-[10px] text-text-subtle font-mono">VSAT Mesh Relay Active</span>
+</div>
+</aside>
+<!-- Main Shell -->
+<div class="md:pl-60 pt-16">
+<main class="w-full max-w-7xl mx-auto px-6 py-8 bg-canvas min-h-[calc(100vh-4rem)]">
+<!-- Sleek Top Sub-header Context Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 mb-6 border-b border-border-subtle">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="text-xl font-semibold tracking-tight text-text-main">Wayanad District Relief Roster</h1>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-gray-100 text-text-muted border border-border-subtle">RLS Enforced</span>
+</div>
+<p class="text-xs text-text-muted mt-1">Meppadi Sector 3 &amp; Chooralmala Relief Quadrants</p>
+</div>
+<!-- Minimal Action Controls -->
+<div class="flex items-center gap-2.5">
+<button class="h-9 px-3.5 rounded-lg border border-border-subtle bg-white text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 flex items-center gap-1.5 transition-colors" onclick="triggerBatchExport()" type="button">
+<span class="material-symbols-outlined text-[17px]">download</span>
+<span>Export CSV</span>
+</button>
+<button class="h-9 px-4 rounded-lg bg-brand-primary text-white text-xs font-medium flex items-center gap-1.5 hover:bg-brand-primary/90 transition-all shadow-xs" onclick="toggleIntakeDrawer(true)" type="button">
+<span class="material-symbols-outlined text-[17px]">add</span>
+<span>New Beneficiary Intake</span>
+</button>
+</div>
+</div>
+<!-- Minimal Subtle Offline Indicator Banner -->
+<div class="bg-white border border-border-subtle rounded-lg px-4 py-2.5 mb-6 flex items-center justify-between text-xs" id="offlineNotice">
+<div class="flex items-center gap-2.5 text-text-muted">
+<span class="w-1.5 h-1.5 rounded-full bg-status-amber"></span>
+<span class="font-medium text-text-main">Local-First Storage Active:</span>
+<span>14 local records queued for background relay via Microwave Mesh Node 09-KL.</span>
+</div>
+<button class="text-text-subtle hover:text-text-main text-xs" onclick="toggleOfflineNotice()">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Clean, Uncluttered Metric KPI Strip -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3.5 mb-6">
+<!-- Metric 1 -->
+<div class="bg-white p-4 rounded-lg border border-border-subtle">
+<div class="text-[11px] uppercase tracking-wider text-text-subtle font-medium">Total Registered</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-2xl font-semibold tracking-tight text-text-main">1,482</span>
+<span class="text-[11px] font-mono text-status-teal font-medium">+28 today</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-white p-4 rounded-lg border border-border-subtle">
+<div class="text-[11px] uppercase tracking-wider text-text-subtle font-medium">In Relief Camps</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-2xl font-semibold tracking-tight text-text-main">820</span>
+<span class="text-[11px] text-text-muted">6 camps</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-white p-4 rounded-lg border border-border-subtle">
+<div class="text-[11px] uppercase tracking-wider text-text-subtle font-medium">Available for Work</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-2xl font-semibold tracking-tight text-text-main">640</span>
+<span class="text-[11px] font-mono text-status-teal font-medium">Deployable</span>
+</div>
+</div>
+<!-- Metric 4 -->
+<div class="bg-white p-4 rounded-lg border border-border-subtle">
+<div class="text-[11px] uppercase tracking-wider text-text-subtle font-medium">Placed in Rebuilding</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-2xl font-semibold tracking-tight text-text-main">412</span>
+<span class="text-[11px] font-mono text-text-muted">₹750/day avg</span>
+</div>
+</div>
+<!-- Metric 5 -->
+<div class="col-span-2 md:col-span-1 bg-white p-4 rounded-lg border border-border-subtle">
+<div class="text-[11px] uppercase tracking-wider text-text-subtle font-medium">Sync Integrity</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-2xl font-semibold tracking-tight text-status-teal font-mono">100%</span>
+<span class="text-[11px] text-text-subtle font-mono">0 pending</span>
+</div>
+</div>
+</div>
+<!-- Sleek Filter & Search Bar -->
+<div class="bg-white border border-border-subtle rounded-lg p-2.5 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+<!-- Search Input -->
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-md bg-transparent text-xs text-text-main placeholder:text-text-subtle focus:outline-none focus:ring-1 focus:ring-brand-primary border-0" id="rosterSearch" placeholder="Search by name, ID, camp location..." type="text"/>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium bg-brand-primary text-white transition-all shadow-2xs" data-filter="all" onclick="setFilter('all')" type="button">All (1,482)</button>
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 transition-all" data-filter="camp" onclick="setFilter('camp')" type="button">Relief Camps</button>
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 transition-all" data-filter="makeshift" onclick="setFilter('makeshift')" type="button">Makeshift</button>
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 transition-all" data-filter="available" onclick="setFilter('available')" type="button">Available (640)</button>
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 transition-all" data-filter="masons" onclick="setFilter('masons')" type="button">Masons</button>
+<button class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium text-text-muted hover:text-text-main hover:bg-gray-50 transition-all" data-filter="electricians" onclick="setFilter('electricians')" type="button">Electricians</button>
+</div>
+</div>
+<!-- Minimalist Roster Table Container -->
+<div class="bg-white border border-border-subtle rounded-lg overflow-hidden mb-8">
+<!-- Subtle Table Header Status -->
+<div class="px-5 py-3 border-b border-border-subtle bg-white flex items-center justify-between text-xs">
+<div class="flex items-center gap-2 text-text-muted">
+<span class="w-2 h-2 rounded-full bg-status-teal"></span>
+<span class="font-medium text-text-main">Active Case Records</span>
+<span class="text-text-subtle">· Auto-syncs continuously</span>
+</div>
+<div class="flex items-center gap-3 text-text-muted">
+<span>Showing 5 of 1,482</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded border border-border-subtle bg-white text-text-subtle disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-[15px]">chevron_left</span>
+</button>
+<button class="p-1 rounded border border-border-subtle bg-white text-text-muted hover:text-text-main">
+<span class="material-symbols-outlined text-[15px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Responsive Table -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="border-b border-border-subtle bg-gray-50/60 text-[11px] font-mono uppercase tracking-wider text-text-muted">
+<th class="py-3 px-5 font-medium">Beneficiary</th>
+<th class="py-3 px-5 font-medium">Impact &amp; Shelter</th>
+<th class="py-3 px-5 font-medium">Verified Vocational Skills</th>
+<th class="py-3 px-5 font-medium">Status</th>
+<th class="py-3 px-5 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle text-text-main" id="beneficiaryTableBody">
+<!-- Beneficiary 1 -->
+<tr class="hover:bg-gray-50/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+                    RK
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-medium text-text-main">Ramesh K.</span>
+<span class="font-mono text-[11px] text-text-subtle">KL-9021</span>
+</div>
+<div class="text-[11px] text-text-muted">Age 38 · Male · +91 98••• ••812</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="space-y-1">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-status-amber border border-amber-200/60">
+                    Landslide Survivor
+                  </span>
+<div class="text-[11px] text-text-muted">Camp #4 — Meppadi Higher Sec.</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex flex-wrap gap-1.5 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+                    Masonry (12 yrs)
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Concrete Shoring
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Bricklaying
+                  </span>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+<span class="font-medium text-status-teal text-[11px] uppercase tracking-wide">Available</span>
+</div>
+<span class="text-[11px] text-text-subtle">Fit for heavy duty</span>
+</td>
+<td class="py-4 px-5 text-right">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-primary/90 transition-colors shadow-2xs" onclick="openQuickMatch('Ramesh K.', 'Masonry', 'Meppadi Sector')" type="button">
+<span class="material-symbols-outlined text-[15px]">bolt</span>
+<span>Match Job</span>
+</button>
+</td>
+</tr>
+<!-- Beneficiary 2 -->
+<tr class="hover:bg-gray-50/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+                    AP
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-medium text-text-main">Ananya Padmanabhan</span>
+<span class="font-mono text-[11px] text-text-subtle">KL-9022</span>
+</div>
+<div class="text-[11px] text-text-muted">Age 29 · Female · +91 94••• ••204</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="space-y-1">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200/60">
+                    Flash Flood Displaced
+                  </span>
+<div class="text-[11px] text-text-muted">Makeshift Shelter — Chooralmala Riverbank</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex flex-wrap gap-1.5 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+                    Nursing / Triage (5 yrs)
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    BLS Certified
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Pharmacology
+                  </span>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-subtle"></span>
+<span class="font-medium text-text-muted text-[11px] uppercase tracking-wide">Assigned</span>
+</div>
+<span class="text-[11px] text-text-subtle">Mobile Clinic Beta</span>
+</td>
+<td class="py-4 px-5 text-right">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border-subtle bg-white text-text-muted hover:text-text-main hover:bg-gray-50 text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>View</span>
+</button>
+</td>
+</tr>
+<!-- Beneficiary 3 -->
+<tr class="hover:bg-gray-50/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+                    SV
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-medium text-text-main">Suresh Varghese</span>
+<span class="font-mono text-[11px] text-text-subtle">KL-9023</span>
+</div>
+<div class="text-[11px] text-text-muted">Age 45 · Male · +91 97••• ••991</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="space-y-1">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-status-amber border border-amber-200/60">
+                    Landslide Survivor
+                  </span>
+<div class="text-[11px] text-text-muted">Camp #2 — St. Joseph Auditorium</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex flex-wrap gap-1.5 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+                    Electrical Grid (15 yrs)
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Diesel Generator Op
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    High-Voltage Lines
+                  </span>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+<span class="font-medium text-status-teal text-[11px] uppercase tracking-wide">Available</span>
+</div>
+<span class="text-[11px] text-text-subtle">Has safety gear</span>
+</td>
+<td class="py-4 px-5 text-right">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-primary/90 transition-colors shadow-2xs" onclick="openQuickMatch('Suresh Varghese', 'Electrical Grid', 'KSEB Substation Repair')" type="button">
+<span class="material-symbols-outlined text-[15px]">bolt</span>
+<span>Match Job</span>
+</button>
+</td>
+</tr>
+<!-- Beneficiary 4 -->
+<tr class="hover:bg-gray-50/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+                    MB
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-medium text-text-main">Muhammed Basheer</span>
+<span class="font-mono text-[11px] text-text-subtle">KL-9024</span>
+</div>
+<div class="text-[11px] text-text-muted">Age 52 · Male · +91 99••• ••330</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="space-y-1">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-status-rose border border-rose-200/60">
+                    Cyclone Debris Area
+                  </span>
+<div class="text-[11px] text-text-muted">Returnee — Partial Homestead</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex flex-wrap gap-1.5 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+                    Heavy Equipment (JCB/Excavator)
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Commercial License
+                  </span>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-subtle"></span>
+<span class="font-medium text-text-muted text-[11px] uppercase tracking-wide">Assigned</span>
+</div>
+<span class="text-[11px] text-text-subtle">PWD Road Clearance #12</span>
+</td>
+<td class="py-4 px-5 text-right">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border-subtle bg-white text-text-muted hover:text-text-main hover:bg-gray-50 text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+<span>View</span>
+</button>
+</td>
+</tr>
+<!-- Beneficiary 5 -->
+<tr class="hover:bg-gray-50/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+                    LT
+                  </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-medium text-text-main">Lakshmi Thankappan</span>
+<span class="font-mono text-[11px] text-text-subtle">KL-9025</span>
+</div>
+<div class="text-[11px] text-text-muted">Age 34 · Female · +91 91••• ••745</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="space-y-1">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-status-amber border border-amber-200/60">
+                    Landslide Survivor
+                  </span>
+<div class="text-[11px] text-text-muted">Camp #4 — Meppadi Higher Sec.</div>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex flex-wrap gap-1.5 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+                    Plumbing &amp; Sanitation (8 yrs)
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    PVC Pipe Fitting
+                  </span>
+<span class="px-2 py-0.5 rounded bg-gray-50 text-text-muted text-[11px] border border-border-subtle">
+                    Water Tank Setup
+                  </span>
+</div>
+</td>
+<td class="py-4 px-5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+<span class="font-medium text-status-teal text-[11px] uppercase tracking-wide">Available</span>
+</div>
+<span class="text-[11px] text-text-subtle">Immediate deployment</span>
+</td>
+<td class="py-4 px-5 text-right">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-primary/90 transition-colors shadow-2xs" onclick="openQuickMatch('Lakshmi Thankappan', 'Plumbing &amp; Sanitation', 'Camp 4 Water Treatment Line')" type="button">
+<span class="material-symbols-outlined text-[15px]">bolt</span>
+<span>Match Job</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Clean Minimal Table Action Footer -->
+<div class="px-5 py-3 border-t border-border-subtle bg-gray-50/50 flex flex-wrap items-center justify-between gap-3 text-xs">
+<div class="flex items-center gap-3 text-text-muted">
+<span>Batch Actions:</span>
+<button class="px-2.5 py-1 rounded border border-border-subtle bg-white text-text-muted hover:text-text-main disabled:opacity-40" disabled="" id="btnBatchMobilize">
+            Mobilize to Site
+          </button>
+<button class="px-2.5 py-1 rounded border border-border-subtle bg-white text-text-muted hover:text-text-main disabled:opacity-40" disabled="" id="btnBatchCamp">
+            Transfer Camp
+          </button>
+</div>
+<div class="text-[11px] font-mono text-text-subtle">
+          Partition: KL-WYD-2024::P1_TRIAGE
+        </div>
+</div>
+</div>
+<!-- Minimalist Bottom Context Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Card 1: Camp Capacities -->
+<div class="bg-white border border-border-subtle rounded-lg p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-sm font-semibold text-text-main">Relief Camp Capacities</h2>
+<span class="text-[11px] text-text-subtle font-mono">Live</span>
+</div>
+<p class="text-xs text-text-muted mb-4">Occupancy status in active sectors.</p>
+<div class="space-y-3.5 text-xs">
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-text-main font-medium">Meppadi Higher Sec. (#4)</span>
+<span class="text-status-amber font-medium">342 / 350 (98%)</span>
+</div>
+<div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-amber h-full w-[98%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-text-main font-medium">St. Joseph Hall (#2)</span>
+<span class="text-status-teal font-medium">210 / 300 (70%)</span>
+</div>
+<div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-teal h-full w-[70%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-text-main font-medium">Chooralmala Riverbank Makeshift</span>
+<span class="text-status-rose font-medium">268 / 250 (Over)</span>
+</div>
+<div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-rose h-full w-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-3 border-t border-border-subtle flex items-center justify-between text-xs">
+<span class="text-text-muted text-[11px]">Recommend relocation of 18 families</span>
+<button class="text-brand-primary font-medium hover:underline text-xs">Dispatch</button>
+</div>
+</div>
+<!-- Card 2: Skill Demand Gap -->
+<div class="bg-white border border-border-subtle rounded-lg p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-sm font-semibold text-text-main">Urgent Labor Deficits</h2>
+<span class="text-[11px] text-text-subtle font-mono">PWD / NDRF</span>
+</div>
+<p class="text-xs text-text-muted mb-4">Immediate field rehabilitation requests.</p>
+<div class="space-y-2 text-xs">
+<div class="flex items-center justify-between p-2 rounded border border-border-subtle/70 bg-gray-50/50">
+<span class="text-text-main font-medium">Masonry &amp; Foundation</span>
+<span class="font-mono text-status-amber font-medium">Need 80 <span class="text-text-subtle font-normal">(42 in place)</span></span>
+</div>
+<div class="flex items-center justify-between p-2 rounded border border-border-subtle/70 bg-gray-50/50">
+<span class="text-text-main font-medium">Substation Electricians</span>
+<span class="font-mono text-text-main font-medium">Need 35 <span class="text-text-subtle font-normal">(18 in place)</span></span>
+</div>
+<div class="flex items-center justify-between p-2 rounded border border-border-subtle/70 bg-gray-50/50">
+<span class="text-text-main font-medium">Sanitation &amp; Filters</span>
+<span class="font-mono text-status-teal font-medium">Need 25 <span class="text-text-subtle font-normal">(22 in place)</span></span>
+</div>
+</div>
+</div>
+<button class="mt-5 w-full h-8 rounded border border-border-subtle bg-gray-50 hover:bg-gray-100 text-text-main text-xs font-medium transition-colors" onclick="toggleIntakeDrawer(true)">
+          Prioritize Intake For These Skills
+        </button>
+</div>
+<!-- Card 3: Offline Sync Engine Status -->
+<div class="bg-white border border-border-subtle rounded-lg p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-sm font-semibold text-text-main">Field Device Sync Cache</h2>
+<span class="text-[11px] text-status-teal font-mono">Encrypted</span>
+</div>
+<p class="text-xs text-text-muted mb-4">Rugged IndexedDB local-first storage.</p>
+<div class="space-y-1.5 font-mono text-[11px] text-text-muted bg-gray-50/70 p-3 rounded border border-border-subtle/70">
+<div class="flex justify-between">
+<span>Engine:</span>
+<span class="text-text-main">IndexedDB / AES-256</span>
+</div>
+<div class="flex justify-between">
+<span>Unsynced:</span>
+<span class="text-status-teal font-medium" id="unsyncedCount">0 Queued</span>
+</div>
+<div class="flex justify-between">
+<span>Power Mode:</span>
+<span class="text-text-main">Low Latency Standby</span>
+</div>
+</div>
+</div>
+<div class="mt-5 flex items-center gap-2">
+<button class="flex-1 h-8 rounded bg-brand-primary text-white text-xs font-medium hover:bg-brand-primary/90 transition-colors" onclick="triggerManualSync()">
+            Force Push Relay
+          </button>
+<button class="h-8 px-2.5 rounded border border-border-subtle bg-white text-text-muted hover:text-status-rose hover:border-status-rose/40 transition-colors" onclick="clearLocalTestCache()" title="Purge local temporary test cache">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RAPID FIELD INTAKE SLIDE-OVER DRAWER (<90 SECONDS FORM) -->
+<div class="fixed inset-0 bg-black/30 backdrop-blur-xs z-50 hidden transition-opacity" id="intakeDrawerOverlay">
+<div class="fixed inset-y-0 right-0 max-w-full flex">
+<div class="w-screen max-w-md bg-white border-l border-border-subtle shadow-xl flex flex-col justify-between overflow-y-auto">
+<!-- Drawer Header -->
+<div class="px-6 py-4 border-b border-border-subtle flex items-center justify-between sticky top-0 bg-white z-10">
+<div>
+<h2 class="text-sm font-semibold text-text-main">Rapid Beneficiary Intake</h2>
+<span class="text-[11px] font-mono text-text-muted">Target: &lt;90s · Wayanad Command</span>
+</div>
+<button class="p-1 rounded text-text-subtle hover:text-text-main" onclick="toggleIntakeDrawer(false)" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Intake Form Body -->
+<form class="p-6 space-y-4 text-xs flex-1" id="rapidIntakeForm" onsubmit="handleIntakeSubmit(event)">
+<div>
+<label class="block font-medium text-text-main mb-1" for="beneficiaryName">
+                Full Legal Name <span class="text-status-rose">*</span>
+</label>
+<input class="w-full h-9 px-3 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="beneficiaryName" placeholder="e.g. Radhakrishnan Pillai" required="" type="text"/>
+</div>
+<div class="grid grid-cols-3 gap-2.5">
+<div>
+<label class="block font-medium text-text-main mb-1" for="beneficiaryAge">
+                  Age <span class="text-status-rose">*</span>
+</label>
+<input class="w-full h-9 px-3 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="beneficiaryAge" max="100" min="16" placeholder="38" required="" type="number"/>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1" for="beneficiaryGender">
+                  Gender <span class="text-status-rose">*</span>
+</label>
+<select class="w-full h-9 px-2 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="beneficiaryGender">
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1" for="beneficiaryPhone">
+                  Mobile
+                </label>
+<input class="w-full h-9 px-2 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="beneficiaryPhone" placeholder="+91 98..." type="tel"/>
+</div>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1">
+                Calamity Impact <span class="text-status-rose">*</span>
+</label>
+<div class="grid grid-cols-3 gap-2">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="calamityType" type="radio" value="Landslide"/>
+<div class="py-2 text-center rounded border border-border-subtle peer-checked:bg-brand-primary peer-checked:text-white peer-checked:border-brand-primary text-text-muted transition-all">
+                    Landslide
+                  </div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="calamityType" type="radio" value="Flood"/>
+<div class="py-2 text-center rounded border border-border-subtle peer-checked:bg-brand-primary peer-checked:text-white peer-checked:border-brand-primary text-text-muted transition-all">
+                    Flash Flood
+                  </div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="calamityType" type="radio" value="Cyclone"/>
+<div class="py-2 text-center rounded border border-border-subtle peer-checked:bg-brand-primary peer-checked:text-white peer-checked:border-brand-primary text-text-muted transition-all">
+                    Cyclone
+                  </div>
+</label>
+</div>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1" for="livingStatus">
+                Current Living Status <span class="text-status-rose">*</span>
+</label>
+<select class="w-full h-9 px-3 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="livingStatus">
+<option value="Camp #4 — Meppadi Higher Sec.">Relief Camp Meppadi (#4)</option>
+<option value="Camp #2 — St. Joseph Auditorium">Relief Camp St. Joseph (#2)</option>
+<option value="Makeshift Shelter — Chooralmala">Makeshift Tent / Riverbank</option>
+<option value="Returnee — Damaged Homestead">Returnee / Homestead</option>
+<option value="Host Family Residence">Host Family / Relatives</option>
+</select>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1">
+                Vocational Skills (Select all that apply)
+              </label>
+<div class="grid grid-cols-2 gap-1.5" id="skillChipsContainer">
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Masonry')" type="button">
+<span>Masonry</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Electrical')" type="button">
+<span>Electrical Wiring</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Carpentry')" type="button">
+<span>Carpentry</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Heavy Equipment')" type="button">
+<span>Heavy Machinery</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Plumbing')" type="button">
+<span>Plumbing</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+<button class="skill-chip py-1.5 px-2.5 rounded border border-border-subtle text-text-muted flex items-center justify-between hover:border-gray-400 transition-all" onclick="toggleSkillChip(this, 'Nursing/First Aid')" type="button">
+<span>First Aid / Clinic</span>
+<span class="material-symbols-outlined text-[14px]">add</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<div>
+<label class="block font-medium text-text-main mb-1" for="experienceYears">
+                  Experience (Years)
+                </label>
+<input class="w-full h-9 px-3 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="experienceYears" max="60" min="0" placeholder="e.g. 8" type="number"/>
+</div>
+<div>
+<label class="block font-medium text-text-main mb-1" for="medicalFitness">
+                  Fitness
+                </label>
+<select class="w-full h-9 px-2 rounded border border-border-subtle text-xs text-text-main focus:outline-none focus:ring-1 focus:ring-brand-primary" id="medicalFitness">
+<option value="Fit for Heavy Duty">Fit - Heavy Duty</option>
+<option value="Fit for Light Duty">Fit - Light / Camp</option>
+<option value="Medical Attention Required">Medical Rest</option>
+</select>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="pt-4 border-t border-border-subtle flex items-center gap-2">
+<button class="flex-1 h-9 rounded border border-border-subtle text-text-muted hover:text-text-main" onclick="toggleIntakeDrawer(false)" type="button">
+                Cancel
+              </button>
+<button class="flex-1 h-9 rounded bg-brand-primary text-white font-medium hover:bg-brand-primary/90 transition-colors" type="submit">
+                Register Record
+              </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- ONE-CLICK QUICK MATCH MODAL (DISPATCH OVERLAY) -->
+<div class="fixed inset-0 bg-black/30 backdrop-blur-xs z-50 hidden items-center justify-center p-4" id="quickMatchModal">
+<div class="w-full max-w-md bg-white rounded-lg border border-border-subtle shadow-xl overflow-hidden text-xs">
+<div class="px-5 py-3.5 border-b border-border-subtle flex items-center justify-between">
+<div>
+<h2 class="font-semibold text-text-main">Disaster Dispatch Match</h2>
+<span class="text-[11px] text-text-muted">Post-Landslide Sector Recovery</span>
+</div>
+<button class="text-text-subtle hover:text-text-main" onclick="closeQuickMatch()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="p-5 space-y-4">
+<div class="p-3 bg-gray-50 rounded border border-border-subtle">
+<div class="font-semibold text-text-main text-sm" id="modalCandidateName">Candidate</div>
+<div class="text-[11px] text-text-muted mt-0.5" id="modalCandidateSkill">Skill: Masonry</div>
+</div>
+<div class="space-y-2">
+<span class="text-[11px] uppercase tracking-wider font-mono text-text-subtle">Priority Needs</span>
+<label class="flex items-start gap-2.5 p-2.5 rounded border border-border-subtle hover:bg-gray-50 cursor-pointer transition-colors">
+<input checked="" class="mt-0.5" name="jobMatch" type="radio"/>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-medium text-text-main">Chooralmala Bailey Bridge Wall</span>
+<span class="text-[10px] font-mono text-status-amber font-medium">Urgent</span>
+</div>
+<p class="text-[11px] text-text-muted mt-0.5">PWD-WYD-998 · ₹850/day disaster wage</p>
+</div>
+</label>
+<label class="flex items-start gap-2.5 p-2.5 rounded border border-border-subtle hover:bg-gray-50 cursor-pointer transition-colors">
+<input class="mt-0.5" name="jobMatch" type="radio"/>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-medium text-text-main">Meppadi Camp #4 Perimeter Shoring</span>
+<span class="text-[10px] font-mono text-text-muted">Camp Rehab</span>
+</div>
+<p class="text-[11px] text-text-muted mt-0.5">Relief Task · ₹750/day standard</p>
+</div>
+</label>
+</div>
+</div>
+<div class="px-5 py-3 border-t border-border-subtle bg-gray-50/60 flex items-center justify-end gap-2">
+<button class="h-8 px-3 rounded border border-border-subtle bg-white text-text-muted hover:text-text-main" onclick="closeQuickMatch()">
+            Cancel
+          </button>
+<button class="h-8 px-4 rounded bg-brand-primary text-white font-medium hover:bg-brand-primary/90 transition-colors" onclick="confirmDispatch()">
+            Confirm &amp; Send SMS
+          </button>
+</div>
+</div>
+</div>
+<!-- Minimal Subtle Toast Notification -->
+<div class="fixed bottom-5 right-5 z-50 hidden bg-white border border-border-subtle px-3.5 py-2.5 rounded-lg shadow-lg flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-bottom-2" id="liveToast">
+<span class="w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+<div>
+<span class="font-medium text-text-main" id="toastTitle">Action Synced</span>
+<span class="text-text-muted ml-1" id="toastDesc">Record cached locally.</span>
+</div>
+</div>
+</main>
+</div>
+<script>
+  let selectedSkills = [];
+
+  function toggleIntakeDrawer(show) {
+    const overlay = document.getElementById('intakeDrawerOverlay');
+    if (show) {
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('beneficiaryName').focus();
+    } else {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function toggleSkillChip(btn, skillName) {
+    const icon = btn.querySelector('.material-symbols-outlined');
+    const index = selectedSkills.indexOf(skillName);
+
+    if (index === -1) {
+      selectedSkills.push(skillName);
+      btn.classList.add('bg-brand-primary', 'text-white', 'border-brand-primary');
+      icon.textContent = 'check';
+    } else {
+      selectedSkills.splice(index, 1);
+      btn.classList.remove('bg-brand-primary', 'text-white', 'border-brand-primary');
+      icon.textContent = 'add';
+    }
+  }
+
+  function handleIntakeSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('beneficiaryName').value.trim();
+    const age = document.getElementById('beneficiaryAge').value.trim();
+    const gender = document.getElementById('beneficiaryGender').value;
+    const livingStatus = document.getElementById('livingStatus').value;
+    const calamityRadio = document.querySelector('input[name="calamityType"]:checked');
+    const calamity = calamityRadio ? calamityRadio.value : 'Landslide';
+    const experience = document.getElementById('experienceYears').value || '3';
+
+    if (!name || !age) return;
+
+    const tableBody = document.getElementById('beneficiaryTableBody');
+    const newRow = document.createElement('tr');
+    newRow.className = 'hover:bg-gray-50/60 transition-colors bg-teal-50/20';
+
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'BN';
+    const skillList = selectedSkills.length > 0 ? selectedSkills : ['General Reconstruction'];
+
+    newRow.innerHTML = `
+      <td class="py-4 px-5">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gray-100 border border-border-subtle flex items-center justify-center font-medium text-text-main text-xs">
+            ${initials}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-text-main">${name}</span>
+              <span class="font-mono text-[11px] text-status-teal">NEW</span>
+            </div>
+            <div class="text-[11px] text-text-muted">Age ${age} · ${gender} · Just Added</div>
+          </div>
+        </div>
+      </td>
+      <td class="py-4 px-5">
+        <div class="space-y-1">
+          <span class="inline-block px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-status-amber border border-amber-200/60">
+            ${calamity} Impact
+          </span>
+          <div class="text-[11px] text-text-muted">${livingStatus}</div>
+        </div>
+      </td>
+      <td class="py-4 px-5">
+        <div class="flex flex-wrap gap-1.5 max-w-xs">
+          ${skillList.map(s => `
+            <span class="px-2 py-0.5 rounded bg-gray-100 text-text-main text-[11px] font-medium">
+              ${s} (${experience} yrs)
+            </span>
+          `).join('')}
+        </div>
+      </td>
+      <td class="py-4 px-5">
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-status-teal"></span>
+          <span class="font-medium text-status-teal text-[11px] uppercase tracking-wide">Available</span>
+        </div>
+        <span class="text-[11px] text-text-subtle">Verified</span>
+      </td>
+      <td class="py-4 px-5 text-right">
+        <button type="button" onclick="openQuickMatch('${name}', '${skillList[0]}', '${livingStatus}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-brand-primary text-white text-xs font-medium hover:bg-brand-primary/90 transition-colors shadow-2xs">
+          <span class="material-symbols-outlined text-[15px]">bolt</span>
+          <span>Match Job</span>
+        </button>
+      </td>
+    `;
+
+    tableBody.insertBefore(newRow, tableBody.firstChild);
+
+    toggleIntakeDrawer(false);
+    showToast('Registered', `${name} cached to offline roster.`);
+    e.target.reset();
+    selectedSkills = [];
+    document.querySelectorAll('.skill-chip').forEach(btn => {
+      btn.classList.remove('bg-brand-primary', 'text-white', 'border-brand-primary');
+      btn.querySelector('.material-symbols-outlined').textContent = 'add';
+    });
+  }
+
+  function openQuickMatch(name, skill, location) {
+    document.getElementById('modalCandidateName').textContent = name;
+    document.getElementById('modalCandidateSkill').textContent = 'Skill: ' + skill + ' · ' + location;
+    const modal = document.getElementById('quickMatchModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeQuickMatch() {
+    const modal = document.getElementById('quickMatchModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function confirmDispatch() {
+    closeQuickMatch();
+    showToast('Dispatch Mobilized', 'Worker notified via priority SMS.');
+  }
+
+  function toggleOfflineNotice() {
+    const notice = document.getElementById('offlineNotice');
+    notice.classList.toggle('hidden');
+  }
+
+  function triggerManualSync() {
+    showToast('Relay Synced', 'Mutations confirmed with Collectorate.');
+  }
+
+  function clearLocalTestCache() {
+    showToast('Cache Purged', 'Ephemeral offline buffers cleared.');
+  }
+
+  function triggerBatchExport() {
+    showToast('Export Started', '1,482 relief roster entries compiled to CSV.');
+  }
+
+  function setFilter(filter) {
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      if (btn.dataset.filter === filter) {
+        btn.classList.remove('text-text-muted', 'hover:text-text-main', 'hover:bg-gray-50');
+        btn.classList.add('bg-brand-primary', 'text-white', 'shadow-2xs');
+      } else {
+        btn.classList.remove('bg-brand-primary', 'text-white', 'shadow-2xs');
+        btn.classList.add('text-text-muted', 'hover:text-text-main', 'hover:bg-gray-50');
+      }
+    });
+    showToast('Filter Applied', filter.toUpperCase());
+  }
+
+  function showToast(title, desc) {
+    const toast = document.getElementById('liveToast');
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastDesc').textContent = desc;
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3500);
+  }
+
+  document.getElementById('rosterSearch').addEventListener('input', function(e) {
+    const q = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#beneficiaryTableBody tr');
+    rows.forEach(r => {
+      const text = r.textContent.toLowerCase();
+      r.style.display = text.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+</body></html>

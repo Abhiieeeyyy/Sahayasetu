@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>SahayaSetu - Disaster Recovery &amp; Skill-Matching Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#2f1500", "secondary": "#904d00", "surface-dim": "#d2d9f4", "on-primary": "#ffffff", "surface-tint": "#1e667f", "surface": "#faf8ff", "tertiary-fixed-dim": "#68dba9", "outline-variant": "#bfc8cd", "surface-bright": "#faf8ff", "error": "#ba1a1a", "primary-fixed-dim": "#90cfec", "on-secondary": "#ffffff", "tertiary-fixed": "#85f8c4", "on-secondary-container": "#663500", "secondary-fixed-dim": "#ffb77d", "tertiary-container": "#006142", "on-error-container": "#93000a", "on-primary-container": "#93d3ef", "secondary-container": "#fe932c", "on-tertiary": "#ffffff", "primary-fixed": "#bde9ff", "surface-container-highest": "#dae2fd", "on-primary-fixed": "#001f2a", "outline": "#70787d", "secondary-fixed": "#ffdcc3", "error-container": "#ffdad6", "inverse-surface": "#283044", "surface-variant": "#dae2fd", "surface-container-lowest": "#ffffff", "on-surface": "#131b2e", "primary-container": "#0d5c75", "surface-container-low": "#f2f3ff", "on-primary-fixed-variant": "#004d64", "tertiary": "#004730", "surface-container": "#eaedff", "on-background": "#131b2e", "on-tertiary-fixed": "#002114", "inverse-primary": "#90cfec", "on-tertiary-container": "#6bdeac", "surface-container-high": "#e2e7ff", "primary": "#004357", "on-error": "#ffffff", "on-secondary-fixed-variant": "#6e3900", "inverse-on-surface": "#eef0ff", "on-tertiary-fixed-variant": "#005137", "background": "#faf8ff", "on-surface-variant": "#40484c" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "gutter-2xl": "3rem", "gutter-xl": "2rem", "touch-target-min": "3rem", "margin-mobile": "1rem", "gutter-md": "1rem", "gutter-sm": "0.5rem", "margin-tablet": "1.5rem", "gutter-lg": "1.5rem", "margin-desktop": "2rem", "gutter-xs": "0.25rem" }, fontFamily: { "headline-lg": ["Plus Jakarta Sans"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Plus Jakarta Sans"], "label-lg": ["Inter"], "data-metric": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "body-sm": ["Inter"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-lg flex items-center justify-between gap-gutter-md"><div class="flex items-center gap-gutter-md"><img alt="A modern geometric humanitarian emblem for SahayaSetu disaster recovery platform. A stylized bridge arch combined with a protective sheltering hand and connecting nodes representing skill-matching and rehabilitation. Clean, vector, dual-tone deep emergency teal and warm amber gold, transparent background.. Design context: - Primary color: #0d5c75
+- Font: plusJakartaSans
+- Mode: light
+- Roundness: rounded-sm
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1USZ63cySY-MMK0NyO5MFO7jURd68UnHsmUzJVRl5jRJ6_-qOBGJCWW7gYCMBPqsXcXkc7_UuEE2Dcwode0ic6gEA_0UMTXCgme8epx9OsrepqyBaOcBBrltryWEoLw3GqHrBC1GrdT1I7rbslvdk4CEoBDFInQGZF_vsy9pvh36Qq9kYFCbHfI9-6-z2LxI8qcQ3lR-PrTNOVw6iphhR71wnpMKnPHtCRtTzngQaEQBFGxV4KNLuBL"/><div class="flex flex-col"><div class="flex items-center gap-gutter-sm"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-primary">SahayaSetu</span><span class="px-2 py-0.5 rounded-lg bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Disaster Relief &amp; Skill Matching</span></div><div class="flex items-center gap-gutter-xs mt-0.5"><span class="material-symbols-outlined text-[14px] text-secondary">lock</span><span class="font-label-sm text-label-sm text-secondary font-semibold">Active Context: Regional Admin (KL-WYD-2024 Wayanad)</span><span class="mx-1 text-outline-variant font-body-sm text-body-sm">|</span><span class="font-label-sm text-label-sm text-on-surface-variant">Tenant Tier: Priority-1 Triage</span></div></div></div><nav class="hidden xl:flex items-center gap-gutter-xs bg-surface-container-low p-1 rounded-xl" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="beneficiary-intake-and-roster" href="#">Beneficiary Intake &amp; Roster</a><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="skill-matching-and-jobs" href="#">Skill Matching &amp; Jobs</a><a aria-current="page" class="px-3 py-2 transition-all bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="super-admin-command" href="#">Super Admin Command</a><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="beneficiary-self-portal" href="#">Beneficiary Self-Portal</a></nav><div class="flex items-center gap-gutter-md"><div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-tertiary-container/10"><span class="material-symbols-outlined text-[18px] text-tertiary">sync_saved_locally</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-tertiary font-bold leading-none">Offline Sync: Active</span><span class="font-label-sm text-[10px] text-on-surface-variant leading-none mt-0.5">AES-256 Encrypted Cache</span></div></div><button class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-error text-on-error font-label-md text-label-md hover:bg-on-error-container hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">sos</span><span>Helpline 1077</span></button><div class="flex items-center gap-gutter-sm pl-gutter-sm"><div class="hidden lg:flex flex-col text-right"><span class="font-label-md text-label-md font-bold text-on-surface">Priya Sharma</span><span class="font-label-sm text-label-sm text-on-surface-variant">Regional Relief Coordinator</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1Vu5QvIehAURJ_rU1rJxflunIUcdFZB4bnfqfeX-VjD8Hwajqz2Xuo-2Ia2ldELhrPnVCqmADMUFmBBmz8qTtxUbJfsns4zq1Xlxbpl-aiNjBXTr0F9d7xtog34nsREDuTMDzQiZ_VZKxVhcVoBtUPR2HxMDUNHmae2Tx4dKB9uQYfqcWgypBKovzUcb8hfqBt0WDNV_Zev4dZK0vu-HFaIrClO8-w1EIhHfU7pbPZhGnWelf-c8czc"/></div></div></div></header><aside class="fixed left-0 top-20 bottom-0 w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 hidden md:flex flex-col justify-between p-gutter-md"><div class="flex flex-col gap-gutter-md"><div class="px-2"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Field Operations</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="beneficiary-intake-and-roster" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span>Intake &amp; Roster</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="skill-matching-and-jobs" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Skill &amp; Dispatch</span></a><a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="super-admin-command" href="#"><span class="material-symbols-outlined text-[20px]">admin_panel_settings</span><span>Command Center</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="beneficiary-self-portal" href="#"><span class="material-symbols-outlined text-[20px]">person_apron</span><span>Relief Self-Portal</span></a></nav></div><div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Local Database</span><span class="font-label-sm text-label-sm text-tertiary font-bold">100% Synced</span></div><div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden"><div class="bg-tertiary h-full w-full"></div></div><span class="font-body-sm text-[11px] text-on-surface-variant">Next relay queued via Satellite VSAT</span></div></aside><div class="md:pl-64"><main class="w-full pt-20 px-gutter-md md:px-gutter-xl pb-gutter-2xl bg-surface min-h-screen"><div class="flex flex-col w-full">
+<section class="flex flex-col gap-6 mb-8">
+<div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<div class="flex flex-col gap-2">
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider rounded-lg">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">security</span>
+            Global RBAC Oversight (All Jurisdictions)
+          </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-tertiary-container/10 text-tertiary font-label-sm text-label-sm rounded-lg">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+            Row-Level Security (RLS) Enforced
+          </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded-lg">
+            Tenant Sharding: PostGIS Active
+          </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Statewide Disaster Recovery Command &amp; Global Multi-Tenant Analytics</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time situational telemetry, cross-district labor reallocation, and institutional data governance.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant mr-2">public</span>
+<label class="sr-only" for="tenant-filter">Select Regional Jurisdiction</label>
+<select class="bg-transparent font-label-md text-label-md text-on-surface font-semibold focus:outline-none cursor-pointer pr-2" id="tenant-filter">
+<option value="ALL">All Regions (Consolidated Telemetry)</option>
+<option value="KL-WYD-2024">KL-WYD-2024 (Wayanad Hills)</option>
+<option value="TN-NIL-2024">TN-NIL-2024 (Nilgiris Western Ghats)</option>
+<option value="KL-IDK-2024">KL-IDK-2024 (Idukki High Range)</option>
+<option value="KL-ALP-2024">KL-ALP-2024 (Alappuzha Coastal Kuttanad)</option>
+</select>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md rounded-lg transition-all shadow-sm" id="open-drawer-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">domain_add</span>
+<span>Provision Tenant / NGO</span>
+</button>
+</div>
+</div>
+<!-- 4 Global KPI Cards with SVG mini-sparkline / indicators -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Total Displaced</span>
+<div class="font-data-metric text-data-metric text-on-surface mt-1">14,290</div>
+</div>
+<div class="p-2.5 bg-primary-fixed text-on-primary-fixed rounded-lg">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-tertiary font-bold">
+<span class="material-symbols-outlined text-[16px]">trending_down</span> -3.4% intake peak
+          </span>
+<span class="text-on-surface-variant">6 Active Districts</span>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Rebuilding Placements</span>
+<div class="font-data-metric text-data-metric text-tertiary mt-1">8,740</div>
+</div>
+<div class="p-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-lg">
+<span class="material-symbols-outlined text-[24px]">handshake</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between">
+<div class="w-full mr-3 bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 61.2%"></div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-tertiary whitespace-nowrap">61.2% Rate</span>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Emergency Requisitions</span>
+<div class="font-data-metric text-data-metric text-secondary mt-1">342 Open</div>
+</div>
+<div class="p-2.5 bg-secondary-fixed text-on-secondary-fixed rounded-lg">
+<span class="material-symbols-outlined text-[24px]">assignment_late</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span class="text-on-secondary-container font-semibold">1,120 Positions Unfilled</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-fixed/50 font-label-sm text-[10px] text-on-secondary-fixed-variant">NDRF Priority</span>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Skill Shortage Index</span>
+<div class="font-data-metric text-data-metric text-error mt-1">3 Districts</div>
+</div>
+<div class="p-2.5 bg-error-container text-on-error-container rounded-lg">
+<span class="material-symbols-outlined text-[24px]">electric_meter</span>
+</div>
+</div>
+<div class="mt-4 pt-3 flex items-center gap-1.5 text-error font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">crisis_alert</span>
+<span>Deficit in Earth-moving &amp; Linemen</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Split Bento Analytics: GIS Incident Operations & Supply vs Demand Visualizer -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+<!-- Map & District Incident Readiness -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">map</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Multi-Tenant Calamity Deployment Grid</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+            Live Geo-Sync (4 Nodes)
+          </span>
+</div>
+</div>
+<div class="relative w-full h-80 rounded-xl overflow-hidden bg-surface-container-low">
+<div class="w-full h-full bg-cover bg-center rounded-xl" data-location="Wayanad, Kerala, India" style=""></div>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent p-5 flex flex-col justify-between pointer-events-none">
+<div class="flex justify-between items-start">
+<span class="px-2.5 py-1 rounded bg-inverse-surface/80 backdrop-blur text-inverse-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+              Telemetry Feed: Kerala &amp; Tamil Nadu Border
+            </span>
+<span class="px-2 py-1 rounded bg-tertiary text-on-tertiary font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">satellite_alt</span> SDRF Mesh: Online
+            </span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-inverse-on-surface">
+<div class="bg-inverse-surface/75 backdrop-blur p-2.5 rounded-lg">
+<span class="font-label-sm text-[10px] text-surface-dim uppercase">KL-WYD</span>
+<p class="font-label-md text-label-md font-bold">Meppadi, Wayanad</p>
+<p class="font-body-sm text-[11px] text-secondary-fixed-dim">Landslide Stage 3</p>
+</div>
+<div class="bg-inverse-surface/75 backdrop-blur p-2.5 rounded-lg">
+<span class="font-label-sm text-[10px] text-surface-dim uppercase">TN-NIL</span>
+<p class="font-label-md text-label-md font-bold">Gudalur Slope</p>
+<p class="font-body-sm text-[11px] text-secondary-fixed-dim">Runoff Blockade</p>
+</div>
+<div class="bg-inverse-surface/75 backdrop-blur p-2.5 rounded-lg">
+<span class="font-label-sm text-[10px] text-surface-dim uppercase">KL-IDK</span>
+<p class="font-label-md text-label-md font-bold">Munnar High-Pass</p>
+<p class="font-body-sm text-[11px] text-primary-fixed-dim">Inundation Alert</p>
+</div>
+<div class="bg-inverse-surface/75 backdrop-blur p-2.5 rounded-lg">
+<span class="font-label-sm text-[10px] text-surface-dim uppercase">KL-ALP</span>
+<p class="font-label-md text-label-md font-bold">Champakulam</p>
+<p class="font-body-sm text-[11px] text-primary-fixed-dim">Canal Overflow</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
+          Zero Cross-Tenant Leakage: Isolated database partitions by Disaster ID
+        </span>
+<button class="font-label-sm text-label-sm text-primary font-bold hover:underline flex items-center gap-0.5" type="button">
+          View GeoJSON Layer Specs <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Skill Supply vs Reconstruction Demand breakdown -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">bar_chart</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Skill Supply vs. Demand</h2>
+</div>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded">State Aggregate</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Displaced qualified laborers vs. required infrastructure recovery mandates.</p>
+<!-- Metric Bars -->
+<div class="flex flex-col gap-5">
+<!-- Masonry / Construction -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">foundation</span>
+                Masons &amp; Structural Trades
+              </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                Supply: <strong class="text-on-surface">1,840</strong> | Req: <strong class="text-primary font-bold">2,600</strong>
+</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 70%"></div>
+<div class="bg-surface-container-high h-full" style="width: 30%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-[10px] text-on-surface-variant">
+<span>Moderate Shortfall (-29%)</span>
+<span class="text-secondary font-bold">High Demand</span>
+</div>
+</div>
+<!-- Electricians & Wiremen -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-error">bolt</span>
+                Certified Electricians &amp; Grid Technicians
+              </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                Supply: <strong class="text-error">320</strong> | Req: <strong class="text-primary font-bold">1,250</strong>
+</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden flex">
+<div class="bg-error h-full" style="width: 25%"></div>
+<div class="bg-error-container/40 h-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-[10px]">
+<span class="text-error font-bold">Severe Deficit (-74%)</span>
+<span class="text-error font-semibold">Priority Triage Dispatched</span>
+</div>
+</div>
+<!-- Earth-moving Operators -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">precision_manufacturing</span>
+                JCB &amp; Heavy Excavator Drivers
+              </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                Supply: <strong class="text-secondary">190</strong> | Req: <strong class="text-primary font-bold">480</strong>
+</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden flex">
+<div class="bg-secondary h-full" style="width: 39%"></div>
+<div class="bg-secondary-fixed/40 h-full" style="width: 61%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-[10px]">
+<span class="text-secondary font-bold">Deficit (-60%)</span>
+<span class="text-on-surface-variant">Inter-District Transfer Pending</span>
+</div>
+</div>
+<!-- Carpenters & Formwork -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-tertiary">carpenter</span>
+                Carpenters &amp; Formwork Technicians
+              </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                Supply: <strong class="text-tertiary">910</strong> | Req: <strong class="text-primary font-bold">950</strong>
+</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden flex">
+<div class="bg-tertiary h-full" style="width: 95%"></div>
+<div class="bg-tertiary-container/30 h-full" style="width: 5%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-[10px] text-tertiary font-bold">
+<span>Balanced Equilibrium (96% Filled)</span>
+<span>Self-Sufficient</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded bg-tertiary text-on-tertiary">
+<span class="material-symbols-outlined text-[20px]">transfer_within_a_station</span>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Auto-Match Rebalancing</p>
+<p class="font-body-sm text-[11px] text-on-surface-variant">Relocating 140 idle tradespeople to Wayanad Zone 2</p>
+</div>
+</div>
+<button class="px-3 py-1.5 bg-primary text-on-primary font-label-sm text-label-sm font-semibold rounded-lg hover:bg-primary-container transition-all" type="button">
+          Review Batch
+        </button>
+</div>
+</div>
+</section>
+<!-- District Comparative Analytics Matrix (Table) -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-8">
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">table_chart</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">District Comparative Analytics Matrix</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Cross-tenant operational health, registration triage, matching velocity, and database partition integrity.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container font-label-md text-label-md text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span> Export Auditor Report
+        </button>
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container font-label-md text-label-md text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">refresh</span> Re-Index
+        </button>
+</div>
+</div>
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-md text-body-md">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider sticky top-0">
+<tr>
+<th class="py-3.5 px-6 font-bold" scope="col">District / Region Code</th>
+<th class="py-3.5 px-4 font-bold" scope="col">Calamity Type</th>
+<th class="py-3.5 px-4 text-right font-bold" scope="col">Total Displaced</th>
+<th class="py-3.5 px-4 text-right font-bold" scope="col">Registered</th>
+<th class="py-3.5 px-4 text-right font-bold" scope="col">Placed / Working</th>
+<th class="py-3.5 px-4 text-right font-bold" scope="col">Open Jobs</th>
+<th class="py-3.5 px-4 text-center font-bold" scope="col">Matching Velocity</th>
+<th class="py-3.5 px-6 font-bold" scope="col">Tenant Security &amp; Health</th>
+<th class="py-3.5 px-4 text-center font-bold" scope="col">Actions</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<!-- Wayanad -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-headline-sm text-[15px] font-bold text-on-surface">Wayanad District</span>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">lock</span>
+<span class="font-mono">KL-WYD-2024</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">landslide</span> Landslide / Flash Flood
+              </span>
+</td>
+<td class="py-4 px-4 text-right font-mono font-semibold">6,120</td>
+<td class="py-4 px-4 text-right font-mono text-primary font-bold">5,840</td>
+<td class="py-4 px-4 text-right font-mono text-tertiary font-bold">3,790</td>
+<td class="py-4 px-4 text-right font-mono text-secondary font-bold">520</td>
+<td class="py-4 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/10 text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">speed</span> 2.8 hrs
+              </span>
+</td>
+<td class="py-4 px-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px]">verified_user</span> 0 IDOR Leaks · 100% RLS
+                </div>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Partition: shards.wyd_24 (AES-256)</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<button class="p-2 rounded hover:bg-surface-container text-primary hover:text-primary-container" title="Drilldown Regional Roster" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Nilgiris -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-headline-sm text-[15px] font-bold text-on-surface">Nilgiris Western Ghats</span>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">lock</span>
+<span class="font-mono">TN-NIL-2024</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">terrain</span> Hillside Landslide
+              </span>
+</td>
+<td class="py-4 px-4 text-right font-mono font-semibold">3,450</td>
+<td class="py-4 px-4 text-right font-mono text-primary font-bold">3,110</td>
+<td class="py-4 px-4 text-right font-mono text-tertiary font-bold">2,150</td>
+<td class="py-4 px-4 text-right font-mono text-secondary font-bold">290</td>
+<td class="py-4 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/10 text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">speed</span> 3.4 hrs
+              </span>
+</td>
+<td class="py-4 px-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px]">verified_user</span> 0 IDOR Leaks · 100% RLS
+                </div>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Partition: shards.nil_24 (AES-256)</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<button class="p-2 rounded hover:bg-surface-container text-primary hover:text-primary-container" title="Drilldown Regional Roster" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Idukki -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-headline-sm text-[15px] font-bold text-on-surface">Idukki High Range</span>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">lock</span>
+<span class="font-mono">KL-IDK-2024</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">tsunami</span> Heavy Inundation
+              </span>
+</td>
+<td class="py-4 px-4 text-right font-mono font-semibold">2,820</td>
+<td class="py-4 px-4 text-right font-mono text-primary font-bold">2,600</td>
+<td class="py-4 px-4 text-right font-mono text-tertiary font-bold">1,680</td>
+<td class="py-4 px-4 text-right font-mono text-secondary font-bold">180</td>
+<td class="py-4 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/10 text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">speed</span> 3.9 hrs
+              </span>
+</td>
+<td class="py-4 px-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px]">verified_user</span> 0 IDOR Leaks · 100% RLS
+                </div>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Partition: shards.idk_24 (AES-256)</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<button class="p-2 rounded hover:bg-surface-container text-primary hover:text-primary-container" title="Drilldown Regional Roster" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Alappuzha -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-headline-sm text-[15px] font-bold text-on-surface">Alappuzha (Kuttanad)</span>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">lock</span>
+<span class="font-mono">KL-ALP-2024</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">water</span> Riverine Flooding
+              </span>
+</td>
+<td class="py-4 px-4 text-right font-mono font-semibold">1,900</td>
+<td class="py-4 px-4 text-right font-mono text-primary font-bold">1,780</td>
+<td class="py-4 px-4 text-right font-mono text-tertiary font-bold">1,120</td>
+<td class="py-4 px-4 text-right font-mono text-secondary font-bold">130</td>
+<td class="py-4 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/10 text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">speed</span> 4.1 hrs
+              </span>
+</td>
+<td class="py-4 px-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px]">verified_user</span> 0 IDOR Leaks · 100% RLS
+                </div>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Partition: shards.alp_24 (AES-256)</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<button class="p-2 rounded hover:bg-surface-container text-primary hover:text-primary-container" title="Drilldown Regional Roster" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Disaster Region Provisioning & NGO Access Drawer (Slide-in / Toggle Overlay) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden items-center justify-end transition-opacity" id="provision-drawer">
+<div class="w-full max-w-xl bg-surface-container-lowest h-full shadow-2xl flex flex-col justify-between overflow-y-auto p-8">
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between pb-4">
+<div class="flex items-center gap-3">
+<div class="p-2.5 rounded-lg bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[24px]">corporate_fare</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Region Provisioning &amp; NGO Auth</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Deploy fresh multi-tenant boundaries and generate scoped access keys</p>
+</div>
+</div>
+<button class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant" id="close-drawer-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Tab Controls inside drawer -->
+<div class="flex gap-2 p-1 bg-surface-container-low rounded-lg">
+<button class="flex-1 py-2 font-label-sm text-label-sm font-bold rounded-lg bg-surface-container-lowest text-primary shadow-sm" id="tab-provision" type="button">
+            + Provision Region
+          </button>
+<button class="flex-1 py-2 font-label-sm text-label-sm font-semibold rounded-lg text-on-surface-variant hover:text-on-surface" id="tab-tokens" type="button">
+            Assign NGO Token
+          </button>
+<button class="flex-1 py-2 font-label-sm text-label-sm font-semibold rounded-lg text-on-surface-variant hover:text-on-surface" id="tab-audit" type="button">
+            Audit Logs
+          </button>
+</div>
+<!-- Tab 1: Provision Region Form -->
+<div class="flex flex-col gap-4" id="panel-provision">
+<div>
+<label class="block font-label-sm text-label-sm font-bold uppercase text-on-surface-variant mb-1" for="reg-code">State / District Tenant Key</label>
+<input class="w-full px-4 py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none ring-2 ring-primary/20" id="reg-code" placeholder="e.g. KL-KNR-2024 (Kannur Flash Flood)" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm font-bold uppercase text-on-surface-variant mb-1" for="calamity-cat">Calamity Triage Protocol</label>
+<select class="w-full px-4 py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none" id="calamity-cat">
+<option>Landslide &amp; Hill Slope Rupture</option>
+<option>Riverine / Dam Overflow Inundation</option>
+<option>Coastal Cyclone &amp; Surge</option>
+<option>Earthquake / Structural Collapse</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm font-bold uppercase text-on-surface-variant mb-1" for="admin-officer">Lead District Collector (Admin Email)</label>
+<input class="w-full px-4 py-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none" id="admin-officer" placeholder="collector.wayanad@gov.in" type="email"/>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low flex flex-col gap-2">
+<span class="font-label-sm text-label-sm font-bold text-tertiary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">verified</span> Automated Encryption Isolation
+            </span>
+<p class="font-body-sm text-[12px] text-on-surface-variant">A dedicated PostgreSQL schema with Row-Level Security will be instantiated with zero cross-tenant query routes.</p>
+</div>
+</div>
+<!-- NGO Token Box (Demo content) -->
+<div class="hidden flex-col gap-4" id="panel-tokens">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-bold text-on-surface">Habitat for Humanity India</span>
+<span class="px-2 py-0.5 rounded bg-tertiary text-on-tertiary font-label-sm text-[10px]">Active</span>
+</div>
+<p class="font-mono text-[11px] text-on-surface-variant mt-2 bg-surface-container-lowest p-2 rounded truncate">
+              sh_live_9f83a2bc001948ae88b139
+            </p>
+<span class="font-body-sm text-[11px] text-on-surface-variant mt-1 block">Scope: KL-WYD-2024 · Skill Verification Only</span>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-bold text-on-surface">Red Cross Emergency Corps</span>
+<span class="px-2 py-0.5 rounded bg-tertiary text-on-tertiary font-label-sm text-[10px]">Active</span>
+</div>
+<p class="font-mono text-[11px] text-on-surface-variant mt-2 bg-surface-container-lowest p-2 rounded truncate">
+              sh_live_72ea09c0d12e4f01ba3391
+            </p>
+<span class="font-body-sm text-[11px] text-on-surface-variant mt-1 block">Scope: TN-NIL-2024 · Intake Dispatching</span>
+</div>
+<button class="w-full py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-bold rounded-lg transition-all flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">key</span> Generate Scoped Access Token
+          </button>
+</div>
+<!-- Audit Log View -->
+<div class="hidden flex-col gap-3 font-body-sm text-body-sm" id="panel-audit">
+<div class="p-3 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex justify-between font-label-sm text-[11px]">
+<span class="font-bold text-on-surface">RLS Constraint Check</span>
+<span class="text-on-surface-variant font-mono">11:42:04 IST</span>
+</div>
+<p class="text-tertiary font-semibold">100% Compliance across 14,290 records</p>
+<span class="text-[10px] text-on-surface-variant font-mono">actor: system_cron_job</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<div class="flex justify-between font-label-sm text-[11px]">
+<span class="font-bold text-on-surface">District Tenant Initialized</span>
+<span class="text-on-surface-variant font-mono">Yesterday</span>
+</div>
+<p class="text-on-surface">Provisioned KL-WYD-2024 (Wayanad High-Priority)</p>
+<span class="text-[10px] text-on-surface-variant font-mono">actor: priya.sharma@disastermgmt.gov.in</span>
+</div>
+</div>
+</div>
+<div class="pt-6 flex items-center justify-end gap-3">
+<button class="px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" id="cancel-drawer-btn" type="button">
+          Cancel
+        </button>
+<button class="px-5 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-all" type="button">
+          Confirm Provisioning
+        </button>
+</div>
+</div>
+</div>
+<!-- Humanitarian Field Verification Photo Feed Banner -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+<div class="relative h-44 rounded-xl overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Indian humanitarian disaster recovery workers coordinating electrical pole restoration in Wayanad Kerala, wearing high-visibility orange and navy jackets, early morning misty mountain landscape, realistic documentary photo style, cinematic natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUAEHKNp0gb30VKgO0QNWWx6xarBeWP3YzahC5WFDejIRCviCqe8RhQr0806Lk74HmoTypdKLPPJcq3Cpog20ucdotuFpM4mOw8_Bx8WTZkI_6gAAD8p7HlLg5uYVzJmbQL_ee4HcAkQb8MzpVbGYFWma2ozZbI0-GnFCYO13vbD2S8AfEHT209SzjZ4na6qcD6FfjqCORyXPbcbz513bp0SJEqzgFNfGOec3jyOPyr1LQJKGpqw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent p-4 flex flex-col justify-end text-inverse-on-surface">
+<span class="font-label-sm text-label-sm text-tertiary-fixed font-bold">Wayanad Grid Line 4</span>
+<p class="font-label-md text-label-md font-semibold">KSEB Linemen Emergency Re-connection</p>
+</div>
+</div>
+<div class="relative h-44 rounded-xl overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Heavy excavator JCB machine clearing red mud and boulders on a scenic hillside road in Nilgiris Tamil Nadu with disaster response volunteers overseeing safety barriers, documentary photography, natural daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArsbYyNJromj2DEEzj0Qy2JPW_6etBA_LXrb0Q-4NPqHEYzCMe49QubBQaAxq0bbghfegFYMXdgTqQWW6VstoWB4sLlDIiKS6rSCG9tqGHo0BMhNoOJt_ClDzOjG-n3FTaai8Lu3E27vgpqlIRbBp_Nb4ynV9QzfAHdOPGs3OqaTSjIC_8ywsSUMEnJKPSWJ3HvTOiHa3bC3TTYSDch1s_V3Z6I25z52OIUOikFBYMS-qBZZgqbg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent p-4 flex flex-col justify-end text-inverse-on-surface">
+<span class="font-label-sm text-label-sm text-secondary-fixed font-bold">Gudalur Ghat Bypass</span>
+<p class="font-label-md text-label-md font-semibold">Earth-Moving Equipment Clearing Mud Runoff</p>
+</div>
+</div>
+<div class="relative h-44 rounded-xl overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Community relief rehabilitation center in Kerala with displaced artisans and carpenters constructing modular wooden temporary shelter frames, high detail documentary photo, warm ambient light, humanitarian hope." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNh9SCM6NZ7fooMOxE2uDSybOlAkHCd49bKzufe-airUobAR02ilsQ3sZJ_42dwiID7XeuMeEZGzhJwq5Ylt2o2kBNn_db_71sAVg0RMgL2NjoMbSO29n5SexsVYATS5UDOr-QwgId4yebt171JW2TwwPK2qOhHyi0zL8BJVSNU506pZhA_6Yr7vGSp8d3SDDikWmh-5RQhPxJ8iivoY1Qhb48FbbuyRN_aYD-sTpZIUZSw1lB1g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent p-4 flex flex-col justify-end text-inverse-on-surface">
+<span class="font-label-sm text-label-sm text-primary-fixed font-bold">Meppadi Camp Site A</span>
+<p class="font-label-md text-label-md font-semibold">Modular Emergency Housing Assembly</p>
+</div>
+</div>
+</section>
+</div>
+<script>
+  (function() {
+    const drawer = document.getElementById('provision-drawer');
+    const openBtn = document.getElementById('open-drawer-btn');
+    const closeBtn = document.getElementById('close-drawer-btn');
+    const cancelBtn = document.getElementById('cancel-drawer-btn');
+
+    const tabProvision = document.getElementById('tab-provision');
+    const tabTokens = document.getElementById('tab-tokens');
+    const tabAudit = document.getElementById('tab-audit');
+
+    const panelProvision = document.getElementById('panel-provision');
+    const panelTokens = document.getElementById('panel-tokens');
+    const panelAudit = document.getElementById('panel-audit');
+
+    function showDrawer() {
+      drawer.classList.remove('hidden');
+      drawer.classList.add('flex');
+    }
+
+    function hideDrawer() {
+      drawer.classList.add('hidden');
+      drawer.classList.remove('flex');
+    }
+
+    if(openBtn) openBtn.addEventListener('click', showDrawer);
+    if(closeBtn) closeBtn.addEventListener('click', hideDrawer);
+    if(cancelBtn) cancelBtn.addEventListener('click', hideDrawer);
+
+    // Tab switching
+    const tabs = [
+      { btn: tabProvision, panel: panelProvision },
+      { btn: tabTokens, panel: panelTokens },
+      { btn: tabAudit, panel: panelAudit }
+    ];
+
+    tabs.forEach(({ btn, panel }) => {
+      if(!btn) return;
+      btn.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.panel.classList.add('hidden');
+          t.panel.classList.remove('flex');
+          t.btn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          t.btn.classList.add('text-on-surface-variant');
+        });
+
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        btn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btn.classList.remove('text-on-surface-variant');
+      });
+    });
+
+    // Jurisdiction switcher interactive feedback
+    const regionSelect = document.getElementById('tenant-filter');
+    if(regionSelect) {
+      regionSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(r => {
+          if (val === 'ALL' || r.textContent.includes(val)) {
+            r.style.display = '';
+          } else {
+            r.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script></main></div></body></html>

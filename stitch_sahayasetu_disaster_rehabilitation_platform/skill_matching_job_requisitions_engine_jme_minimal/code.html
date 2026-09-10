@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SahayaSetu - Disaster Recovery &amp; Skill-Matching Platform</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,300..500,0..1,-50..200" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f8fafc",
+            "surface": "#f8fafc",
+            "surface-card": "#ffffff",
+            "primary": "#0f4c5c",
+            "primary-hover": "#0b3844",
+            "primary-subtle": "#f0fdfa",
+            "slate-neutral": "#0f172a",
+            "slate-muted": "#64748b",
+            "border-subtle": "#e2e8f0",
+            "border-light": "#f1f5f9",
+            "accent-warning": "#d97706",
+            "accent-success": "#059669",
+            "accent-error": "#dc2626"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          borderRadius: {
+            'card': '0.625rem',
+            'badge': '0.375rem'
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#f8fafc] font-sans text-slate-800 antialiased selection:bg-slate-200">
+<!-- Minimal Top Navigation -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-border-subtle h-16">
+<div class="h-full w-full px-6 flex items-center justify-between gap-6">
+<!-- Brand & Context -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2.5">
+<img alt="SahayaSetu Humanitarian Platform" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1USZ63cySY-MMK0NyO5MFO7jURd68UnHsmUzJVRl5jRJ6_-qOBGJCWW7gYCMBPqsXcXkc7_UuEE2Dcwode0ic6gEA_0UMTXCgme8epx9OsrepqyBaOcBBrltryWEoLw3GqHrBC1GrdT1I7rbslvdk4CEoBDFInQGZF_vsy9pvh36Qq9kYFCbHfI9-6-z2LxI8qcQ3lR-PrTNOVw6iphhR71wnpMKnPHtCRtTzngQaEQBFGxV4KNLuBL"/>
+<span class="font-display font-bold text-lg tracking-tight text-slate-900">SahayaSetu</span>
+</div>
+<div class="hidden lg:flex items-center gap-3 pl-4 border-l border-border-subtle text-xs text-slate-500">
+<span class="flex items-center gap-1 font-medium text-slate-700">
+<span class="material-symbols-outlined text-[15px] text-slate-400">pin_drop</span>
+            KL-WYD-2024 Wayanad
+          </span>
+<span class="text-slate-300">|</span>
+<span class="inline-flex items-center gap-1 text-slate-500">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            Triage Level 1 Active
+          </span>
+</div>
+</div>
+<!-- Center Minimal Navigation -->
+<nav class="hidden xl:flex items-center gap-1 bg-slate-100/70 p-1 rounded-lg text-xs font-medium text-slate-600">
+<a class="px-3 py-1.5 rounded-md hover:text-slate-900 transition-colors" data-path="beneficiary-intake-and-roster" href="#">Beneficiary Intake</a>
+<a aria-current="page" class="px-3 py-1.5 rounded-md bg-white text-slate-900 font-semibold shadow-xs transition-all" data-path="skill-matching-and-jobs" href="#">Skill Matching &amp; Jobs</a>
+<a class="px-3 py-1.5 rounded-md hover:text-slate-900 transition-colors" data-path="super-admin-command" href="#">Command Center</a>
+<a class="px-3 py-1.5 rounded-md hover:text-slate-900 transition-colors" data-path="beneficiary-self-portal" href="#">Relief Self-Portal</a>
+</nav>
+<!-- Right Utility Actions -->
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 px-2.5 py-1 text-xs text-slate-600 bg-slate-50 border border-border-subtle rounded-md">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span>
+<span class="font-mono text-[11px]">Sync: Local AES</span>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-rose-200 bg-rose-50/50 text-rose-700 text-xs font-semibold hover:bg-rose-100/60 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">phone_in_talk</span>
+<span>SOS 1077</span>
+</button>
+<div class="flex items-center gap-3 pl-3 border-l border-border-subtle">
+<div class="hidden sm:flex flex-col text-right text-xs">
+<span class="font-semibold text-slate-800 leading-tight">Priya Sharma</span>
+<span class="text-[11px] text-slate-400">Relief Coordinator</span>
+</div>
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida/AEtjO1Vu5QvIehAURJ_rU1rJxflunIUcdFZB4bnfqfeX-VjD8Hwajqz2Xuo-2Ia2ldELhrPnVCqmADMUFmBBmz8qTtxUbJfsns4zq1Xlxbpl-aiNjBXTr0F9d7xtog34nsREDuTMDzQiZ_VZKxVhcVoBtUPR2HxMDUNHmae2Tx4dKB9uQYfqcWgypBKovzUcb8hfqBt0WDNV_Zev4dZK0vu-HFaIrClO8-w1EIhHfU7pbPZhGnWelf-c8czc"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Clean Subdued Sidebar -->
+<aside class="fixed left-0 top-16 bottom-0 w-60 bg-white border-r border-border-subtle z-40 hidden md:flex flex-col justify-between p-4">
+<div class="flex flex-col gap-5">
+<div class="px-2 pt-2">
+<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Field Operations</span>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="beneficiary-intake-and-roster" href="#">
+<span class="material-symbols-outlined text-[18px] text-slate-400">how_to_reg</span>
+<span>Intake &amp; Roster</span>
+</a>
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold bg-slate-900 text-white transition-colors" data-path="skill-matching-and-jobs" href="#">
+<span class="material-symbols-outlined text-[18px] text-slate-200">hub</span>
+<span>Skill &amp; Dispatch</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="super-admin-command" href="#">
+<span class="material-symbols-outlined text-[18px] text-slate-400">admin_panel_settings</span>
+<span>Command Center</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" data-path="beneficiary-self-portal" href="#">
+<span class="material-symbols-outlined text-[18px] text-slate-400">person_outline</span>
+<span>Relief Self-Portal</span>
+</a>
+</nav>
+</div>
+<!-- Minimal Offline DB telemetry -->
+<div class="p-3 rounded-lg border border-border-subtle bg-slate-50/70 text-xs text-slate-600">
+<div class="flex items-center justify-between mb-2">
+<span class="font-medium text-slate-700 text-[11px]">Local Edge Cache</span>
+<span class="font-mono text-[10px] text-emerald-600 font-semibold">100% SYNCED</span>
+</div>
+<div class="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-full"></div>
+</div>
+<p class="text-[11px] text-slate-400 mt-2 font-mono leading-tight">VSAT relay 42s ago</p>
+</div>
+</aside>
+<!-- Main Workstation Canvas -->
+<div class="md:pl-60">
+<main class="w-full pt-20 px-6 md:px-10 pb-16 min-h-screen">
+<div class="max-w-7xl mx-auto flex flex-col gap-6">
+<!-- Scoped Header and Subdued Context -->
+<div class="bg-white border border-border-subtle rounded-xl p-6 shadow-xs">
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-6 border-b border-border-light">
+<div class="flex flex-col gap-2">
+<div class="flex items-center flex-wrap gap-2 text-xs">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                  Region: KL-WYD-2024
+                </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/60 font-medium">
+<span class="material-symbols-outlined text-[13px]">warning</span>
+                  Hazard Zone 2 (Landslide)
+                </span>
+<span class="text-slate-400 font-mono text-[11px]">Matching Core v2.4</span>
+</div>
+<h1 class="font-display text-2xl font-bold tracking-tight text-slate-900 mt-1">
+                Disaster Rehabilitation Skill Matching &amp; Dispatch
+              </h1>
+<p class="text-sm text-slate-500 max-w-3xl leading-relaxed">
+                Clean algorithmic candidate matching connecting verified displaced artisans, tradespeople, and emergency laborers with urgent civil recovery projects.
+              </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2.5 self-start lg:self-center shrink-0">
+<button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium transition-all shadow-xs" id="postNeedBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Post Need</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-border-subtle bg-white text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors" id="refreshSyncBtn" type="button">
+<span class="material-symbols-outlined text-[16px] text-slate-500">sync</span>
+<span>Re-compute Weights</span>
+</button>
+</div>
+</div>
+<!-- Minimalist KPI Metrics Bar -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-5">
+<div class="flex flex-col gap-0.5">
+<span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Open Requisitions</span>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-2xl font-semibold text-slate-900" id="statOpenReqs">16</span>
+<span class="text-xs text-slate-500">active works</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5 border-l border-border-light pl-4">
+<span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Artisan Pool</span>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-2xl font-semibold text-slate-900">142</span>
+<span class="text-xs text-slate-500">verified in camps</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5 border-l border-border-light pl-4">
+<span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Dispatched Today</span>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-2xl font-semibold text-emerald-600" id="statDispatchedToday">38</span>
+<span class="text-xs text-emerald-700/70 font-medium">on site</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5 border-l border-border-light pl-4">
+<span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Sync Latency</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-xl font-medium text-slate-700">0.14<span class="text-xs font-normal text-slate-400 ml-1">ms</span></span>
+<span class="inline-flex items-center text-[10px] text-slate-400 font-mono">SQLite Local</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Feedback Notification -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-sm w-full" id="dispatchToast">
+<div class="bg-white border border-border-subtle p-4 rounded-xl shadow-lg flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">done</span>
+</div>
+<div class="flex flex-col flex-1 pr-1">
+<span class="text-xs font-semibold text-slate-900" id="toastTitle">Candidate Assigned Successfully</span>
+<span class="text-[11px] text-slate-500 mt-0.5 leading-relaxed" id="toastBody">Candidate Anil Kumar assigned to Chooralmala Retaining Wall project.</span>
+<span class="text-[10px] font-mono text-emerald-600 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">sms</span> SMS Dispatch: Queued
+              </span>
+</div>
+<button class="text-slate-400 hover:text-slate-700" onclick="dismissToast()">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- 12-Column Responsive Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: Requisitions Queue (4 Columns) -->
+<div class="lg:col-span-4 flex flex-col gap-3">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2">
+<h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Requisitions</h2>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium" id="activeReqsBadge">3 listed</span>
+</div>
+<span class="text-[11px] text-slate-400 font-medium">Ranked by Priority</span>
+</div>
+<!-- Search Field -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[16px] text-slate-400">search</span>
+<input class="w-full pl-8 pr-3 py-2 rounded-lg bg-white border border-border-subtle text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 focus:ring-0 transition-colors" placeholder="Filter roles, agencies..." type="text"/>
+</div>
+<!-- Requisitions List -->
+<div class="flex flex-col gap-3" id="requisitionsContainer">
+<!-- Req #1 (Selected) -->
+<div class="group relative cursor-pointer bg-white border-2 border-slate-900 p-4 rounded-xl shadow-xs transition-all" id="reqCard-1" onclick="selectRequisition('req1')">
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-rose-50 text-rose-700 border border-rose-200">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+                    P1 Critical
+                  </span>
+<span class="text-[11px] font-mono text-slate-400">WYD-041</span>
+</div>
+<h3 class="font-display font-semibold text-sm text-slate-900 leading-snug">Emergency Retaining Wall Construction</h3>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-slate-400">account_balance</span>
+                  Kerala PWD / Habitat
+                </p>
+<div class="mt-3 grid grid-cols-2 gap-2 p-2 rounded-lg bg-slate-50 border border-border-light text-xs">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Spots Remaining</span>
+<span class="font-semibold text-slate-900 mt-0.5 block" id="req1QuotaDisplay">6 of 15 remaining</span>
+</div>
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Daily DBT</span>
+<span class="font-semibold text-slate-900 mt-0.5 block">₹850 / day</span>
+</div>
+</div>
+<div class="mt-3 flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Masonry</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Heavy Equipment</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Stone Cutting</span>
+</div>
+<div class="mt-3 pt-3 border-t border-border-light flex items-center justify-between text-xs text-slate-500">
+<span class="flex items-center gap-1 text-[11px]">
+<span class="material-symbols-outlined text-[14px] text-slate-400">location_on</span>
+                    Chooralmala Sector 3
+                  </span>
+<span class="text-[11px] font-medium text-slate-900 flex items-center gap-0.5">
+                    Viewing Matches
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+</div>
+<!-- Req #2 -->
+<div class="group relative cursor-pointer bg-white border border-border-subtle hover:border-slate-300 p-4 rounded-xl transition-all" id="reqCard-2" onclick="selectRequisition('req2')">
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                    P2 Infrastructure
+                  </span>
+<span class="text-[11px] font-mono text-slate-400">WYD-048</span>
+</div>
+<h3 class="font-display font-semibold text-sm text-slate-800 leading-snug group-hover:text-slate-900">Relief Camp Power Grid Restoration</h3>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-slate-400">bolt</span>
+                  KSEB Emergency Cell
+                </p>
+<div class="mt-3 grid grid-cols-2 gap-2 p-2 rounded-lg bg-slate-50/70 border border-border-light text-xs">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Spots Remaining</span>
+<span class="font-semibold text-slate-800 mt-0.5 block">2 of 5 remaining</span>
+</div>
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Daily DBT</span>
+<span class="font-semibold text-slate-800 mt-0.5 block">₹950 / day</span>
+</div>
+</div>
+<div class="mt-3 flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Electrical</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Industrial Wiring</span>
+</div>
+<div class="mt-3 pt-3 border-t border-border-light flex items-center justify-between text-xs text-slate-400">
+<span class="flex items-center gap-1 text-[11px] text-slate-500">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                    Meppadi Hall
+                  </span>
+<span class="text-[11px] text-slate-500 flex items-center gap-0.5">
+                    12 Candidates
+                    <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</div>
+<!-- Req #3 -->
+<div class="group relative cursor-pointer bg-white border border-border-subtle hover:border-slate-300 p-4 rounded-xl transition-all" id="reqCard-3" onclick="selectRequisition('req3')">
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-slate-100 text-slate-700">
+                    P3 Housing
+                  </span>
+<span class="text-[11px] font-mono text-slate-400">WYD-052</span>
+</div>
+<h3 class="font-display font-semibold text-sm text-slate-800 leading-snug group-hover:text-slate-900">Makeshift Shelter Framework Carpentry</h3>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-slate-400">roofing</span>
+                  Red Cross Relief
+                </p>
+<div class="mt-3 grid grid-cols-2 gap-2 p-2 rounded-lg bg-slate-50/70 border border-border-light text-xs">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Spots Remaining</span>
+<span class="font-semibold text-slate-800 mt-0.5 block">8 of 10 remaining</span>
+</div>
+<div>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Daily DBT</span>
+<span class="font-semibold text-slate-800 mt-0.5 block">₹750 / day</span>
+</div>
+</div>
+<div class="mt-3 flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Carpentry</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">Truss Assembly</span>
+</div>
+<div class="mt-3 pt-3 border-t border-border-light flex items-center justify-between text-xs text-slate-400">
+<span class="flex items-center gap-1 text-[11px] text-slate-500">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                    Attamala Staging
+                  </span>
+<span class="text-[11px] text-slate-500 flex items-center gap-0.5">
+                    9 Candidates
+                    <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT MAIN COLUMN: Candidate Matches (8 Columns) -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<!-- Matching Filter Header Box -->
+<div class="bg-white border border-border-subtle p-5 rounded-xl">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-border-light">
+<div>
+<span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400 block">Candidate Matches</span>
+<h2 class="font-display text-lg font-bold text-slate-900 mt-0.5">Emergency Retaining Wall Construction</h2>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-center" id="candidateCountDisplay">
+                  18 Candidates Matched
+                </span>
+</div>
+<!-- Filter Query Bar -->
+<div class="mt-3 py-2 px-3 rounded-lg bg-slate-50 border border-border-light font-mono text-[11px] text-slate-600 flex items-center gap-2 overflow-x-auto">
+<span class="material-symbols-outlined text-[14px] text-slate-400 shrink-0">code</span>
+<span class="truncate">region == 'KL-WYD-2024' &amp;&amp; status == 'AVAILABLE' &amp;&amp; skills OVERLAPS ['Masonry', 'Heavy Equipment']</span>
+</div>
+<!-- Filter Tabs -->
+<div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+<div class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-md bg-slate-900 text-white font-medium">All Matches (18)</button>
+<button class="px-3 py-1.5 rounded-md text-slate-600 hover:bg-slate-100 font-medium">Camp Priority (#1-#4)</button>
+<button class="px-3 py-1.5 rounded-md text-slate-600 hover:bg-slate-100 font-medium">Equipment Licenced</button>
+</div>
+<div class="flex items-center gap-1 text-slate-500 text-[11px]">
+<span>Sort by:</span>
+<span class="font-medium text-slate-900">Highest Overlap</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Candidates Match Cards -->
+<div class="flex flex-col gap-3" id="candidatesList">
+<!-- Candidate 1: Anil Kumar -->
+<div class="bg-white border border-border-subtle p-5 rounded-xl hover:border-slate-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-5" id="candidate-anil">
+<div class="flex items-start gap-4 flex-1 min-w-0">
+<div class="relative shrink-0">
+<img alt="Anil Kumar" class="w-14 h-14 rounded-lg object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqGtmhSrn7dD3EwbUAO6ly2DPb3QcZ3cufNCATj9UcDN8wiCNXacPMCLNVUH_mWzi4lxNhoVkQ_rFlYQHJSCrppH8ljjzeVx40mlxNhcm8ExGW4Ud2q5MxNw3CypbcaxBlKIHIKDBV_zAnBJ_IM72YBs_H62TzQway2ZOL3Pg1Qa8iNUuSTJmAQdraoPzPnD7dl7TGswb_i_8oz8eCdgFLMG4fzd0ML1hQdGmAAX5M9z0kJRx26A"/>
+<span class="absolute -bottom-1.5 -right-1 px-1.5 py-0.2 rounded font-mono text-[9px] font-bold bg-emerald-600 text-white shadow-xs">100%</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-display font-semibold text-sm text-slate-900">Anil Kumar</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">AVAILABLE</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">Immediate</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+<span>Age 42</span>
+<span class="text-slate-300">•</span>
+<span class="flex items-center gap-1 text-slate-700">
+<span class="material-symbols-outlined text-[13px] text-slate-400">holiday_village</span>
+                        Camp #2 Chooralmala
+                      </span>
+<span class="text-slate-300">•</span>
+<span>14 yrs exp</span>
+<span class="text-slate-300">•</span>
+<span class="text-slate-600">Heavy Civil Ready</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Masonry (Master)
+                      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> JCB / Excavator Lic.
+                      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Stone Cutting
+                      </span>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto shrink-0 gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-border-light">
+<div class="text-left md:text-right">
+<span class="text-[10px] uppercase font-mono text-slate-400 block">Overlap</span>
+<span class="text-xs font-semibold text-emerald-700">3/3 Matched</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium transition-all shadow-xs" onclick="assignCandidate('Anil Kumar', 'candidate-anil')">
+                    Assign Candidate
+                  </button>
+</div>
+</div>
+<!-- Candidate 2: Suresh Babu -->
+<div class="bg-white border border-border-subtle p-5 rounded-xl hover:border-slate-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-5" id="candidate-suresh">
+<div class="flex items-start gap-4 flex-1 min-w-0">
+<div class="relative shrink-0">
+<img alt="Suresh Babu" class="w-14 h-14 rounded-lg object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa5_B9up8NPUy05G65HsdXACvivCpWlQg7G3vDWNHdLsRpufKrwlesWCGgm1G0v722SiOIFj-WCoFoqNm4YV19enG9d70TW8OHC0eYu_cNMdT92oBX22PO157IZDbbmlRLBu3eqeD_7cHqu6Q6Z8hvRA2t4-6m3r1Vhs_na56_w8otiA27EioUsCHBq5ajAAJZjHLk_PX7I1qi1ycJtrvfAyatW-L_SbpaJxCAOLuAhgHDSvVLZw"/>
+<span class="absolute -bottom-1.5 -right-1 px-1.5 py-0.2 rounded font-mono text-[9px] font-bold bg-slate-700 text-white shadow-xs">85%</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-display font-semibold text-sm text-slate-900">Suresh Babu</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">AVAILABLE</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Standby 24h</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+<span>Age 38</span>
+<span class="text-slate-300">•</span>
+<span class="flex items-center gap-1 text-slate-700">
+<span class="material-symbols-outlined text-[13px] text-slate-400">holiday_village</span>
+                        Camp #4 Meppadi
+                      </span>
+<span class="text-slate-300">•</span>
+<span>9 yrs exp</span>
+<span class="text-slate-300">•</span>
+<span class="text-slate-600">Medical Cleared</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Heavy Equipment (Grade II)
+                      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Stone Dressing
+                      </span>
+<span class="px-2 py-0.5 rounded bg-slate-50 text-slate-400 text-[11px]">
+                        Concrete Shuttering
+                      </span>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto shrink-0 gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-border-light">
+<div class="text-left md:text-right">
+<span class="text-[10px] uppercase font-mono text-slate-400 block">Overlap</span>
+<span class="text-xs font-semibold text-slate-700">2/3 Matched</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium transition-all shadow-xs" onclick="assignCandidate('Suresh Babu', 'candidate-suresh')">
+                    Assign Candidate
+                  </button>
+</div>
+</div>
+<!-- Candidate 3: Vinod K. -->
+<div class="bg-white border border-border-subtle p-5 rounded-xl hover:border-slate-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-5" id="candidate-vinod">
+<div class="flex items-start gap-4 flex-1 min-w-0">
+<div class="relative shrink-0">
+<img alt="Vinod K." class="w-14 h-14 rounded-lg object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEWmtBpkeEdbwCddbekyIDSRnUINHL7ifb5NmxofwOmmRCz1WGhiXPEKqSNtHXSLMrZN_HD4m0sWjLHTHFub97WxKaMfQoQZF-ftBlhsgDPTDQ0KASFgZ-qKwAyMJNPbH2TknQ4admVxiffJC4HFFsJN4aiuyzrCsMs2Z9i6E8ynScylzxMWWaLKiqveSXLLaQa-Wu2-1NZTMw8CE0plqoNzikEwrP7cXaBxJB3DJJGcVewkzuZA"/>
+<span class="absolute -bottom-1.5 -right-1 px-1.5 py-0.2 rounded font-mono text-[9px] font-bold bg-slate-700 text-white shadow-xs">85%</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-display font-semibold text-sm text-slate-900">Vinod K.</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">AVAILABLE</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">Immediate</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+<span>Age 46</span>
+<span class="text-slate-300">•</span>
+<span class="flex items-center gap-1 text-slate-700">
+<span class="material-symbols-outlined text-[13px] text-slate-400">holiday_village</span>
+                        Camp #1 Kalpetta
+                      </span>
+<span class="text-slate-300">•</span>
+<span>20 yrs exp</span>
+<span class="text-slate-300">•</span>
+<span class="text-slate-600">Full Fitness</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Retaining Wall Specialist
+                      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Gabion Layout
+                      </span>
+<span class="px-2 py-0.5 rounded bg-slate-50 text-slate-400 text-[11px]">
+                        Brickwork
+                      </span>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto shrink-0 gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-border-light">
+<div class="text-left md:text-right">
+<span class="text-[10px] uppercase font-mono text-slate-400 block">Overlap</span>
+<span class="text-xs font-semibold text-slate-700">2/3 Matched</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium transition-all shadow-xs" onclick="assignCandidate('Vinod K.', 'candidate-vinod')">
+                    Assign Candidate
+                  </button>
+</div>
+</div>
+<!-- Candidate 4: Biju P. -->
+<div class="bg-white border border-border-subtle p-5 rounded-xl hover:border-slate-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-5" id="candidate-biju">
+<div class="flex items-start gap-4 flex-1 min-w-0">
+<div class="relative shrink-0">
+<img alt="Biju P." class="w-14 h-14 rounded-lg object-cover ring-1 ring-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvjko1PfEsxv6inv1pfUkaZ9I5QZV2h03ReS--ViVklH_oladb8PAcm8A3mbjRswiB_mcJ1QkrwA5fGfPSMyRFrRTSCXKykE4igZRCX1meT6y49vF_wchu-T3_eczDaps6UthenUUfTf9KbLO15rv_tzBhkwmFe_F9inXSFprk63367TBYIwDw94HQNaT-QgXmjuylWIeBjAc9Q_rOHLz2eMvrlPcXU-aMkg12w03KZs3Dryu4Pw"/>
+<span class="absolute -bottom-1.5 -right-1 px-1.5 py-0.2 rounded font-mono text-[9px] font-bold bg-slate-700 text-white shadow-xs">70%</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-display font-semibold text-sm text-slate-900">Biju P.</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">AVAILABLE</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Standby 48h</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+<span>Age 34</span>
+<span class="text-slate-300">•</span>
+<span class="flex items-center gap-1 text-slate-700">
+<span class="material-symbols-outlined text-[13px] text-slate-400">holiday_village</span>
+                        Camp #3 Mundakkai
+                      </span>
+<span class="text-slate-300">•</span>
+<span>6 yrs exp</span>
+<span class="text-slate-300">•</span>
+<span class="text-slate-600">Site Ready</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 border border-border-subtle text-slate-700 text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-emerald-600">check</span> Heavy Equipment (Dozer)
+                      </span>
+<span class="px-2 py-0.5 rounded bg-slate-50 text-slate-400 text-[11px]">
+                        Debris Excavation
+                      </span>
+<span class="px-2 py-0.5 rounded bg-slate-50 text-slate-400 text-[11px]">
+                        General Labor
+                      </span>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto shrink-0 gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-border-light">
+<div class="text-left md:text-right">
+<span class="text-[10px] uppercase font-mono text-slate-400 block">Overlap</span>
+<span class="text-xs font-semibold text-slate-700">1/3 Matched</span>
+</div>
+<button class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium transition-all shadow-xs" onclick="assignCandidate('Biju P.', 'candidate-biju')">
+                    Assign Candidate
+                  </button>
+</div>
+</div>
+</div>
+<!-- Minimal DBT Escrow Summary Bar -->
+<div class="bg-white border border-border-subtle rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+</div>
+<div>
+<h4 class="text-xs font-semibold text-slate-900">Direct Benefit Transfer (DBT) Escrow</h4>
+<p class="text-[11px] text-slate-500">Automated daily release at 17:30 IST via NPCI Aadhaar bridge.</p>
+</div>
+</div>
+<div class="flex items-center gap-4 self-end sm:self-center">
+<div class="text-right">
+<span class="text-[10px] uppercase font-mono text-slate-400 block">Reserved Escrow</span>
+<span class="font-mono text-xs font-semibold text-slate-900">₹1,27,500</span>
+</div>
+<button class="px-3 py-1.5 rounded-md border border-border-subtle text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                  Audit Ledger
+                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Minimal Modal: Post Emergency Need -->
+<div class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="postNeedModal">
+<div class="bg-white border border-border-subtle w-full max-w-xl rounded-2xl shadow-xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between pb-3 border-b border-border-light">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-900"></span>
+<h2 class="font-display font-semibold text-base text-slate-900">Post Emergency Requisition</h2>
+</div>
+<button class="w-7 h-7 rounded-full text-slate-400 hover:text-slate-700 flex items-center justify-center hover:bg-slate-100" id="closeModalBtn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="text-xs text-slate-500 leading-relaxed">
+        Publishing an emergency requisition immediately initiates geo-targeted skill-matching across active relief camp registers in Region: KL-WYD-2024.
+      </p>
+<form class="flex flex-col gap-4 text-xs" id="emergencyNeedForm" onsubmit="handleFormSubmit(event)">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Project / Task Title *</label>
+<input class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500" placeholder="e.g. Drainage Desilting &amp; Culvert Clearing" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Executing Agency *</label>
+<input class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500" placeholder="e.g. Kerala Minor Irrigation Dept" required="" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Positions Required *</label>
+<input class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500" max="100" min="1" required="" type="number" value="10"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Daily Wage (₹) *</label>
+<input class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500" min="500" required="" step="50" type="number" value="800"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Urgency Level *</label>
+<select class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500">
+<option>P1 - Critical (6h)</option>
+<option selected="">P2 - High (24h)</option>
+<option>P3 - Standard (3-7d)</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-medium text-slate-700">Relief Location *</label>
+<input class="w-full px-3 py-2 rounded-lg border border-border-subtle bg-slate-50 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-500" placeholder="e.g. Vellarmala High School Junction, Sector 2" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-medium text-slate-700">Matching Filter Skills</label>
+<div class="flex flex-wrap gap-2 text-xs">
+<label class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border-subtle bg-slate-50 cursor-pointer hover:bg-slate-100">
+<input checked="" class="rounded text-slate-900 focus:ring-0" type="checkbox"/> Masonry
+            </label>
+<label class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border-subtle bg-slate-50 cursor-pointer hover:bg-slate-100">
+<input checked="" class="rounded text-slate-900 focus:ring-0" type="checkbox"/> Heavy Equipment
+            </label>
+<label class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border-subtle bg-slate-50 cursor-pointer hover:bg-slate-100">
+<input class="rounded text-slate-900 focus:ring-0" type="checkbox"/> Electrical
+            </label>
+<label class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border-subtle bg-slate-50 cursor-pointer hover:bg-slate-100">
+<input class="rounded text-slate-900 focus:ring-0" type="checkbox"/> Carpentry
+            </label>
+<label class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border-subtle bg-slate-50 cursor-pointer hover:bg-slate-100">
+<input class="rounded text-slate-900 focus:ring-0" type="checkbox"/> Plumbing
+            </label>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2 pt-4 border-t border-border-light">
+<button class="px-3.5 py-2 rounded-lg border border-border-subtle text-slate-600 hover:bg-slate-50 font-medium" id="cancelModalBtn" type="button">
+            Cancel
+          </button>
+<button class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-medium shadow-xs" type="submit">
+            Publish &amp; Match
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Interactive Scripts -->
+<script>
+    let remainingPositions = 6;
+    let dispatchedToday = 38;
+
+    function assignCandidate(candidateName, candidateCardId) {
+      const card = document.getElementById(candidateCardId);
+      if (!card) return;
+
+      if (remainingPositions > 0) {
+        remainingPositions--;
+        dispatchedToday++;
+        document.getElementById('req1QuotaDisplay').innerText = `${remainingPositions} of 15 remaining`;
+        document.getElementById('statDispatchedToday').innerText = dispatchedToday;
+      }
+
+      const actionBtn = card.querySelector('button');
+      if (actionBtn) {
+        actionBtn.disabled = true;
+        actionBtn.className = 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-medium cursor-default flex items-center gap-1 border border-border-subtle';
+        actionBtn.innerHTML = '<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> Assigned';
+      }
+
+      const availBadge = card.querySelector('.bg-emerald-50');
+      if (availBadge) {
+        availBadge.className = 'px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600';
+        availBadge.innerText = 'ASSIGNED';
+      }
+
+      card.classList.add('bg-slate-50/60');
+      showToast(candidateName);
+    }
+
+    function showToast(name) {
+      const toast = document.getElementById('dispatchToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastBody = document.getElementById('toastBody');
+
+      toastTitle.innerText = `Candidate Assigned: ${name}`;
+      toastBody.innerText = `${name} dispatched to Chooralmala Retaining Wall project. Wage notification sent.`;
+
+      toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        dismissToast();
+      }, 5000);
+    }
+
+    function dismissToast() {
+      const toast = document.getElementById('dispatchToast');
+      toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    function selectRequisition(reqId) {
+      const cards = ['reqCard-1', 'reqCard-2', 'reqCard-3'];
+      cards.forEach(id => {
+        const c = document.getElementById(id);
+        if (c) {
+          c.classList.remove('border-2', 'border-slate-900', 'shadow-xs');
+          c.classList.add('border', 'border-border-subtle');
+        }
+      });
+
+      let targetCardId = 'reqCard-1';
+      if (reqId === 'req2') targetCardId = 'reqCard-2';
+      if (reqId === 'req3') targetCardId = 'reqCard-3';
+
+      const target = document.getElementById(targetCardId);
+      if (target) {
+        target.classList.remove('border-border-subtle');
+        target.classList.add('border-2', 'border-slate-900', 'shadow-xs');
+      }
+    }
+
+    const modal = document.getElementById('postNeedModal');
+    const openBtn = document.getElementById('postNeedBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+
+    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      modal.classList.add('hidden');
+
+      const toast = document.getElementById('dispatchToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastBody = document.getElementById('toastBody');
+      toastTitle.innerText = "Requisition Published";
+      toastBody.innerText = "New Emergency Requisition broadcasted. Matching engine is indexing 142 local artisan profiles.";
+      toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      const openReqs = document.getElementById('statOpenReqs');
+      if (openReqs) openReqs.innerText = "17";
+      const badge = document.getElementById('activeReqsBadge');
+      if (badge) badge.innerText = "4 listed";
+
+      setTimeout(() => dismissToast(), 4500);
+    }
+
+    document.getElementById('refreshSyncBtn').addEventListener('click', function() {
+      this.classList.add('opacity-60', 'pointer-events-none');
+      const icon = this.querySelector('.material-symbols-outlined');
+      icon.classList.add('animate-spin');
+      setTimeout(() => {
+        this.classList.remove('opacity-60', 'pointer-events-none');
+        icon.classList.remove('animate-spin');
+        const countDisplay = document.getElementById('candidateCountDisplay');
+        countDisplay.innerText = "18 Candidates Re-ranked";
+      }, 600);
+    });
+  </script>
+</body></html>

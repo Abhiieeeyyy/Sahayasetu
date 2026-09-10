@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>SahayaSetu - Disaster Recovery &amp; Skill-Matching Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#2f1500", "secondary": "#904d00", "surface-dim": "#d2d9f4", "on-primary": "#ffffff", "surface-tint": "#1e667f", "surface": "#faf8ff", "tertiary-fixed-dim": "#68dba9", "outline-variant": "#bfc8cd", "surface-bright": "#faf8ff", "error": "#ba1a1a", "primary-fixed-dim": "#90cfec", "on-secondary": "#ffffff", "tertiary-fixed": "#85f8c4", "on-secondary-container": "#663500", "secondary-fixed-dim": "#ffb77d", "tertiary-container": "#006142", "on-error-container": "#93000a", "on-primary-container": "#93d3ef", "secondary-container": "#fe932c", "on-tertiary": "#ffffff", "primary-fixed": "#bde9ff", "surface-container-highest": "#dae2fd", "on-primary-fixed": "#001f2a", "outline": "#70787d", "secondary-fixed": "#ffdcc3", "error-container": "#ffdad6", "inverse-surface": "#283044", "surface-variant": "#dae2fd", "surface-container-lowest": "#ffffff", "on-surface": "#131b2e", "primary-container": "#0d5c75", "surface-container-low": "#f2f3ff", "on-primary-fixed-variant": "#004d64", "tertiary": "#004730", "surface-container": "#eaedff", "on-background": "#131b2e", "on-tertiary-fixed": "#002114", "inverse-primary": "#90cfec", "on-tertiary-container": "#6bdeac", "surface-container-high": "#e2e7ff", "primary": "#004357", "on-error": "#ffffff", "on-secondary-fixed-variant": "#6e3900", "inverse-on-surface": "#eef0ff", "on-tertiary-fixed-variant": "#005137", "background": "#faf8ff", "on-surface-variant": "#40484c" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "gutter-2xl": "3rem", "gutter-xl": "2rem", "touch-target-min": "3rem", "margin-mobile": "1rem", "gutter-md": "1rem", "gutter-sm": "0.5rem", "margin-tablet": "1.5rem", "gutter-lg": "1.5rem", "margin-desktop": "2rem", "gutter-xs": "0.25rem" }, fontFamily: { "headline-lg": ["Plus Jakarta Sans"], "label-md": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Plus Jakarta Sans"], "label-lg": ["Inter"], "data-metric": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "body-sm": ["Inter"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-lg flex items-center justify-between gap-gutter-md"><div class="flex items-center gap-gutter-md"><img alt="A modern geometric humanitarian emblem for SahayaSetu disaster recovery platform. A stylized bridge arch combined with a protective sheltering hand and connecting nodes representing skill-matching and rehabilitation. Clean, vector, dual-tone deep emergency teal and warm amber gold, transparent background.. Design context: - Primary color: #0d5c75
+- Font: plusJakartaSans
+- Mode: light
+- Roundness: rounded-sm
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1USZ63cySY-MMK0NyO5MFO7jURd68UnHsmUzJVRl5jRJ6_-qOBGJCWW7gYCMBPqsXcXkc7_UuEE2Dcwode0ic6gEA_0UMTXCgme8epx9OsrepqyBaOcBBrltryWEoLw3GqHrBC1GrdT1I7rbslvdk4CEoBDFInQGZF_vsy9pvh36Qq9kYFCbHfI9-6-z2LxI8qcQ3lR-PrTNOVw6iphhR71wnpMKnPHtCRtTzngQaEQBFGxV4KNLuBL"/><div class="flex flex-col"><div class="flex items-center gap-gutter-sm"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-primary">SahayaSetu</span><span class="px-2 py-0.5 rounded-lg bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Disaster Relief &amp; Skill Matching</span></div><div class="flex items-center gap-gutter-xs mt-0.5"><span class="material-symbols-outlined text-[14px] text-secondary">lock</span><span class="font-label-sm text-label-sm text-secondary font-semibold">Active Context: Regional Admin (KL-WYD-2024 Wayanad)</span><span class="mx-1 text-outline-variant font-body-sm text-body-sm">|</span><span class="font-label-sm text-label-sm text-on-surface-variant">Tenant Tier: Priority-1 Triage</span></div></div></div><nav class="hidden xl:flex items-center gap-gutter-xs bg-surface-container-low p-1 rounded-xl" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="beneficiary-intake-and-roster" href="#">Beneficiary Intake &amp; Roster</a><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="skill-matching-and-jobs" href="#">Skill Matching &amp; Jobs</a><a class="px-3 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="super-admin-command" href="#">Super Admin Command</a><a aria-current="page" class="px-3 py-2 transition-all bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="beneficiary-self-portal" href="#">Beneficiary Self-Portal</a></nav><div class="flex items-center gap-gutter-md"><div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-tertiary-container/10"><span class="material-symbols-outlined text-[18px] text-tertiary">sync_saved_locally</span><div class="flex flex-col"><span class="font-label-sm text-label-sm text-tertiary font-bold leading-none">Offline Sync: Active</span><span class="font-label-sm text-[10px] text-on-surface-variant leading-none mt-0.5">AES-256 Encrypted Cache</span></div></div><button class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-error text-on-error font-label-md text-label-md hover:bg-on-error-container hover:text-on-error transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">sos</span><span>Helpline 1077</span></button><div class="flex items-center gap-gutter-sm pl-gutter-sm"><div class="hidden lg:flex flex-col text-right"><span class="font-label-md text-label-md font-bold text-on-surface">Priya Sharma</span><span class="font-label-sm text-label-sm text-on-surface-variant">Regional Relief Coordinator</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1Vu5QvIehAURJ_rU1rJxflunIUcdFZB4bnfqfeX-VjD8Hwajqz2Xuo-2Ia2ldELhrPnVCqmADMUFmBBmz8qTtxUbJfsns4zq1Xlxbpl-aiNjBXTr0F9d7xtog34nsREDuTMDzQiZ_VZKxVhcVoBtUPR2HxMDUNHmae2Tx4dKB9uQYfqcWgypBKovzUcb8hfqBt0WDNV_Zev4dZK0vu-HFaIrClO8-w1EIhHfU7pbPZhGnWelf-c8czc"/></div></div></div></header><aside class="fixed left-0 top-20 bottom-0 w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 hidden md:flex flex-col justify-between p-gutter-md"><div class="flex flex-col gap-gutter-md"><div class="px-2"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Field Operations</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="beneficiary-intake-and-roster" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span>Intake &amp; Roster</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="skill-matching-and-jobs" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Skill &amp; Dispatch</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="super-admin-command" href="#"><span class="material-symbols-outlined text-[20px]">admin_panel_settings</span><span>Command Center</span></a><a aria-current="page" class="flex items-center gap-3 px-3 py-2.5 transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="beneficiary-self-portal" href="#"><span class="material-symbols-outlined text-[20px]">person_apron</span><span>Relief Self-Portal</span></a></nav></div><div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Local Database</span><span class="font-label-sm text-label-sm text-tertiary font-bold">100% Synced</span></div><div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden"><div class="bg-tertiary h-full w-full"></div></div><span class="font-body-sm text-[11px] text-on-surface-variant">Next relay queued via Satellite VSAT</span></div></aside><div class="md:pl-64"><main class="w-full pt-20 px-gutter-md md:px-gutter-xl pb-gutter-2xl bg-surface min-h-screen"><div class="flex flex-col w-full gap-gutter-lg">
+<!-- Emergency Citizen Broadcast Alert Banner -->
+<div class="w-full bg-secondary-container/15 rounded-xl p-gutter-md flex flex-col md:flex-row items-start md:items-center justify-between gap-gutter-md shadow-sm">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]">campaign</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">Wayanad District Relief Advisory</span>
+<span class="inline-block w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Updated 14 mins ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-semibold mt-0.5">
+          Safe route cleared &amp; opened to Meppadi Sector 2. Ration kit &amp; DBT daily cash payout counters are operating at <span class="text-primary font-bold">Community Hall Block B</span>.
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 self-stretch md:self-auto">
+<a class="w-full md:w-auto h-touch-target-min px-4 bg-error text-on-error rounded-lg font-label-md text-label-md font-bold flex items-center justify-center gap-2 shadow-sm hover:opacity-95 transition-opacity" href="tel:1077">
+<span class="material-symbols-outlined text-[20px]">call</span>
+<span>Relief SOS 1077</span>
+</a>
+</div>
+</div>
+<!-- Worker Welcome Banner & Micro Utility Bar -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-gutter-lg shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-gutter-lg">
+<div class="flex items-center gap-gutter-md">
+<div class="relative shrink-0">
+<img class="w-16 h-16 rounded-xl object-cover shadow-sm" data-alt="Close up portrait photograph of Ramesh K, a determined 42 year old south Indian construction craftsman and skilled stone mason from Kerala, wearing clean protective cotton headwrap and orange hi-vis reflective safety jacket in bright morning natural light against green tropical relief camp backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtwPI-0CeywgabTvc9BSDeTiJvpK-71EN99i2uarjKseaM2PFDwArWk-J4Gs-CRONQgKMuDrp3I6Wrk4oZP20ggwYkR1j2dlpTriz6oFAU0XeZfEa5bvujCpLbqPU-qkjA4Ef2k7uSeKycen708N5FbCHd0155JFfE6w02_aryiicClP_JKVjtKrpecx_-kRCZFQF3hNqnf9I9v8tJzlFJkd9X82xeE0Td_AW9hiwAsgurP6p9Aw"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 bg-tertiary text-on-tertiary rounded-full flex items-center justify-center text-[12px] shadow-sm">
+<span class="material-symbols-outlined text-[13px]">verified</span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">Welcome back, Ramesh K.</span>
+<span class="px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Aadhaar Bio-Verified</span>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="flex items-center gap-1 font-semibold text-primary">
+<span class="material-symbols-outlined text-[16px]">holiday_village</span>
+            Camp ID: WYD-CMP-042 (Meppadi Camp, Ward 6)
+          </span>
+<span class="text-outline-variant">•</span>
+<span class="font-mono text-on-surface-variant">Beneficiary UID: 9402-8812-7019</span>
+<span class="text-outline-variant">•</span>
+<span class="text-tertiary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">medical_services</span> Medical Fit for Duty
+          </span>
+</div>
+</div>
+</div>
+<!-- Language Selector & Print Pass -->
+<div class="flex items-center flex-wrap gap-2 pt-2 lg:pt-0">
+<div class="bg-surface-container-low p-1 rounded-xl flex items-center gap-1">
+<button class="px-3 py-2 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-sm" type="button">English</button>
+<button class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm font-bold transition-colors" type="button">മലയാളം</button>
+<button class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high font-label-sm text-label-sm font-bold transition-colors" type="button">தமிழ்</button>
+</div>
+<button class="h-touch-target-min px-4 bg-surface-container text-on-surface rounded-lg font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-high transition-colors" onclick="window.print()" type="button">
+<span class="material-symbols-outlined text-[18px]">badge</span>
+<span class="hidden sm:inline">Offline Relief Pass</span>
+</button>
+</div>
+</div>
+<!-- Primary Layout Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start">
+<!-- Left / Center Column: Active Assignment & Wage Ledger (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-gutter-lg">
+<!-- Section 1: Active Reconstruction Assignment Card -->
+<div class="bg-surface-container-lowest rounded-xl p-gutter-lg shadow-sm flex flex-col gap-gutter-md relative overflow-hidden">
+<!-- Header Ribbon -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-bold uppercase tracking-wider flex items-center gap-1.5">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary-fixed animate-ping"></span>
+              Active Deployment
+            </span>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+              Shift: Week 3 of 6
+            </span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">gavel</span> Priority 1 Critical Infra
+          </span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface leading-tight">
+            Chooralmala Riverbank Embankment Reinforcement
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            Kerala State Disaster Management Authority (KSDMA) &amp; Habitat for Humanity Recovery Fleet
+          </p>
+</div>
+<!-- Deployment Info Matrix -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-surface-container-low p-gutter-md rounded-xl">
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">engineering</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Designated Role</span>
+<span class="font-body-md text-body-md font-bold text-on-surface">Lead Mason</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Stone Shoring &amp; Gabion Caging</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Work Schedule</span>
+<span class="font-body-md text-body-md font-bold text-on-surface">Mon – Sat (08:00 – 16:30)</span>
+<span class="font-body-sm text-body-sm text-tertiary font-medium">1 hr lunch + 2 hydration pauses</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Standard Daily Rate</span>
+<span class="font-body-md text-body-md font-bold text-on-surface">₹850 / Day</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">+ ₹150 Hardship &amp; Safety Allowance</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">safety_check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">PPE Mandatory Status</span>
+<span class="font-body-md text-body-md font-bold text-on-surface">Steel-Toe &amp; Harness</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Issued by Onsite Depot #2</span>
+</div>
+</div>
+</div>
+<!-- Worksite Navigation & Landmark Section -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">pin_drop</span>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Reporting Worksite: Chooralmala Bridge Sector 3</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1.8 km from Camp</span>
+</div>
+<!-- Static Map Target -->
+<div class="w-full h-44 bg-surface-container-high rounded-xl relative overflow-hidden flex items-end p-3 shadow-inner" data-location="Chooralmala, Wayanad, Kerala, India" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDphFjvvvu7bp_x60rje9387HHpbS9pPv3mF3jydFhtHr54wsxqvoB4NxyKJVQZjJf8IsCsTMaEYPESxgRuT_2R8JG_jYSXtqrf_mnshtZAcWhNE6HFZb7EwYyC-NsSgiwstYo6Bcd4GRmb0ppBNi0MB6PnXPtfc9pECakWL9b1mh2G_4WPSvEQUEyS-CYXZLDsqlaRIPGrCXzJRm7f86Zxumc_l3WyoYzTiMlfgZigHciy_WcWBw');">
+<div class="bg-surface-container-lowest/95 backdrop-blur px-3 py-2 rounded-lg flex items-center gap-3 shadow-md max-w-full">
+<span class="material-symbols-outlined text-secondary text-[22px]">navigation</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-on-surface truncate">Landmark: Old Bailey Bridge Checkpost (Near Forest Range Office)</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant truncate">Relief bus departs Meppadi Camp gate at 07:15 AM sharp</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Supervisor Contact Module -->
+<div class="bg-surface-container rounded-xl p-gutter-md flex flex-col sm:flex-row sm:items-center justify-between gap-gutter-md">
+<div class="flex items-center gap-3">
+<img class="w-12 h-12 rounded-xl object-cover shrink-0" data-alt="Square portrait of Er Sreekumar, senior field engineer in hard hat and safety vest, holding construction clipboard at disaster reconstruction site in India, professional and calm expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwE9yrIx_dJ7jfRWzMSrzkcOE_wkFA9Tdtaf04nSdlwW3NYgAGiF7GT-BCYIF31bL-3ihIdcCv90dx2k_FceeJ3nBRrdNrdShI-OcIotMWobEZSjgKTQy4FjjhZFCEHg0cubnfuJUUNbrSirK7bCqU4oggv6XHxTrP4dNIkCZLsWPvzUSO0SWUqFKDYa5VMRdrAOzZsOP2h4cTFHvb1I-lnWdw-YJ7aCXMXHgc7DVOafF3tqJaWw"/>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wide text-on-surface-variant">Reporting Field Supervisor</span>
+<span class="font-body-lg text-body-lg font-bold text-on-surface">Er. Sreekumar</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Field Officer ID: #WYD-91 (PWD Kerala Relief Cell)</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<a class="h-touch-target-min px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm hover:bg-primary-container transition-colors" href="tel:+919876543210">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span>Call Supervisor</span>
+</a>
+<a class="h-touch-target-min px-3 bg-surface-container-lowest text-on-surface rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:bg-surface-container-high transition-colors" href="sms:+919876543210">
+<span class="material-symbols-outlined text-[18px]">sms</span>
+<span class="sr-only sm:not-sr-only">SMS</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Section 2: Verified Daily Wage & Direct Benefit Transfer (DBT) Tracker -->
+<div class="bg-surface-container-lowest rounded-xl p-gutter-lg shadow-sm flex flex-col gap-gutter-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Verified Wage &amp; DBT Transfer Tracker</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time biometric punch logs backed by Public Financial Management System (PFMS)</p>
+</div>
+<span class="px-3 py-1 rounded-full bg-tertiary-container/10 text-tertiary font-label-sm text-label-sm font-bold flex items-center gap-1 self-start sm:self-auto">
+<span class="material-symbols-outlined text-[16px]">account_balance</span>
+            Aadhaar DBT: Linked (SBI Meppadi #***4108)
+          </span>
+</div>
+<!-- Metric KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="p-gutter-md rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold">Total Earned to Date</span>
+<span class="font-data-metric text-data-metric text-primary mt-1">₹12,750</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">15 days confirmed service</span>
+</div>
+<div class="p-gutter-md rounded-xl bg-tertiary-container/10 flex flex-col">
+<span class="font-label-sm text-label-sm text-tertiary uppercase font-bold">Next Direct Disbursal</span>
+<span class="font-data-metric text-data-metric text-tertiary mt-1">₹4,250</span>
+<span class="font-body-sm text-body-sm text-tertiary font-semibold mt-0.5">Scheduled for Friday (5 Days)</span>
+</div>
+<div class="p-gutter-md rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold">Relief Subsidy Added</span>
+<span class="font-data-metric text-data-metric text-secondary mt-1">₹2,250</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Disaster Recovery Living Grant</span>
+</div>
+</div>
+<!-- Digital Wage Slip Ledger Table -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase font-bold text-on-surface">Recent Work Shift Wage Log</span>
+<button class="text-primary hover:underline font-label-sm text-label-sm font-semibold flex items-center gap-0.5" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span> Download 15-Day Slip
+            </button>
+</div>
+<div class="overflow-x-auto rounded-xl bg-surface-container-low">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase">
+<tr>
+<th class="py-3 px-4">Date</th>
+<th class="py-3 px-4">Work Site</th>
+<th class="py-3 px-3">Hours</th>
+<th class="py-3 px-4">Supervisor Sign-off</th>
+<th class="py-3 px-4 text-right">Wage Amount</th>
+<th class="py-3 px-4 text-center">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">26 Oct (Today)</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Riverbank Embankment Sec 3</td>
+<td class="py-3.5 px-3 font-mono">8.0 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">Er. Sreekumar (Field)</td>
+<td class="py-3.5 px-4 text-right font-bold text-on-surface">₹850</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[11px] font-bold">Scheduled</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">25 Oct</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Riverbank Embankment Sec 3</td>
+<td class="py-3.5 px-3 font-mono">8.0 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">Er. Sreekumar (Field)</td>
+<td class="py-3.5 px-4 text-right font-bold text-on-surface">₹850</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[11px] font-bold">Scheduled</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">24 Oct</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Gabion Wall Shoring Sec 2</td>
+<td class="py-3.5 px-3 font-mono">8.5 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">Er. Sreekumar (Field)</td>
+<td class="py-3.5 px-4 text-right font-bold text-on-surface">₹850</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[11px] font-bold">Scheduled</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">23 Oct</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Masonry Culvert Clearing</td>
+<td class="py-3.5 px-3 font-mono">8.0 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">A. Mathew (PWD Insp)</td>
+<td class="py-3.5 px-4 text-right font-bold text-on-surface">₹850</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[11px] font-bold">Scheduled</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">22 Oct</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Drainage Retaining Block 4</td>
+<td class="py-3.5 px-3 font-mono">8.0 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">Er. Sreekumar (Field)</td>
+<td class="py-3.5 px-4 text-right font-bold text-on-surface">₹850</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-[11px] font-bold">Scheduled</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-3.5 px-4 font-semibold text-on-surface">20 Oct</td>
+<td class="py-3.5 px-4 text-on-surface-variant">Bridge Foundation Prep</td>
+<td class="py-3.5 px-3 font-mono">8.0 hrs</td>
+<td class="py-3.5 px-4 text-on-surface">Er. Sreekumar (Field)</td>
+<td class="py-3.5 px-4 text-right font-bold text-tertiary">₹4,250 (5-Day Batch)</td>
+<td class="py-3.5 px-4 text-center">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[11px] font-bold">Credited</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[12px] px-1">
+<span>Showing recent 6 logs • DBT Ref ID: PFMS-2024-WYD-882194</span>
+<span class="text-tertiary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">done_all</span> All hours verified via biometric punch
+            </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Skills, Tool Grants & Offline Self-Service (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-gutter-lg">
+<!-- Section 3: Registered Skills & Qualification Status -->
+<div class="bg-surface-container-lowest rounded-xl p-gutter-lg shadow-sm flex flex-col gap-gutter-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">workspace_premium</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">My Registered Skills</h3>
+</div>
+<button class="font-label-sm text-label-sm text-primary font-bold hover:underline flex items-center gap-1" id="btn-request-skill" type="button">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Add Skill
+          </button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Your skills are verified by National Skill Development Corporation (NSDC) &amp; Kerala Disaster Relief Command.
+        </p>
+<!-- Skill Pills / Cards -->
+<div class="flex flex-col gap-2.5">
+<div class="p-3 bg-surface-container-low rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">construction</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">Masonry &amp; Stone Retaining</span>
+<span class="font-label-sm text-label-sm text-tertiary font-bold">NSDC Level 3 Certified Expert</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">hardware</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">Heavy Rigging &amp; Scaffolding</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Emergency Clearance Specialist</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-error/10 text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">medical_services</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">First Aid &amp; Triage Support</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Indian Red Cross Disaster Certified</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[20px]">verified</span>
+</div>
+</div>
+<!-- Tool Grant / Upskilling Application CTA -->
+<div class="p-gutter-md rounded-xl bg-surface-container-high flex flex-col gap-3 mt-1">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">handyman</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Livelihood Tool Grant Available</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                KSDMA is distributing free professional tool kits (Masonry Trowel sets, Spirit levels, Power drills, &amp; Carpentry gear) for registered rehabilitating workers.
+              </p>
+</div>
+</div>
+<button class="h-touch-target-min w-full px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-primary-container shadow-sm transition-colors" id="btn-claim-toolkit" type="button">
+<span class="material-symbols-outlined text-[20px]">redeem</span>
+<span>Apply for Free Rehabilitation Tool Kit</span>
+</button>
+</div>
+</div>
+<!-- Camp Welfare & Relief Amenities Status -->
+<div class="bg-surface-container-lowest rounded-xl p-gutter-lg shadow-sm flex flex-col gap-gutter-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Camp Welfare &amp; Essentials</h3>
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Active Camp #042</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">restaurant</span>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Hot Meals &amp; Potable Water</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Next: Dinner served at 19:30</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-tertiary">Distributed</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">local_pharmacy</span>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Health Post &amp; Tetanus Shots</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Medical tent open 24x7</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-primary">On Duty</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-tertiary text-[20px]">family_restroom</span>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Family Resettlement Registry</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Shelter transit housing allotments</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-secondary">In Review</span>
+</div>
+</div>
+<!-- 24/7 Toll Free Help Bar -->
+<div class="border-t-0 p-4 rounded-xl bg-surface-container-high/60 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm uppercase font-bold text-on-surface-variant">Immediate Assistance Desk</span>
+<div class="flex flex-wrap gap-2">
+<a class="flex-1 min-w-[130px] h-10 px-3 bg-surface-container-lowest text-error font-label-md text-label-md font-bold rounded-lg flex items-center justify-center gap-1.5 shadow-sm hover:bg-error-container hover:text-on-error-container transition-colors" href="tel:1077">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+<span>1077 Control</span>
+</a>
+<a class="flex-1 min-w-[130px] h-10 px-3 bg-surface-container-lowest text-primary font-label-md text-label-md font-bold rounded-lg flex items-center justify-center gap-1.5 shadow-sm hover:bg-surface-container transition-colors" href="tel:1098">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span>Camp Desk #4</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Modal: Upskilling / Tool Grant Application (Toggled by JS) -->
+<div class="hidden fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center p-gutter-md" id="grant-modal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl p-gutter-lg shadow-xl flex flex-col gap-gutter-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">construction</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Apply for Rehabilitation Tool Kit</h3>
+</div>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center" id="btn-close-modal" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Select the subsidized kit corresponding to your rehabilitation work track. Grants are approved by the District Labor Commissioner within 24 hours.
+      </p>
+<form class="flex flex-col gap-3" onsubmit="event.preventDefault(); alert('Tool grant application submitted successfully! Reference #TG-WYD-904'); document.getElementById('grant-modal').classList.add('hidden');">
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="accent-primary w-5 h-5" name="toolkit" type="radio"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Heavy Masonry &amp; River Shoring Toolkit</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Includes high-grade trowels, spirit levels, chisel kit, steel measuring tape &amp; helmet</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="accent-primary w-5 h-5" name="toolkit" type="radio"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Carpentry &amp; Temporary Shelter Assembly Kit</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Includes crosscut saw, framing hammer, cordless drill kit, angle square</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="accent-primary w-5 h-5" name="toolkit" type="radio"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Emergency Electrical &amp; Wire Rigging Kit</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Multimeter, insulated pliers set, voltage detector, crimping toolkit</span>
+</div>
+</label>
+<div class="pt-2 flex items-center justify-end gap-2">
+<button class="h-touch-target-min px-4 bg-surface-container text-on-surface rounded-lg font-label-md text-label-md" id="btn-cancel-modal" type="button">
+            Cancel
+          </button>
+<button class="h-touch-target-min px-5 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-bold shadow-sm hover:bg-primary-container" type="submit">
+            Submit Request
+          </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const modal = document.getElementById('grant-modal');
+    const openBtn = document.getElementById('btn-claim-toolkit');
+    const skillBtn = document.getElementById('btn-request-skill');
+    const closeBtn = document.getElementById('btn-close-modal');
+    const cancelBtn = document.getElementById('btn-cancel-modal');
+
+    function openModal() {
+      if(modal) modal.classList.remove('hidden');
+    }
+    function closeModal() {
+      if(modal) modal.classList.add('hidden');
+    }
+
+    if(openBtn) openBtn.addEventListener('click', openModal);
+    if(skillBtn) skillBtn.addEventListener('click', () => {
+      alert('Skill verification center is open at Camp Block 4 from 09:00 AM to 05:00 PM daily. Bring your NSDC card or prior contractor slip.');
+    });
+    if(closeBtn) closeBtn.addEventListener('click', closeModal);
+    if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  })();
+</script></main></div></body></html>

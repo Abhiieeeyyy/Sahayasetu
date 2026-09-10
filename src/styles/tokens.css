@@ -1,0 +1,108 @@
+/**
+ * ============================================================================
+ * SAHAYASETU DESIGN SYSTEM - TOKENS & DESIGN VARIABLES
+ * ============================================================================
+ * 
+ * This file defines the core CSS design tokens matching the humanitarian
+ * mission specifications in DESIGN.md:
+ * - High-contrast daylight readability exceeding WCAG AAA standards.
+ * - Deep Emergency Teal for authoritative command and governance.
+ * - Safety Ochre for urgent triage, shortages, and active alerts.
+ * - Forest Green for verified milestones and completed placements.
+ * - Tabular monospaced figures for telemetry to eliminate optical jitter.
+ */
+
+:root {
+  /* --------------------------------------------------------------------------
+   * 1. BRAND & THEMATIC PALETTE
+   * -------------------------------------------------------------------------- */
+  --color-primary: #0d5c75;             /* Deep Emergency Teal: Authoritative logistics */
+  --color-primary-dark: #003441;        /* Dark Command Teal */
+  --color-primary-container: #0f4c5c;  /* Elevated action background */
+  --color-on-primary: #ffffff;          /* Primary button and banner text */
+  --color-primary-fixed: #bde9ff;       /* Light teal background tint */
+  --color-on-primary-fixed: #001f2a;    /* High contrast text on light teal */
+  --color-primary-fixed-dim: #90cfec;   /* Muted teal highlight */
+
+  --color-secondary: #d97706;           /* Safety Ochre: Urgent shortages & hazards */
+  --color-secondary-dark: #904d00;      /* Deep amber border & emphasis */
+  --color-secondary-container: #fe932c;/* Amber badge container */
+  --color-on-secondary: #ffffff;        /* White text for amber elements */
+  --color-secondary-fixed: #ffdcc3;     /* Light amber hazard tint */
+  --color-on-secondary-fixed: #2f1500;  /* High contrast text on amber */
+  --color-secondary-fixed-dim: #ffb77d; /* Soft amber tone */
+
+  --color-tertiary: #059669;            /* Forest Green: Verified and completed */
+  --color-tertiary-dark: #004730;       /* Deep forest green */
+  --color-tertiary-container: #006142;  /* Green container badge */
+  --color-on-tertiary: #ffffff;         /* Text on forest green */
+  --color-tertiary-fixed: #85f8c4;      /* Light green success tint */
+  --color-on-tertiary-fixed: #002114;   /* Text on success tint */
+  --color-tertiary-fixed-dim: #68dba9;  /* Muted success highlight */
+
+  --color-error: #ba1a1a;               /* Alert Red: Live structural hazards & SOS */
+  --color-error-container: #ffdad6;     /* Light red container */
+  --color-on-error: #ffffff;            /* White text on error button */
+  --color-on-error-container: #93000a;  /* Dark red text */
+
+  /* --------------------------------------------------------------------------
+   * 2. NEUTRAL SURFACES & ELEVATION PLANES
+   * -------------------------------------------------------------------------- */
+  --color-background: #f8fafc;          /* Slate 50 Ground canvas */
+  --color-surface: #faf8ff;             /* Elevated background tint */
+  --color-surface-lowest: #ffffff;      /* Pure white card surface */
+  --color-surface-low: #f2f3ff;         /* Tinted secondary panel */
+  --color-surface-container: #eaedff;   /* Border / chip fill */
+  --color-surface-container-high: #e2e7ff; /* Hover highlight surface */
+  --color-surface-container-highest: #dae2fd; /* Inset sub-surface */
+  --color-surface-dim: #d2d9f4;         /* Dim overlay plane */
+
+  --color-on-surface: #0f172a;          /* Deep Slate typography */
+  --color-on-surface-variant: #475569;  /* Slate 600 secondary labels & metadata */
+  --color-outline: #70787d;             /* Mid-tone border lines */
+  --color-outline-variant: #cbd5e1;     /* Hairline structure dividers (1px) */
+
+  /* --------------------------------------------------------------------------
+   * 3. TYPOGRAPHY FAMILIES
+   * -------------------------------------------------------------------------- */
+  --font-header: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-editorial: 'Newsreader', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* --------------------------------------------------------------------------
+   * 4. BORDER RADII (Disciplined Utilitarian Standard: 4px to 8px)
+   * -------------------------------------------------------------------------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;               /* Strictly reserved for status pills */
+
+  /* --------------------------------------------------------------------------
+   * 5. SPACING & TOUCH TARGETS
+   * -------------------------------------------------------------------------- */
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --touch-target-min: 48px; /* Safe physical touch target for field hardware */
+
+  /* --------------------------------------------------------------------------
+   * 6. SHADOWS & ELEVATION TIERS
+   * -------------------------------------------------------------------------- */
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+
+  /* --------------------------------------------------------------------------
+   * 7. TRANSITIONS & TIMING
+   * -------------------------------------------------------------------------- */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
