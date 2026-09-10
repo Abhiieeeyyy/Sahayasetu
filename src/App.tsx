@@ -480,9 +480,6 @@ export const App: React.FC = () => {
       const hash = window.location.hash.toLowerCase();
 
       if (path.includes('superadmin') || hash.includes('superadmin')) {
-        if (window.location.hash || window.location.pathname !== '/superadmin') {
-          window.history.replaceState({}, '', '/superadmin');
-        }
         setCurrentRole('super-admin');
         setActiveTab('super-admin');
         return;
@@ -494,9 +491,6 @@ export const App: React.FC = () => {
         hash.includes('regional-admin') || 
         hash.includes('regionaladmin')
       ) {
-        if (window.location.hash || window.location.pathname !== '/regionaladmin') {
-          window.history.replaceState({}, '', '/regionaladmin');
-        }
         const activeAdmin = getActiveRegionalAdmin();
         setActiveRegionalAdminState(activeAdmin);
         setCurrentRole('regional-admin');

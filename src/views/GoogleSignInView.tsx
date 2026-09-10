@@ -265,9 +265,70 @@ export const GoogleSignInView: React.FC<GoogleSignInViewProps> = ({
             <span>{isRedirecting ? 'Connecting to Google Accounts...' : t.googleBtn}</span>
           </button>
 
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => setShowAccountModal(true)}
+            style={{
+              fontSize: '12px',
+              color: 'var(--color-primary)',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              marginTop: '4px'
+            }}
+            title="Alternative quick sign-in for testing or offline demonstration"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>account_circle</span>
+            <span>Testing / Quick Demo Sign-In</span>
+          </button>
+
           <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
             {t.securityNotice}
           </span>
+        </div>
+
+        {/* Relief Officer Quick Access */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '8px 16px',
+          backgroundColor: 'var(--color-surface-low)',
+          borderRadius: 'var(--radius-full)',
+          border: '1px solid var(--color-outline-variant)',
+          fontSize: '12px',
+          color: 'var(--color-on-surface-variant)'
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '15px', color: 'var(--color-secondary)' }}>admin_panel_settings</span>
+          <span style={{ fontWeight: 600 }}>Relief Official / Admin?</span>
+          <a
+            href="/regionaladmin"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/regionaladmin');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{ color: 'var(--color-secondary)', fontWeight: 700, textDecoration: 'none' }}
+          >
+            Regional Admin Portal &rarr;
+          </a>
+          <span>•</span>
+          <a
+            href="/superadmin"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/superadmin');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}
+          >
+            Super Admin Command &rarr;
+          </a>
         </div>
 
         {/* Feature Preview Callout */}
