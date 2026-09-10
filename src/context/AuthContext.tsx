@@ -37,27 +37,75 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Initialize session
   useEffect(() => {
     const initAuth = async () => {
-      // Check active local or Supabase session
-      if (isSupabaseConfigured) {
+      try {
+        if (!isSupabaseConfigured) {
+          const stored = getActiveGoogleUser();
+          setUser(stored);
+          setIsLoading(false);
+          return;
+        }
+
+        // 1. Check for OAuth callback code in URL search parameters (PKCE flow)
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get('code');
+        const errorDesc = searchParams.get('error_description') || searchParams.get('error');
+
+        if (errorDesc) {
+          console.warn('Google OAuth redirected with notice:', errorDesc);
+          window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+        }
+
+        if (code) {
+          try {
+            const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+            // Clean up the URL search params so ?code= is removed from address bar
+            window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+            if (data?.session?.user) {
+              const u = data.session.user;
+              const profile: GoogleUserProfile = {
+                id: u.id,
+                email: u.email || '',
+                fullName: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Citizen Applicant',
+                avatarUrl: u.user_metadata?.avatar_url || u.user_metadata?.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.email || 'CA')}`,
+                provider: 'google'
+              };
+              localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
+              setUser(profile);
+              setIsLoading(false);
+              return;
+            }
+          } catch (exchangeErr) {
+            console.warn('OAuth code exchange notice:', exchangeErr);
+          }
+        }
+
+        // 2. Check active Supabase session
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+          const u = session.user;
           const profile: GoogleUserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            fullName: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Citizen Applicant',
-            avatarUrl: session.user.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+            id: u.id,
+            email: u.email || '',
+            fullName: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Citizen Applicant',
+            avatarUrl: u.user_metadata?.avatar_url || u.user_metadata?.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.email || 'CA')}`,
             provider: 'google'
           };
+          localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
           setUser(profile);
           setIsLoading(false);
           return;
         }
-      }
 
-      // Check stored session
-      const stored = getActiveGoogleUser();
-      setUser(stored);
-      setIsLoading(false);
+        // 3. Check stored local session
+        const stored = getActiveGoogleUser();
+        setUser(stored);
+      } catch (err) {
+        console.warn('Auth initialization warning:', err);
+        const stored = getActiveGoogleUser();
+        setUser(stored);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     initAuth();
@@ -66,16 +114,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isSupabaseConfigured) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session?.user) {
+          const u = session.user;
           const profile: GoogleUserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            fullName: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Citizen Applicant',
-            avatarUrl: session.user.user_metadata?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+            id: u.id,
+            email: u.email || '',
+            fullName: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Citizen Applicant',
+            avatarUrl: u.user_metadata?.avatar_url || u.user_metadata?.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.email || 'CA')}`,
             provider: 'google'
           };
+          localStorage.setItem('sahayasetu_google_user', JSON.stringify(profile));
           setUser(profile);
-        } else {
+        } else if (_event === 'SIGNED_OUT') {
           setUser(null);
+          localStorage.removeItem('sahayasetu_google_user');
         }
       });
 

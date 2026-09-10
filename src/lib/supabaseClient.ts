@@ -17,11 +17,14 @@
 
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 
-const SUPABASE_URL = ((import.meta as any).env?.VITE_SUPABASE_URL as string) || '';
+const SUPABASE_URL = 
+  ((import.meta as any).env?.VITE_SUPABASE_URL as string) || 
+  'https://lftospgdzrwkvhbalkti.supabase.co';
+
 const SUPABASE_ANON_KEY = 
   ((import.meta as any).env?.VITE_SUPABASE_ANON_KEY as string) || 
   ((import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY as string) || 
-  '';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmdG9zcGdkenJ3a3ZoYmFsa3RpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzEzNzUsImV4cCI6MjEwNDUwNzM3NX0.WxodujO6OixJlZTTGl6l_FlbJkKCm-3HuNq5gJ265B8';
 
 // Verify if live Supabase credentials are configured
 export const isSupabaseConfigured = Boolean(
@@ -45,7 +48,7 @@ export interface GoogleUserProfile {
   provider: 'google';
 }
 
-const LOCAL_STORAGE_USER_KEY = 'sahayasetu_google_user';
+export const LOCAL_STORAGE_USER_KEY = 'sahayasetu_google_user';
 
 /**
  * Initiates genuine Google OAuth Sign-In via Supabase.
@@ -53,10 +56,15 @@ const LOCAL_STORAGE_USER_KEY = 'sahayasetu_google_user';
  */
 export const signInWithGoogle = async (): Promise<void> => {
   if (isSupabaseConfigured) {
+    const redirectUrl = window.location.origin;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account'
+        }
       }
     });
     if (error) {
@@ -68,7 +76,7 @@ export const signInWithGoogle = async (): Promise<void> => {
     }
     return;
   }
-  throw new Error('Supabase authentication is not configured in .env.');
+  throw new Error('Supabase authentication is not configured.');
 };
 
 /**
