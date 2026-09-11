@@ -45,7 +45,7 @@ const TRANSLATIONS: Record<RegistrationLanguage, {
   quickTestChipLabel: string;
 }> = {
   EN: {
-    languageLabel: 'Select Language / ഭാഷ / மொழி:',
+    languageLabel: 'Select Language / ഭാഷ:',
     badge: 'Official Disaster Relief Identity Gateway',
     title: 'SahayaSetu Citizen Assistance Portal',
     subtitle: 'Sign in with your Google account to access disaster relief registration and live application tracking.',

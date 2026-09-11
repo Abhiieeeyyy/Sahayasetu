@@ -18,12 +18,15 @@ import {
   DistrictTenant, 
   Beneficiary, 
   RegionalAdminAccount, 
-  RegionDisaster 
+  RegionDisaster,
+  SuperAdminTab
 } from '../types';
-import { persistRegionalAdmin } from '../services/supabaseService';
+import { persistRegionalAdmin, deleteRegionalAdminFromDb } from '../services/supabaseService';
 import { 
   getStoredRegionalAdmins, 
   saveStoredRegionalAdmins, 
+  getActiveRegionalAdmin,
+  setActiveRegionalAdmin,
   purgeAllUserData 
 } from '../services/regionalAdminService';
 import {
@@ -35,6 +38,8 @@ import {
 interface SuperAdminCommandViewProps {
   districts: DistrictTenant[];
   beneficiaries: Beneficiary[];
+  activeTabProp?: SuperAdminTab;
+  onTabChange?: (tab: SuperAdminTab) => void;
   onAddDistrict?: (district: DistrictTenant) => void;
   onUpdateDistrict?: (district: DistrictTenant) => void;
   onUpdateBeneficiary?: (beneficiary: Beneficiary) => void;
@@ -42,12 +47,6 @@ interface SuperAdminCommandViewProps {
   onDeleteBeneficiary?: (beneficiaryId: string) => void;
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info' | 'error') => void;
 }
-
-type SuperAdminTab = 
-  | 'ngo-creation' 
-  | 'region-analysis' 
-  | 'admin-management' 
-  | 'add-disasters';
 
 // ----------------------------------------------------------------------------
 // LOCAL STORAGE KEYS & INITIAL SEED DATA
@@ -161,6 +160,8 @@ const INITIAL_REGIONAL_DISASTERS: RegionDisaster[] = [
 export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
   districts,
   beneficiaries,
+  activeTabProp,
+  onTabChange,
   onUpdateDistrict,
   onUpdateBeneficiary,
   onPurgeAllBeneficiaries,
@@ -170,7 +171,22 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
   // --------------------------------------------------------------------------
   // ACTIVE MODULE TAB
   // --------------------------------------------------------------------------
-  const [activeTab, setActiveTab] = useState<SuperAdminTab>('ngo-creation');
+  const [activeTab, setActiveTab] = useState<SuperAdminTab>(activeTabProp || 'admin-management');
+
+  useEffect(() => {
+    if (activeTabProp) {
+      setActiveTab(activeTabProp);
+    } else if (activeTab === 'region-analysis') {
+      setActiveTab('admin-management');
+    }
+  }, [activeTabProp]);
+
+  const handleTabChange = (tab: SuperAdminTab) => {
+    setActiveTab(tab);
+    if (onTabChange) {
+      onTabChange(tab);
+    }
+  };
 
   // --------------------------------------------------------------------------
   // PERSISTENT ENTITIES: REGIONAL ADMINS & DISASTERS
@@ -404,42 +420,66 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
     });
   }, [regionalAdmins, adminSearchQuery, adminRegionFilter, adminStatusFilter]);
 
-  const handleToggleAdminStatus = (adminId: string) => {
-    setRegionalAdmins(prev => prev.map(a => {
+  const handleToggleAdminStatus = async (adminId: string) => {
+    let updatedAdmin: RegionalAdminAccount | null = null;
+    let nextStatus: 'Active' | 'Suspended' = 'Suspended';
+
+    const nextAdmins = regionalAdmins.map(a => {
       if (a.id === adminId) {
-        const nextStatus = a.status === 'Active' ? 'Suspended' : 'Active';
-        onShowToast(
-          'Admin Status Updated',
-          `${a.name} is now ${nextStatus}.`,
-          nextStatus === 'Active' ? 'success' : 'warning'
-        );
-        return { ...a, status: nextStatus };
+        nextStatus = a.status === 'Active' ? 'Suspended' : 'Active';
+        updatedAdmin = { ...a, status: nextStatus };
+        return updatedAdmin;
       }
       return a;
-    }));
-  };
+    });
 
-  const handleResetAdminAccessKey = (adminId: string) => {
-    const freshKey = `RST-${Math.floor(100000 + Math.random() * 900000)}`;
-    setRegionalAdmins(prev => prev.map(a => {
-      if (a.id === adminId) {
-        onShowToast(
-          'Access Key Reset',
-          `New security passcode generated for ${a.name}: ${freshKey}`,
-          'info'
-        );
-        return { ...a, accessKey: freshKey };
+    setRegionalAdmins(nextAdmins);
+    saveStoredRegionalAdmins(nextAdmins);
+
+    if (updatedAdmin) {
+      // 1. Sync updated status to Supabase database table
+      await persistRegionalAdmin(updatedAdmin);
+
+      // 2. If suspended, check if this admin is currently logged in and terminate session immediately
+      if (nextStatus === 'Suspended') {
+        const active = getActiveRegionalAdmin();
+        if (active && (active.id === adminId || active.officerCredentialId === (updatedAdmin as RegionalAdminAccount).officerCredentialId)) {
+          setActiveRegionalAdmin(null);
+        }
       }
-      return a;
-    }));
+
+      const finalStatus = (updatedAdmin as RegionalAdminAccount).status;
+      onShowToast(
+        'Admin Status Updated',
+        `${(updatedAdmin as RegionalAdminAccount).name} is now ${finalStatus}.${finalStatus === 'Suspended' ? ' Active login sessions terminated.' : ''}`,
+        finalStatus === 'Active' ? 'success' : 'warning'
+      );
+    }
   };
 
-  const handleDeleteAdmin = (adminId: string) => {
+  const handleDeleteAdmin = async (adminId: string) => {
     const admin = regionalAdmins.find(a => a.id === adminId);
     if (!admin) return;
-    if (window.confirm(`Revoke credentials and remove regional admin ${admin.name}?`)) {
-      setRegionalAdmins(prev => prev.filter(a => a.id !== adminId));
-      onShowToast('Regional Admin Revoked', `Credentials for ${admin.name} have been revoked.`, 'error');
+    if (window.confirm(`Revoke credentials and permanently delete regional admin ${admin.name} from the database? This action cannot be undone.`)) {
+      // 1. Terminate active session if this admin is currently logged in
+      const active = getActiveRegionalAdmin();
+      if (active && (active.id === adminId || active.officerCredentialId === admin.officerCredentialId)) {
+        setActiveRegionalAdmin(null);
+      }
+
+      // 2. Remove from local state and update localStorage
+      const remainingAdmins = regionalAdmins.filter(a => a.id !== adminId);
+      setRegionalAdmins(remainingAdmins);
+      saveStoredRegionalAdmins(remainingAdmins);
+
+      // 3. Delete permanently from Supabase database `regional_admins` table
+      await deleteRegionalAdminFromDb(adminId);
+
+      onShowToast(
+        'Regional Admin Deleted', 
+        `Administrator ${admin.name} has been deleted entirely from the database.`, 
+        'error'
+      );
     }
   };
 
@@ -581,113 +621,105 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       {/* ----------------------------------------------------------------------
-       * TOP BANNER & 5-TAB GOVERNANCE SUITE NAVIGATION
+       * TOP BANNER & 3-MODULE SUITE TAB BAR (Hidden in Region Wise Analysis Section)
        * ---------------------------------------------------------------------- */}
-      <div style={{
-        backgroundColor: 'var(--color-surface-lowest)',
-        border: '1px solid var(--color-outline-variant)',
-        borderRadius: 'var(--radius-xl)',
-        padding: 'var(--space-lg)',
-        boxShadow: 'var(--shadow-sm)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-md)'
-      }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-md)' }}>
-          <div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <span className="badge" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>admin_panel_settings</span>
-                <span>Super Administrator Authority</span>
-              </span>
-              <span className="badge badge-rls">
-                Statewide Command &amp; Multi-Jurisdiction
-              </span>
+      {activeTab !== 'region-analysis' && (
+        <div style={{
+          backgroundColor: 'var(--color-surface-lowest)',
+          border: '1px solid var(--color-outline-variant)',
+          borderRadius: 'var(--radius-xl)',
+          padding: 'var(--space-lg)',
+          boxShadow: 'var(--shadow-sm)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-md)'
+        }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-md)' }}>
+            <div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span className="badge" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>admin_panel_settings</span>
+                  <span>Super Administrator Authority</span>
+                </span>
+                <span className="badge badge-rls">
+                  Statewide Command &amp; Multi-Jurisdiction
+                </span>
+              </div>
+
+              <h1 style={{ fontSize: '1.75rem', color: 'var(--color-primary)' }}>
+                Super Admin Statewide Disaster Control Suite
+              </h1>
+              <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--color-on-surface-variant)' }}>
+                Manage accredited NGO regional admins, monitor live region-wise telemetry, and coordinate regional disasters.
+              </p>
             </div>
 
-            <h1 style={{ fontSize: '1.75rem', color: 'var(--color-primary)' }}>
-              Super Admin Statewide Disaster Control Suite
-            </h1>
-            <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--color-on-surface-variant)' }}>
-              Manage accredited NGO regional admins, monitor live region-wise telemetry, and coordinate regional disasters.
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="badge badge-verified" style={{ fontSize: '11px', padding: '6px 12px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-tertiary)' }} />
+                <span>Full Cross-Region Access Active</span>
+              </span>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-verified" style={{ fontSize: '11px', padding: '6px 12px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-tertiary)' }} />
-              <span>Full Cross-Region Access Active</span>
-            </span>
+          {/* 3-MODULE TAB NAVIGATION BAR */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px',
+            paddingTop: 'var(--space-sm)',
+            borderTop: '1px solid var(--color-outline-variant)'
+          }}>
+            {/* Tab 1: Regional Admin Management */}
+            <button
+              onClick={() => handleTabChange('admin-management')}
+              className={`btn ${activeTab === 'admin-management' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>manage_accounts</span>
+              <span>1. Regional Admin Management</span>
+              <span className="badge" style={{ 
+                marginLeft: '4px', 
+                backgroundColor: activeTab === 'admin-management' ? 'rgba(255,255,255,0.25)' : 'var(--color-surface-container)',
+                color: activeTab === 'admin-management' ? 'white' : 'var(--color-primary)',
+                fontSize: '11px',
+                padding: '2px 6px'
+              }}>
+                {regionalAdmins.length}
+              </span>
+            </button>
+
+            {/* Tab 2: Regional Admin Creation */}
+            <button
+              onClick={() => handleTabChange('ngo-creation')}
+              className={`btn ${activeTab === 'ngo-creation' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person_add</span>
+              <span>2. Regional Admin Creation</span>
+            </button>
+
+            {/* Tab 3: Disaster Listing */}
+            <button
+              onClick={() => handleTabChange('add-disasters')}
+              className={`btn ${activeTab === 'add-disasters' ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>crisis_alert</span>
+              <span>3. Disaster Listing</span>
+              <span className="badge" style={{ 
+                marginLeft: '4px', 
+                backgroundColor: activeTab === 'add-disasters' ? 'rgba(255,255,255,0.25)' : 'var(--color-surface-container)',
+                color: activeTab === 'add-disasters' ? 'white' : 'var(--color-primary)',
+                fontSize: '11px',
+                padding: '2px 6px'
+              }}>
+                {disasters.length}
+              </span>
+            </button>
           </div>
         </div>
-
-        {/* 4-MODULE TAB NAVIGATION BAR */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-          paddingTop: 'var(--space-sm)',
-          borderTop: '1px solid var(--color-outline-variant)'
-        }}>
-          {/* Tab 1: NGO Regional Admin Creation */}
-          <button
-            onClick={() => setActiveTab('ngo-creation')}
-            className={`btn ${activeTab === 'ngo-creation' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person_add</span>
-            <span>1. NGO Regional Admin Creation</span>
-          </button>
-
-          {/* Tab 2: Region-Wise Data Analysis */}
-          <button
-            onClick={() => setActiveTab('region-analysis')}
-            className={`btn ${activeTab === 'region-analysis' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>analytics</span>
-            <span>2. Region Wise Data Analysis</span>
-          </button>
-
-          {/* Tab 3: Regional Admin Management */}
-          <button
-            onClick={() => setActiveTab('admin-management')}
-            className={`btn ${activeTab === 'admin-management' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>manage_accounts</span>
-            <span>3. Regional Admin Management</span>
-            <span className="badge" style={{ 
-              marginLeft: '4px', 
-              backgroundColor: activeTab === 'admin-management' ? 'rgba(255,255,255,0.25)' : 'var(--color-surface-container)',
-              color: activeTab === 'admin-management' ? 'white' : 'var(--color-primary)',
-              fontSize: '11px',
-              padding: '2px 6px'
-            }}>
-              {regionalAdmins.length}
-            </span>
-          </button>
-
-          {/* Tab 4: Adding Disaster in Each Region */}
-          <button
-            onClick={() => setActiveTab('add-disasters')}
-            className={`btn ${activeTab === 'add-disasters' ? 'btn-primary' : 'btn-ghost'}`}
-            style={{ fontSize: '13px', padding: '8px 14px', borderRadius: 'var(--radius-md)' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>crisis_alert</span>
-            <span>4. Adding Disaster in Each Region</span>
-            <span className="badge" style={{ 
-              marginLeft: '4px', 
-              backgroundColor: activeTab === 'add-disasters' ? 'rgba(255,255,255,0.25)' : 'var(--color-surface-container)',
-              color: activeTab === 'add-disasters' ? 'white' : 'var(--color-primary)',
-              fontSize: '11px',
-              padding: '2px 6px'
-            }}>
-              {disasters.length}
-            </span>
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* ======================================================================
        * 1. NGO REGIONAL ADMIN CREATION
@@ -1476,16 +1508,6 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
                             style={{ minHeight: '30px', padding: '0 8px', fontSize: '11px' }}
                           >
                             {admin.status === 'Active' ? 'Suspend' : 'Activate'}
-                          </button>
-
-                          {/* Reset Password */}
-                          <button
-                            className="btn btn-ghost btn-sm"
-                            onClick={() => handleResetAdminAccessKey(admin.id)}
-                            title="Generate fresh district password"
-                            style={{ minHeight: '30px', padding: '0 6px' }}
-                          >
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>key</span>
                           </button>
 
                           {/* Edit Details */}

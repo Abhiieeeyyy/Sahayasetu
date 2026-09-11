@@ -26,6 +26,7 @@ export type NavigationTab =
   | 'beneficiary-intake'     // BPI: Field intake and live roster
   | 'skill-matching'         // JME: Civil reconstruction dispatch & match engine
   | 'super-admin'            // SGA: Statewide multi-tenant command center
+  | 'region-analysis'        // SGA: Region-wise disaster and relief telemetry analysis
   | 'self-portal'            // Beneficiary wage and active assignment portal
   | 'registration'           // Rapid onboarding dossier (Citizen / Officer)
   | 'citizen-dashboard';     // Logged-in citizen view & readiness status
@@ -45,6 +46,15 @@ export type UserRole =
  * Supported local languages for citizen registration (English and Malayalam only).
  */
 export type RegistrationLanguage = 'EN' | 'ML';
+
+/**
+ * Super Admin Command Center functional tabs.
+ */
+export type SuperAdminTab = 
+  | 'admin-management' 
+  | 'ngo-creation' 
+  | 'add-disasters'
+  | 'region-analysis';
 
 /**
  * Regional administrator credentials provisioned strictly by Super Admin for each Kerala district.

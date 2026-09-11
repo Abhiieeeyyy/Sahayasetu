@@ -211,15 +211,17 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* SOS Emergency Call Button */}
-        <button 
-          className="btn btn-sm btn-error" 
-          onClick={onTriggerSos}
-          title="Emergency Disaster Relief Helpline (1077)"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>sos</span>
-          <span>Helpline 1077</span>
-        </button>
+        {/* SOS Emergency Call Button (Hidden for Super Admin) */}
+        {currentRole !== 'super-admin' && (
+          <button 
+            className="btn btn-sm btn-error" 
+            onClick={onTriggerSos}
+            title="Emergency Disaster Relief Helpline (1077)"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>sos</span>
+            <span>Helpline 1077</span>
+          </button>
+        )}
 
         {/* Authenticated Citizen User Status Bar (ONLY for Citizen Role - Admin is NOT a User) */}
         {currentRole === 'citizen-user' && isAuthenticated && user && (

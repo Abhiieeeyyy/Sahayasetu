@@ -263,6 +263,30 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
   const [bankIfsc, setBankIfsc] = useState(() => existingBeneficiary?.bankIfsc || '');
   const [emergencyContact, setEmergencyContact] = useState(() => existingBeneficiary?.emergencyContact || '');
 
+  // Custom / Unlisted Skills State
+  const [customSkills, setCustomSkills] = useState<string[]>(() => {
+    if (existingBeneficiary?.skills) {
+      return (existingBeneficiary.skills as string[]).filter(s => !ALL_SKILLS.includes(s as any));
+    }
+    return [];
+  });
+  const [customSkillInput, setCustomSkillInput] = useState<string>('');
+
+  const handleAddCustomSkill = () => {
+    const trimmed = customSkillInput.trim();
+    if (!trimmed) return;
+    if (customSkills.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+      setCustomSkillInput('');
+      return;
+    }
+    setCustomSkills(prev => [...prev, trimmed]);
+    setCustomSkillInput('');
+  };
+
+  const handleRemoveCustomSkill = (index: number) => {
+    setCustomSkills(prev => prev.filter((_, i) => i !== index));
+  };
+
   // Synchronize form with existingBeneficiary when it changes or when user logs in
   useEffect(() => {
     if (existingBeneficiary) {
@@ -274,6 +298,10 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
       if (existingBeneficiary.jobPriorities?.[0]) setPriority1(existingBeneficiary.jobPriorities[0] as VocationalSkill);
       if (existingBeneficiary.jobPriorities?.[1]) setPriority2(existingBeneficiary.jobPriorities[1] as VocationalSkill);
       if (existingBeneficiary.jobPriorities?.[2]) setPriority3(existingBeneficiary.jobPriorities[2] as VocationalSkill);
+      if (existingBeneficiary.skills) {
+        const custom = (existingBeneficiary.skills as string[]).filter(s => !ALL_SKILLS.includes(s as any));
+        setCustomSkills(custom);
+      }
       if (existingBeneficiary.experienceYears !== undefined) setExperienceYears(existingBeneficiary.experienceYears);
       setBankAccount(existingBeneficiary.bankAccount || '');
       setBankIfsc(existingBeneficiary.bankIfsc || '');
@@ -418,6 +446,9 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
     const calamityType = chosenDisaster?.disasterType || 'Landslide';
     const calamityTitle = chosenDisaster ? `${chosenDisaster.regionName}: ${chosenDisaster.title}` : 'Kerala Flood/Landslide Relief';
 
+    const combinedSkills = Array.from(new Set([priority1, priority2, priority3, ...customSkills])) as any;
+    const combinedPriorities = Array.from(new Set([priority1, priority2, priority3, ...customSkills]));
+
     if (existingBeneficiary) {
       // UPDATE EXISTING BENEFICIARY APPLICATION
       const updatedBeneficiary: Beneficiary = {
@@ -433,8 +464,8 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
         campId: campName.trim() || existingBeneficiary.campId,
         calamity: calamityType,
         calamityTitle: calamityTitle,
-        skills: Array.from(new Set([priority1, priority2, priority3])),
-        jobPriorities: [priority1, priority2, priority3],
+        skills: combinedSkills,
+        jobPriorities: combinedPriorities,
         experienceYears,
         emergencyContact: emergencyContact.trim() || existingBeneficiary.emergencyContact,
         bankAccount: bankAccount.trim() || existingBeneficiary.bankAccount,
@@ -466,8 +497,8 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
       campId: campName.trim() || `${selectedDistrict} Relief Shelter`,
       calamity: calamityType,
       calamityTitle: calamityTitle,
-      skills: Array.from(new Set([priority1, priority2, priority3])),
-      jobPriorities: [priority1, priority2, priority3],
+      skills: combinedSkills,
+      jobPriorities: combinedPriorities,
       relationshipToAccount: 'Self',
       experienceYears,
       livingStatus: 'Relief Camp',
@@ -825,6 +856,89 @@ export const UserRegistrationView: React.FC<UserRegistrationViewProps> = ({
                     <option key={skill} value={skill}>{t.skills[skill]}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Custom / Unlisted Skills Entry Section */}
+              <div style={{
+                marginTop: '6px',
+                paddingTop: '10px',
+                borderTop: '1px dashed var(--color-outline-variant)'
+              }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-on-surface)', display: 'block', marginBottom: '2px' }}>
+                  {language === 'ML' ? 'പട്ടികയിൽ ഇല്ലാത്ത മറ്റ് തൊഴിൽ നൈപുണ്യങ്ങൾ (Unlisted Custom Skills)' : 'Other Unlisted Vocational Skills & Specializations'}
+                </label>
+                <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginBottom: '8px' }}>
+                  {language === 'ML'
+                    ? 'മുകളിലെ മുൻഗണനാ പട്ടികയിൽ ഇല്ലാത്ത അധിക തൊഴിൽ പരിചയം രേഖപ്പെടുത്താം (ഉദാ: വെൽഡിംഗ്, ബോട്ട് ഓപ്പറേഷൻ, കാറ്ററിംഗ്...)'
+                    : 'Enter any additional craft skills or trade specialties not listed in the options above:'}
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder={language === 'ML' ? 'ഉദാ: വെൽഡിംഗ്, തെങ്ങുകയറ്റം, ബോട്ട് ഓപ്പറേഷൻ...' : 'e.g., Arc Welding, Coconut Tree Climbing, Boat Operation, Catering, Tailoring...'}
+                    value={customSkillInput}
+                    onChange={(e) => setCustomSkillInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCustomSkill();
+                      }
+                    }}
+                    style={{ fontSize: '12.5px', flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleAddCustomSkill}
+                    style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px', padding: '0 12px' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                    <span>{language === 'ML' ? 'ചേർക്കുക' : 'Add Skill'}</span>
+                  </button>
+                </div>
+
+                {customSkills.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                    {customSkills.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="badge"
+                        style={{
+                          backgroundColor: 'var(--color-primary-container)',
+                          color: 'var(--color-on-primary-container)',
+                          padding: '4px 8px',
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          fontSize: '11px',
+                          fontWeight: 700
+                        }}
+                      >
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCustomSkill(idx)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--color-on-primary-container)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: 0,
+                            lineHeight: 1
+                          }}
+                          title="Remove skill"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>close</span>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Experience and Wage */}

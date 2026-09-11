@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { NavigationTab, UserRole, RegionalAdminAccount } from '../types';
+import { NavigationTab, UserRole, RegionalAdminAccount, SuperAdminTab } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -29,6 +29,8 @@ interface SidebarProps {
   onRegionalAdminLogout?: () => void;
   isSuperAdminAuthenticated?: boolean;
   onSuperAdminLogout?: () => void;
+  superAdminSubTab?: SuperAdminTab;
+  onSelectSuperAdminSubTab?: (subTab: SuperAdminTab) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -39,7 +41,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenEditCredentials,
   onRegionalAdminLogout,
   isSuperAdminAuthenticated = false,
-  onSuperAdminLogout
+  onSuperAdminLogout,
+  superAdminSubTab = 'admin-management',
+  onSelectSuperAdminSubTab
 }) => {
   const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
@@ -253,6 +257,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
                     <span>Command Center</span>
+                  </button>
+
+                  <button
+                    onClick={() => onSelectTab('region-analysis')}
+                    className={`btn ${activeTab === 'region-analysis' ? 'btn-primary' : 'btn-ghost'}`}
+                    style={{ justifyContent: 'flex-start', width: '100%', textAlign: 'left' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>analytics</span>
+                    <span>Region Wise Data Analysis</span>
                   </button>
 
                   <button

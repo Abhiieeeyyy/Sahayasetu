@@ -328,6 +328,58 @@ export const fetchRegionalAdminsFromDb = async (): Promise<RegionalAdminAccount[
 };
 
 /**
+ * Deletes a regional admin permanently from the Supabase `regional_admins` table.
+ */
+export const deleteRegionalAdminFromDb = async (adminId: string): Promise<boolean> => {
+  if (!isSupabaseConfigured) return true;
+
+  try {
+    const { error } = await supabase
+      .from('regional_admins')
+      .delete()
+      .eq('id', adminId);
+
+    if (error) {
+      console.warn('Supabase delete regional admin error:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('Supabase delete regional admin error:', err);
+    return false;
+  }
+};
+
+/**
+ * Subscribes to real-time changes on the `regional_admins` table in Supabase.
+ */
+export const subscribeToRegionalAdminsRealtime = (
+  onUpdate: () => void
+): (() => void) => {
+  if (!isSupabaseConfigured) return () => {};
+
+  try {
+    const channel = supabase
+      .channel('regional_admins_realtime_channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'regional_admins' },
+        () => {
+          onUpdate();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.warn('Realtime regional admins subscribe notice:', err);
+    return () => {};
+  }
+};
+
+/**
  * Fetches all job posts from the Supabase `job_posts` (or `job_listings`) table.
  */
 export const fetchJobPostsFromDb = async (): Promise<JobRequisition[]> => {

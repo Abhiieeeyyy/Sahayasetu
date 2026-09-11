@@ -34,7 +34,8 @@ import {
   DistrictTenant, 
   WageEntry, 
   ToastNotification,
-  RegionalAdminAccount
+  RegionalAdminAccount,
+  SuperAdminTab
 } from './types';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -56,12 +57,14 @@ import {
   setActiveRegionalAdmin, 
   getStoredRegionalAdmins,
   saveStoredRegionalAdmins,
+  validateActiveRegionalAdminSession,
   purgeAllUserData, 
   BENEFICIARIES_STORAGE_KEY 
 } from './services/regionalAdminService';
 import { 
   persistBeneficiary, 
   persistJobApproval, 
+  persistJobPost,
   fetchAllBeneficiaries, 
   fetchRegionalAdminsFromDb,
   fetchJobPostsFromDb,
@@ -69,11 +72,13 @@ import {
   purgeAllUsersFromDb,
   deleteBeneficiaryFromDb,
   subscribeToUsersRealtime,
-  subscribeToAllEntitiesRealtime
+  subscribeToAllEntitiesRealtime,
+  subscribeToRegionalAdminsRealtime
 } from './services/supabaseService';
 import { isSupabaseConfigured } from './lib/supabaseClient';
 import { useAuth } from './context/AuthContext';
 import { useLanguage } from './context/LanguageContext';
+import { revertCitizenJobAssignment } from './services/notificationService';
 
 // ----------------------------------------------------------------------------
 // FRESH HUMANITARIAN DATA
@@ -436,6 +441,7 @@ export const App: React.FC = () => {
   const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
   const [isCloudSyncing, setIsCloudSyncing] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastNotification | null>(null);
+  const [superAdminSubTab, setSuperAdminSubTab] = useState<SuperAdminTab>('admin-management');
 
   // Authenticated user from Supabase Google Auth Context
   const { user, isAuthenticated } = useAuth();
@@ -518,19 +524,53 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Listen for admin session changes and user data purges
+  // Listen for admin session changes, status updates (suspension/revocation), and user data purges
   useEffect(() => {
     const handleAdminSync = () => {
-      setActiveRegionalAdminState(getActiveRegionalAdmin());
+      const validation = validateActiveRegionalAdminSession();
+      if (!validation.isValid) {
+        setActiveRegionalAdminState(null);
+        if (currentRole === 'regional-admin' && validation.reason) {
+          showToast(
+            'Session Terminated',
+            validation.reason === 'suspended'
+              ? 'Your regional administrator credentials have been SUSPENDED by the Super Admin. You have been logged out and cannot log in until re-activated.'
+              : 'Your regional administrator account has been deleted by the Super Admin. You have been logged out.',
+            'error'
+          );
+        }
+      } else {
+        setActiveRegionalAdminState(validation.admin);
+      }
     };
+
     const handleDataPurgeSync = () => {
       setBeneficiaries([]);
     };
+
     window.addEventListener('sahayasetu_active_admin_updated', handleAdminSync);
+    window.addEventListener('sahayasetu_admins_updated', handleAdminSync);
+    window.addEventListener('storage', handleAdminSync);
     window.addEventListener('sahayasetu_data_purged', handleDataPurgeSync);
+
     return () => {
       window.removeEventListener('sahayasetu_active_admin_updated', handleAdminSync);
+      window.removeEventListener('sahayasetu_admins_updated', handleAdminSync);
+      window.removeEventListener('storage', handleAdminSync);
       window.removeEventListener('sahayasetu_data_purged', handleDataPurgeSync);
+    };
+  }, [currentRole]);
+
+  // Real-time synchronization of regional admins from Supabase database
+  useEffect(() => {
+    const unsubscribe = subscribeToRegionalAdminsRealtime(async () => {
+      const liveAdmins = await fetchRegionalAdminsFromDb();
+      if (liveAdmins && liveAdmins.length > 0) {
+        saveStoredRegionalAdmins(liveAdmins);
+      }
+    });
+    return () => {
+      unsubscribe();
     };
   }, []);
 
@@ -737,6 +777,14 @@ export const App: React.FC = () => {
   // Add new requisition
   const handleAddRequisition = (newReq: JobRequisition) => {
     setRequisitions([newReq, ...requisitions]);
+    persistJobPost(newReq);
+  };
+
+  // Update existing requisition
+  const handleUpdateRequisition = (updatedReq: JobRequisition) => {
+    setRequisitions(prev => prev.map(r => r.id === updatedReq.id ? updatedReq : r));
+    persistJobPost(updatedReq);
+    showToast('Job Requisition Updated', `Requisition "${updatedReq.title}" has been updated.`, 'success');
   };
 
   // Dispatch candidate to requisition
@@ -786,6 +834,68 @@ export const App: React.FC = () => {
 
     // Persist job approval and audit trail
     persistJobApproval(reqId, beneficiaryId);
+  };
+
+  // Revert/Undo candidate dispatch (restore to Available, decrement requisition count, clear assignment, delete notification)
+  const handleRevertDispatch = (arg1: string, arg2?: string) => {
+    // Gracefully handle either (beneficiaryId, reqId) or (reqId, beneficiaryId)
+    let beneficiaryId = arg1;
+    let reqId = arg2;
+
+    if (arg2 && beneficiaries.some(b => b.id === arg2)) {
+      beneficiaryId = arg2;
+      reqId = arg1;
+    }
+
+    const benToRevert = beneficiaries.find(b => b.id === beneficiaryId);
+    if (!benToRevert) return;
+
+    // Find the associated requisition either by reqId or by matching assignedProjectId
+    const targetReq = requisitions.find(r => 
+      (reqId && r.id === reqId) || 
+      r.id === benToRevert.assignedProjectId || 
+      r.title === benToRevert.assignedProjectId
+    );
+
+    // 1. Decrement requisition assigned headcount and re-open if needed
+    if (targetReq) {
+      const updatedReq: JobRequisition = {
+        ...targetReq,
+        assignedCount: Math.max(0, targetReq.assignedCount - 1),
+        status: 'Open'
+      };
+      setRequisitions(prev => prev.map(r => r.id === targetReq.id ? updatedReq : r));
+      persistJobPost(updatedReq);
+    }
+
+    // 2. Restore candidate placement status to Available and clear project assignment
+    const updatedBen: Beneficiary = {
+      ...benToRevert,
+      placementStatus: 'Available',
+      assignedProjectId: undefined,
+      assignedWorksite: undefined
+    };
+
+    setBeneficiaries(prev => {
+      const updated = prev.map(b => b.id === beneficiaryId ? updatedBen : b);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    // 3. Persist updated beneficiary to Supabase
+    persistBeneficiary(updatedBen, updatedBen.authUserId);
+
+    // 4. Clean up active job assignment notification in citizen portal & localStorage
+    revertCitizenJobAssignment(beneficiaryId);
+
+    // 5. User feedback
+    showToast(
+      'Dispatch Assignment Reverted',
+      `Job assignment for ${benToRevert.name} has been undone. Candidate returned to the Available pool.`,
+      'info'
+    );
   };
 
   // Deploy beneficiary from intake table
@@ -952,6 +1062,11 @@ export const App: React.FC = () => {
           onRegionalAdminLogout={handleRegionalAdminLogout}
           isSuperAdminAuthenticated={isSuperAdminAuthenticated}
           onSuperAdminLogout={handleSuperAdminLogout}
+          superAdminSubTab={superAdminSubTab}
+          onSelectSuperAdminSubTab={(subTab) => {
+            setActiveTab('super-admin');
+            setSuperAdminSubTab(subTab);
+          }}
         />
 
         {/* Main Workstation Workspace Area */}
@@ -979,7 +1094,9 @@ export const App: React.FC = () => {
                         requisitions={requisitions}
                         beneficiaries={beneficiaries}
                         onAddRequisition={handleAddRequisition}
+                        onUpdateRequisition={handleUpdateRequisition}
                         onDispatchCandidate={handleDispatchCandidate}
+                        onRevertDispatch={handleRevertDispatch}
                         onShowToast={showToast}
                         currentRole={currentRole}
                         activeRegionalAdmin={activeRegionalAdmin}
@@ -990,6 +1107,7 @@ export const App: React.FC = () => {
                         onAddBeneficiary={handleAddBeneficiary}
                         onDeployBeneficiary={handleDeployBeneficiary}
                         onDeleteBeneficiary={handleDeleteBeneficiary}
+                        onRevertDispatch={handleRevertDispatch}
                         onShowToast={showToast}
                         isOfflineMode={isOfflineMode}
                         currentRole={currentRole}
@@ -1042,11 +1160,20 @@ export const App: React.FC = () => {
                   />
                 ) : (
                   <>
-                    {/* View 1: Statewide Command Center */}
-                    {activeTab === 'super-admin' && (
+                    {/* View 1: Statewide Command Center & Region-Wise Data Analysis */}
+                    {(activeTab === 'super-admin' || activeTab === 'region-analysis') && (
                       <SuperAdminCommandView
                         districts={districts}
                         beneficiaries={beneficiaries}
+                        activeTabProp={activeTab === 'region-analysis' ? 'region-analysis' : superAdminSubTab}
+                        onTabChange={(tab) => {
+                          if (tab === 'region-analysis') {
+                            setActiveTab('region-analysis');
+                          } else {
+                            setActiveTab('super-admin');
+                            setSuperAdminSubTab(tab);
+                          }
+                        }}
                         onAddDistrict={handleAddDistrict}
                         onUpdateDistrict={handleUpdateDistrict}
                         onUpdateBeneficiary={handleUpdateBeneficiary}
@@ -1063,6 +1190,7 @@ export const App: React.FC = () => {
                         onAddBeneficiary={handleAddBeneficiary}
                         onDeployBeneficiary={handleDeployBeneficiary}
                         onDeleteBeneficiary={handleDeleteBeneficiary}
+                        onRevertDispatch={handleRevertDispatch}
                         onShowToast={showToast}
                         isOfflineMode={isOfflineMode}
                         currentRole={currentRole}
@@ -1077,8 +1205,12 @@ export const App: React.FC = () => {
                         requisitions={requisitions}
                         beneficiaries={beneficiaries}
                         onAddRequisition={handleAddRequisition}
+                        onUpdateRequisition={handleUpdateRequisition}
                         onDispatchCandidate={handleDispatchCandidate}
+                        onRevertDispatch={handleRevertDispatch}
                         onShowToast={showToast}
+                        currentRole={currentRole}
+                        activeRegionalAdmin={activeRegionalAdmin}
                       />
                     )}
 

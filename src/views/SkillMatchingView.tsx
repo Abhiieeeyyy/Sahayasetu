@@ -22,13 +22,17 @@
 import React, { useState, useEffect } from 'react';
 import { JobRequisition, Beneficiary, CandidateMatch, UserRole, RegionalAdminAccount } from '../types';
 import { PostNeedModal } from '../components/PostNeedModal';
+import { EditJobModal } from '../components/EditJobModal';
+import { DispatchApprovalModal } from '../components/DispatchApprovalModal';
 import { addCitizenNotification } from '../services/notificationService';
 
 interface SkillMatchingViewProps {
   requisitions: JobRequisition[];
   beneficiaries: Beneficiary[];
   onAddRequisition: (req: JobRequisition) => void;
+  onUpdateRequisition?: (req: JobRequisition) => void;
   onDispatchCandidate: (reqId: string, beneficiaryId: string) => void;
+  onRevertDispatch?: (reqId: string, beneficiaryId: string) => void;
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info', smsCode?: string) => void;
   currentRole?: UserRole;
   activeRegionalAdmin?: RegionalAdminAccount | null;
@@ -38,7 +42,9 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   requisitions,
   beneficiaries,
   onAddRequisition,
+  onUpdateRequisition,
   onDispatchCandidate,
+  onRevertDispatch,
   onShowToast,
   currentRole,
   activeRegionalAdmin
@@ -122,8 +128,15 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   // --------------------------------------------------------------------------
   const [selectedReqId, setSelectedReqId] = useState<string>(scopedRequisitions[0]?.id || '');
   const [isPostNeedOpen, setIsPostNeedOpen] = useState(false);
+  const [editingRequisition, setEditingRequisition] = useState<JobRequisition | null>(null);
   const [isRecomputing, setIsRecomputing] = useState(false);
   const [requisitionSearchQuery, setRequisitionSearchQuery] = useState('');
+
+  const handleSaveEditedRequisition = (updatedReq: JobRequisition) => {
+    if (onUpdateRequisition) {
+      onUpdateRequisition(updatedReq);
+    }
+  };
 
   // Filtered civil requisitions based on search query
   const displayedRequisitions = React.useMemo(() => {
@@ -148,6 +161,18 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
 
   // Active selected requisition object
   const activeReq = displayedRequisitions.find(r => r.id === selectedReqId) || displayedRequisitions[0] || scopedRequisitions.find(r => r.id === selectedReqId) || scopedRequisitions[0];
+
+  // Active reviewing match for pre-dispatch review modal
+  const [reviewingMatch, setReviewingMatch] = useState<CandidateMatch | null>(null);
+
+  // Workers currently assigned to the active requisition
+  const assignedWorkers = React.useMemo(() => {
+    if (!activeReq) return [];
+    return scopedBeneficiaries.filter(b => 
+      b.placementStatus === 'Assigned' && 
+      (b.assignedProjectId === activeReq.id || b.assignedProjectId === activeReq.title)
+    );
+  }, [activeReq, scopedBeneficiaries]);
 
   // --------------------------------------------------------------------------
   // CANDIDATE OVERLAP MATCHING COMPUTATION
@@ -190,6 +215,16 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   // --------------------------------------------------------------------------
   const handleDispatch = (match: CandidateMatch) => {
     if (!activeReq) return;
+
+    // Super Admin cannot dispatch citizens - authority is reserved for Regional Admins
+    if (currentRole === 'super-admin') {
+      onShowToast(
+        'Regional Authority Required',
+        'Super Admin can view dispatch matching, but candidate dispatching is strictly authorized by Regional District Admins.',
+        'warning'
+      );
+      return;
+    }
 
     // 1. Mark candidate assigned and update requisition headcount
     onDispatchCandidate(activeReq.id, match.beneficiary.id);
@@ -545,9 +580,34 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                 >
                   {/* Header Strip */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span className="font-mono" style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', fontWeight: 600 }}>
-                      {req.id}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="font-mono" style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', fontWeight: 600 }}>
+                        {req.id}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingRequisition(req);
+                        }}
+                        title="Edit Job Requisition"
+                        style={{
+                          minHeight: '22px',
+                          padding: '1px 6px',
+                          fontSize: '11px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '2px',
+                          borderRadius: 'var(--radius-sm)',
+                          backgroundColor: 'var(--color-surface-low)',
+                          border: '1px solid var(--color-outline-variant)'
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '13px', color: 'var(--color-primary)' }}>edit</span>
+                        <span>Edit</span>
+                      </button>
+                    </div>
                     <span className={`badge ${req.priority === 'SOS Urgent' ? 'badge-landslide' : 'badge-rls'}`}>
                       {req.priority}
                     </span>
@@ -632,8 +692,20 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                 padding: 'var(--space-lg)',
                 boxShadow: 'var(--shadow-sm)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span className="badge badge-rls">Selected Matching Target</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="badge badge-rls">Selected Matching Target</span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setEditingRequisition(activeReq)}
+                      style={{ fontSize: '11px', padding: '3px 8px', minHeight: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      title="Edit this job requisition"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit</span>
+                      <span>Edit Job Details</span>
+                    </button>
+                  </div>
                   <span style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
                     Duration: <strong style={{ color: 'var(--color-on-surface)' }}>{activeReq.durationWeeks} Weeks</strong>
                   </span>
@@ -651,6 +723,105 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                   </span>
                 </div>
               </div>
+
+              {/* Currently Assigned Workers to this Project */}
+              {assignedWorkers.length > 0 && (
+                <div style={{
+                  backgroundColor: 'var(--color-surface-lowest)',
+                  border: '1px solid var(--color-outline-variant)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: 'var(--space-md)',
+                  boxShadow: 'var(--shadow-sm)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--color-tertiary)' }}>
+                        engineering
+                      </span>
+                      <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface)' }}>
+                        Currently Assigned Workers ({assignedWorkers.length})
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                      Active deployment quota: {activeReq.assignedCount}/{activeReq.requiredCount}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {assignedWorkers.map((worker) => (
+                      <div
+                        key={worker.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          backgroundColor: 'var(--color-surface-low)',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1px solid var(--color-outline-variant)',
+                          flexWrap: 'wrap',
+                          gap: '8px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{
+                            width: '34px',
+                            height: '34px',
+                            borderRadius: 'var(--radius-sm)',
+                            backgroundColor: 'var(--color-tertiary-fixed)',
+                            color: 'var(--color-on-tertiary-fixed)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 800,
+                            fontSize: '14px'
+                          }}>
+                            {worker.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--color-on-surface)' }}>
+                              {worker.name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
+                              +91 {worker.phone} • {worker.skills.slice(0, 2).join(', ')} • {worker.campId}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="badge badge-verified" style={{ fontSize: '10px' }}>
+                            Deployed
+                          </span>
+                          {currentRole === 'regional-admin' && onRevertDispatch && (
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              style={{
+                                fontSize: '11px',
+                                padding: '4px 10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                color: '#b45309',
+                                borderColor: 'var(--color-outline-variant)'
+                              }}
+                              onClick={() => {
+                                if (window.confirm(`Undo and revert job assignment for ${worker.name}? They will be returned to the Available candidate pool and project vacancy count will be restored.`)) {
+                                  onRevertDispatch(activeReq.id, worker.id);
+                                }
+                              }}
+                              title="Revert assigned job: Restore candidate to Available pool and decrement project headcount"
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>undo</span>
+                              <span>Revert Dispatch</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Candidate Matches Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -772,14 +943,16 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                           Direct daily wage: <strong style={{ color: 'var(--color-on-surface)' }}>₹{activeReq.dailyWage}/day</strong>
                         </div>
 
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleDispatch(match)}
-                          title="Confirm assignment and trigger automated dispatch SMS"
-                        >
-                          <span className="material-symbols-outlined">send</span>
-                          <span>Dispatch &amp; Issue Pass</span>
-                        </button>
+                        {currentRole === 'regional-admin' && (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => setReviewingMatch(match)}
+                            title="Review user and job post details before dispatching and issuing pass"
+                          >
+                            <span className="material-symbols-outlined">send</span>
+                            <span>Dispatch &amp; Issue Pass</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -801,6 +974,30 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
           onShowToast('Emergency Requisition Published', `Requisition "${newReq.title}" active for candidate matching.`, 'success');
         }}
       />
+
+      {/* Edit Job Modal */}
+      {editingRequisition && (
+        <EditJobModal
+          isOpen={!!editingRequisition}
+          requisition={editingRequisition}
+          onClose={() => setEditingRequisition(null)}
+          onSave={handleSaveEditedRequisition}
+        />
+      )}
+
+      {/* Pre-Dispatch Review & Approval Modal */}
+      {reviewingMatch && activeReq && (
+        <DispatchApprovalModal
+          isOpen={!!reviewingMatch}
+          match={reviewingMatch}
+          requisition={activeReq}
+          onClose={() => setReviewingMatch(null)}
+          onConfirm={(confirmedMatch) => {
+            setReviewingMatch(null);
+            handleDispatch(confirmedMatch);
+          }}
+        />
+      )}
     </div>
   );
 };

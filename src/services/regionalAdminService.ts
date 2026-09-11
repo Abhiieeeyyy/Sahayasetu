@@ -317,6 +317,38 @@ export const setActiveRegionalAdmin = (admin: RegionalAdminAccount | null): void
 };
 
 /**
+ * Validates the currently active Regional Admin session.
+ * If the account was suspended or deleted by Super Admin, immediately terminates the session and returns invalid.
+ */
+export const validateActiveRegionalAdminSession = (): {
+  isValid: boolean;
+  admin: RegionalAdminAccount | null;
+  reason?: 'suspended' | 'deleted';
+} => {
+  const active = getActiveRegionalAdmin();
+  if (!active) {
+    return { isValid: false, admin: null };
+  }
+
+  const allAdmins = getStoredRegionalAdmins();
+  const liveAdmin = allAdmins.find(a => a.id === active.id);
+
+  if (!liveAdmin) {
+    // Admin was deleted by Super Admin
+    setActiveRegionalAdmin(null);
+    return { isValid: false, admin: null, reason: 'deleted' };
+  }
+
+  if (liveAdmin.status === 'Suspended') {
+    // Admin was suspended by Super Admin
+    setActiveRegionalAdmin(null);
+    return { isValid: false, admin: null, reason: 'suspended' };
+  }
+
+  return { isValid: true, admin: liveAdmin };
+};
+
+/**
  * Authenticates regional admin using Officer Credential ID and Password created by Super Admin.
  * Supports Officer Credential ID (e.g., OFF-KL-WYD-401), SDMA ID, Admin ID, or Email.
  */
@@ -349,7 +381,7 @@ export const authenticateRegionalAdmin = (
   if (matched.status === 'Suspended') {
     return { 
       success: false, 
-      error: 'Your regional administrator credentials have been SUSPENDED by the Super Admin. Access is revoked.' 
+      error: 'Your regional administrator credentials have been SUSPENDED by the Super Admin. You cannot log in until your status is re-activated by the Super Admin.' 
     };
   }
 

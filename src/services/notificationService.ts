@@ -77,3 +77,20 @@ export const markNotificationAsRead = (notificationId: string): void => {
     console.warn('Failed to update notification read status', err);
   }
 };
+
+/**
+ * Reverts active job assignment notifications for a beneficiary when Regional Admin undoes dispatch.
+ */
+export const revertCitizenJobAssignment = (beneficiaryId: string): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    const all = getCitizenNotifications();
+    // Remove active job assignment notifications for this beneficiary
+    const updated = all.filter(n => !(n.beneficiaryId === beneficiaryId && n.type === 'JOB_ASSIGNMENT'));
+    localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('sahayasetu_notifications_updated'));
+  } catch (err) {
+    console.warn('Failed to revert citizen job notification', err);
+  }
+};
+

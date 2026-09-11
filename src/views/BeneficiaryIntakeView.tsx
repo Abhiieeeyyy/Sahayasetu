@@ -28,6 +28,7 @@ interface BeneficiaryIntakeViewProps {
   beneficiaries: Beneficiary[];
   onAddBeneficiary: (beneficiary: Beneficiary) => void;
   onDeployBeneficiary: (beneficiaryId: string) => void;
+  onRevertDispatch?: (beneficiaryId: string, reqId?: string) => void;
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info') => void;
   isOfflineMode: boolean;
   currentRole: UserRole;
@@ -40,6 +41,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
   beneficiaries,
   onAddBeneficiary,
   onDeployBeneficiary,
+  onRevertDispatch,
   onShowToast,
   isOfflineMode,
   currentRole,
@@ -251,31 +253,6 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
               </span>
             </>
           )}
-        </div>
-
-        {/* Telemetry Indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '4px 10px',
-            backgroundColor: 'var(--color-surface-lowest)',
-            border: '1px solid var(--color-outline-variant)',
-            borderRadius: 'var(--radius-sm)'
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--color-tertiary)' }}>
-              cell_tower
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-on-surface)', lineHeight: 1 }}>
-                Satellite VSAT Relay
-              </span>
-              <span style={{ fontSize: '9px', color: 'var(--color-tertiary)', fontWeight: 600 }}>
-                Auto-reconnect standby (42ms ping)
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -664,7 +641,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
                       </span>
                     </td>
 
-                    {/* Row Actions: View Details for regional admin, plus Dispatch for super admin */}
+                    {/* Row Actions: View Details for all admins, plus Delete if enabled */}
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <button
@@ -676,23 +653,27 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
                           <span>View Details</span>
                         </button>
 
-
-
-                        {currentRole === 'super-admin' && (
-                          b.placementStatus === 'Available' ? (
-                            <button
-                              className="btn btn-secondary btn-sm"
-                              onClick={() => onDeployBeneficiary(b.id)}
-                              title="Assign candidate directly to nearest active civil relief project"
-                            >
-                              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>send</span>
-                              <span>Dispatch</span>
-                            </button>
-                          ) : (
-                            <span className="badge badge-verified" style={{ fontSize: '11px' }}>
-                              Deployed
-                            </span>
-                          )
+                        {currentRole === 'regional-admin' && b.placementStatus === 'Assigned' && onRevertDispatch && (
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            style={{
+                              padding: '4px 8px',
+                              color: '#b45309',
+                              borderColor: 'var(--color-outline-variant)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            onClick={() => {
+                              if (window.confirm(`Undo and revert job assignment for ${b.name}? This will return them to Available status and reopen the job slot.`)) {
+                                onRevertDispatch(b.id, b.assignedProjectId);
+                              }
+                            }}
+                            title="Revert assigned job: Restore candidate to Available pool and decrement project headcount"
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>undo</span>
+                            <span>Revert</span>
+                          </button>
                         )}
 
                         {onDeleteBeneficiary && (

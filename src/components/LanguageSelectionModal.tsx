@@ -73,11 +73,11 @@ export const LanguageSelectionModal: React.FC<LanguageSelectionModalProps> = ({
             Choose Preferred Language
           </h2>
           <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.4 }}>
-            ഭാഷ തിരഞ്ഞെടുക്കുക • மொழியைத் தேர்ந்தெடுக்கவும்
+            ഭാഷ തിരഞ്ഞെടുക്കുക (Choose Language)
           </div>
         </div>
 
-        {/* Modal Body: 3 Language Option Cards */}
+        {/* Modal Body: Language Option Cards */}
         <div style={{
           padding: '24px 28px',
           display: 'flex',
