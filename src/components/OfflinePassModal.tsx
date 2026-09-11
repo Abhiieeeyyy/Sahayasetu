@@ -16,7 +16,7 @@
  * 5. Native Print Trigger: Formatted for standard paper and receipt printers.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Beneficiary } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { jsPDF } from 'jspdf';
@@ -36,6 +36,7 @@ interface OfflinePassModalProps {
   beneficiary: Beneficiary;
   jobDetails?: JobPassDetails;
   onShowToast?: (title: string, message: string, type?: 'success' | 'warning' | 'info') => void;
+  autoDownload?: boolean;
 }
 
 export const OfflinePassModal: React.FC<OfflinePassModalProps> = ({
@@ -43,12 +44,30 @@ export const OfflinePassModal: React.FC<OfflinePassModalProps> = ({
   onClose,
   beneficiary,
   jobDetails,
-  onShowToast
+  onShowToast,
+  autoDownload = false
 }) => {
   const { language } = useLanguage();
   const isMalayalam = language === 'ML';
   const passCardRef = useRef<HTMLDivElement>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const downloadHandlerRef = useRef<(() => Promise<void>) | null>(null);
+  const hasAutoDownloadedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      hasAutoDownloadedRef.current = false;
+      return;
+    }
+    if (isOpen && autoDownload && !hasAutoDownloadedRef.current) {
+      hasAutoDownloadedRef.current = true;
+      // Allow modal DOM and canvas elements to mount and render fully before capture
+      const timer = setTimeout(() => {
+        downloadHandlerRef.current?.();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, autoDownload]);
 
   if (!isOpen) return null;
 
@@ -250,6 +269,8 @@ export const OfflinePassModal: React.FC<OfflinePassModalProps> = ({
       setIsDownloadingPdf(false);
     }
   };
+
+  downloadHandlerRef.current = handleDownloadPdf;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>

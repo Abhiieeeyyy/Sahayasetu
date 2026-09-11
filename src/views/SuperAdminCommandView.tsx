@@ -618,16 +618,6 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-tertiary)' }} />
               <span>Full Cross-Region Access Active</span>
             </span>
-            <button
-              type="button"
-              onClick={handleWipeAllUserData}
-              className="btn btn-sm btn-error"
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', fontSize: '11px' }}
-              title="Wipe all users from database and site to make a 100% fresh start"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>delete_forever</span>
-              <span>Wipe User Records</span>
-            </button>
           </div>
         </div>
 

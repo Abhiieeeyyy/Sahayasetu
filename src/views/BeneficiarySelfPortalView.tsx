@@ -19,12 +19,13 @@
  *    a physical credential pass with assigned worksite details.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Beneficiary, WageEntry } from '../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Beneficiary, WageEntry, RegionalAdminAccount } from '../types';
 import { OfflinePassModal } from '../components/OfflinePassModal';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getCitizenNotifications, CitizenNotification } from '../services/notificationService';
+import { getStoredRegionalAdmins } from '../services/regionalAdminService';
 
 interface BeneficiarySelfPortalViewProps {
   beneficiary: Beneficiary | null;
@@ -55,6 +56,7 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
   const { language: currentLang, setLanguage: setCurrentLang } = useLanguage();
   const isMalayalam = currentLang === 'ML';
   const [isPassModalOpen, setIsPassModalOpen] = useState(false);
+  const [autoDownloadPass, setAutoDownloadPass] = useState(false);
 
   // Synchronized Citizen Assignment Notifications
   const [notifications, setNotifications] = useState<CitizenNotification[]>(() =>
@@ -76,6 +78,22 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
 
   const latestAssignmentNotif = notifications.find(n => n.type === 'JOB_ASSIGNMENT');
   const isAssigned = beneficiary?.placementStatus === 'Assigned' || !!latestAssignmentNotif;
+
+  // Regional Admin for the citizen's assigned district
+  const regionalAdmin = useMemo<RegionalAdminAccount | null>(() => {
+    if (!beneficiary) return null;
+    const allAdmins = getStoredRegionalAdmins();
+    const targetDistrictCode = beneficiary.districtId || 'KL-WYD-2024';
+    const targetDistrictName = (beneficiary.district || '').toLowerCase();
+
+    const matched = allAdmins.find(adm => 
+      adm.districtId === targetDistrictCode ||
+      (targetDistrictName && adm.districtName.toLowerCase().includes(targetDistrictName)) ||
+      (adm.districtId && targetDistrictCode && adm.districtId.split('-')[1] === targetDistrictCode.split('-')[1])
+    );
+
+    return matched || allAdmins[0] || null;
+  }, [beneficiary]);
 
   // Assigned worksite determination
   const assignedWorksite = latestAssignmentNotif?.worksite || 
@@ -224,7 +242,10 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               {/* Generate Printable / PDF Pass for Assigned Job */}
               <button
                 type="button"
-                onClick={() => setIsPassModalOpen(true)}
+                onClick={() => {
+                  setAutoDownloadPass(true);
+                  setIsPassModalOpen(true);
+                }}
                 className="btn btn-sm btn-touch"
                 style={{
                   backgroundColor: '#047857',
@@ -412,16 +433,6 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
               <span>{isMalayalam ? 'അപേക്ഷ തിരുത്തുക' : 'Edit Application'}</span>
             </button>
           )}
-
-          <button
-            className="btn btn-primary"
-            onClick={() => setIsPassModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
-            title={isMalayalam ? "ഔദ്യോഗിക പാസ്സ് കാണുക / ഡൗൺലോഡ് ചെയ്യുക" : "View and download official pass"}
-          >
-            <span className="material-symbols-outlined">badge</span>
-            <span>{isMalayalam ? 'തൊഴിൽ പാസ്സ്' : 'Print Job Pass'}</span>
-          </button>
         </div>
       </div>
 
@@ -570,26 +581,6 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
             <span className="badge badge-rls">
               {isMalayalam ? `വേതനാവകാശം: ₹${beneficiary.dailyWageTier}/ദിവസം` : `Wage Entitlement: ₹${beneficiary.dailyWageTier}/day`}
             </span>
-            {onNavigateToRegister && (
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={onNavigateToRegister}
-                title={isMalayalam ? "അപേക്ഷാ വിവരങ്ങൾ മാറ്റുക" : "Edit application details"}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>edit</span>
-                <span>{isMalayalam ? 'അപേക്ഷ തിരുത്തുക' : 'Edit Application'}</span>
-              </button>
-            )}
-
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => setIsPassModalOpen(true)}
-              title={isMalayalam ? "അപേക്ഷാ പാസ്സ് പ്രിന്റ് ചെയ്യുക" : "Print your relief pass"}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>print</span>
-              <span>{isMalayalam ? 'അപേക്ഷാ പാസ്സ് പ്രിന്റ്' : 'Print Application Pass'}</span>
-            </button>
           </div>
         </div>
       </div>
@@ -697,39 +688,46 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
         {/* RIGHT COLUMN: EMERGENCY CONTACTS (6 Columns) */}
         {/* Notice: Camp Official Broadcasts has been removed as per user instructions */}
         <div style={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-          {/* Key Relief Camp Contacts */}
+          {/* Key Relief Camp Contacts - Regional Admin Contact Info Only */}
           <div className="card">
             <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)', display: 'block', marginBottom: '12px' }}>
-              {isMalayalam ? 'ക്യാമ്പ് അടിയന്തര ഉദ്യോഗസ്ഥർ' : 'Emergency Camp Officials'}
+              {isMalayalam ? 'ക്യാമ്പ് അടിയന്തര ഉദ്യോഗസ്ഥൻ' : 'Emergency Camp Official'}
             </span>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '13px' }}>Dr. K. Suresh</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
-                    {isMalayalam ? 'മെഡിക്കൽ റിലീഫ് ഓഫീസർ' : 'Medical Relief Officer'}
+            {regionalAdmin ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--color-on-surface)' }}>
+                      {regionalAdmin.name}
+                    </span>
+                    <span className="badge badge-verified" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                      {isMalayalam ? 'റീജിയണൽ അഡ്മിൻ' : 'Regional Admin'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', fontWeight: 500 }}>
+                    {regionalAdmin.ngoName} • {regionalAdmin.districtName}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    <span className="font-mono">ID: {regionalAdmin.officerCredentialId || regionalAdmin.sdmaOfficerId}</span>
                   </div>
                 </div>
-                <a href="tel:9447100221" className="btn btn-secondary btn-sm">
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>call</span>
-                  <span>{isMalayalam ? 'വിളിക്കുക' : 'Call'}</span>
-                </a>
-              </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '13px' }}>Vipin Das</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
-                    {isMalayalam ? 'ക്യാമ്പ് വാർഡൻ' : 'Shelter Camp Warden'}
-                  </div>
-                </div>
-                <a href="tel:9447100332" className="btn btn-secondary btn-sm">
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>call</span>
+                <a 
+                  href={`tel:${(regionalAdmin.phone || '+919447128901').replace(/[^0-9+]/g, '')}`} 
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, padding: '6px 14px', fontWeight: 700 }}
+                  title={isMalayalam ? "റീജിയണൽ അഡ്മിനെ വിളിക്കുക" : "Call Regional Admin"}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>call</span>
                   <span>{isMalayalam ? 'വിളിക്കുക' : 'Call'}</span>
                 </a>
               </div>
-            </div>
+            ) : (
+              <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)' }}>
+                {isMalayalam ? 'റീജിയണൽ അഡ്മിൻ വിവരങ്ങൾ ലഭ്യമല്ല' : 'Regional Admin contact details not provisioned'}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -737,7 +735,11 @@ export const BeneficiarySelfPortalView: React.FC<BeneficiarySelfPortalViewProps>
       {/* Official Job & Relief Pass Modal with PDF Download and Worksite Display */}
       <OfflinePassModal
         isOpen={isPassModalOpen}
-        onClose={() => setIsPassModalOpen(false)}
+        onClose={() => {
+          setIsPassModalOpen(false);
+          setAutoDownloadPass(false);
+        }}
+        autoDownload={autoDownloadPass}
         beneficiary={beneficiary}
         onShowToast={onShowToast}
         jobDetails={{
