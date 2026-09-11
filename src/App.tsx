@@ -79,6 +79,7 @@ import { isSupabaseConfigured } from './lib/supabaseClient';
 import { useAuth } from './context/AuthContext';
 import { useLanguage } from './context/LanguageContext';
 import { revertCitizenJobAssignment } from './services/notificationService';
+import { isSameJurisdiction, getDistrictDisplayName } from './utils/jurisdictionUtils';
 
 // ----------------------------------------------------------------------------
 // FRESH HUMANITARIAN DATA
@@ -792,6 +793,18 @@ export const App: React.FC = () => {
     const matchedReq = requisitions.find(r => r.id === reqId);
     const matchedBen = beneficiaries.find(b => b.id === beneficiaryId);
 
+    if (!matchedReq || !matchedBen) return;
+
+    // STRICT JURISDICTION ENFORCEMENT: Cross-regional candidate dispatch is strictly blocked
+    if (!isSameJurisdiction(matchedBen, matchedReq)) {
+      showToast(
+        'Cross-Regional Dispatch Blocked',
+        `Jurisdiction Rule Enforced: Citizen ${matchedBen.name} (${getDistrictDisplayName(matchedBen.districtId || matchedBen.district)}) cannot be assigned to worksites in ${getDistrictDisplayName(matchedReq.districtId || matchedReq.districtName)}. Displaced citizens may only work in their home jurisdiction.`,
+        'warning'
+      );
+      return;
+    }
+
     // Update requisition assigned headcount
     setRequisitions(prev => prev.map(r => {
       if (r.id === reqId) {
@@ -900,13 +913,29 @@ export const App: React.FC = () => {
 
   // Deploy beneficiary from intake table
   const handleDeployBeneficiary = (beneficiaryId: string) => {
-    const defaultReq = requisitions[0];
-    if (!defaultReq) return;
-    handleDispatchCandidate(defaultReq.id, beneficiaryId);
     const ben = beneficiaries.find(b => b.id === beneficiaryId);
+    if (!ben) return;
+
+    // Strictly find an open requisition in the candidate's OWN jurisdiction
+    const matchingReq = requisitions.find(r => 
+      isSameJurisdiction(ben, r) && 
+      r.status !== 'Completed' && 
+      r.assignedCount < r.requiredCount
+    ) || requisitions.find(r => isSameJurisdiction(ben, r) && r.status !== 'Completed');
+
+    if (!matchingReq) {
+      showToast(
+        'No Open Worksites in Jurisdiction',
+        `Cannot deploy ${ben.name}: No available reconstruction projects exist in ${getDistrictDisplayName(ben.districtId || ben.district)}. Cross-regional dispatch is prohibited by state disaster protocol.`,
+        'warning'
+      );
+      return;
+    }
+
+    handleDispatchCandidate(matchingReq.id, beneficiaryId);
     showToast(
       'Beneficiary Dispatched',
-      `${ben?.name || 'Beneficiary'} assigned to ${defaultReq.title}.`,
+      `${ben.name} assigned to ${matchingReq.title} within ${getDistrictDisplayName(ben.districtId || ben.district)}.`,
       'success',
       'Automated Malayalam SMS SMS_REQD_09 Dispatched'
     );

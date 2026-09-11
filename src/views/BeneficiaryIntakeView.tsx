@@ -23,6 +23,7 @@ import React, { useState, useMemo } from 'react';
 import { Beneficiary, VocationalSkill, UserRole, RegionalAdminAccount } from '../types';
 import { IntakeDrawer } from '../components/IntakeDrawer';
 import { UserDetailsModal } from '../components/UserDetailsModal';
+import { normalizeDistrictCode } from '../utils/jurisdictionUtils';
 
 interface BeneficiaryIntakeViewProps {
   beneficiaries: Beneficiary[];
@@ -139,10 +140,12 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
   // --------------------------------------------------------------------------
   const districtScopedBeneficiaries = useMemo(() => {
     if (currentRole === 'regional-admin') {
-      return beneficiaries.filter(b => b.districtId === targetDistrictId);
+      const targetNorm = normalizeDistrictCode(targetDistrictId);
+      return beneficiaries.filter(b => normalizeDistrictCode(b.districtId || b.district) === targetNorm);
     }
     if (selectedDistrict !== 'ALL') {
-      return beneficiaries.filter(b => b.districtId === selectedDistrict);
+      const selNorm = normalizeDistrictCode(selectedDistrict);
+      return beneficiaries.filter(b => normalizeDistrictCode(b.districtId || b.district) === selNorm);
     }
     return beneficiaries;
   }, [beneficiaries, currentRole, targetDistrictId, selectedDistrict]);
@@ -707,6 +710,7 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
       <IntakeDrawer
         isOpen={isIntakeDrawerOpen}
         onClose={() => setIsIntakeDrawerOpen(false)}
+        activeRegionalAdmin={activeRegionalAdmin}
         onSubmit={(newBen) => {
           onAddBeneficiary(newBen);
           onShowToast('Beneficiary Registered', `${newBen.name} successfully enqueued into live roster.`);

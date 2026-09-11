@@ -19,12 +19,13 @@
  */
 
 import React, { useState } from 'react';
-import { Beneficiary, CalamityType, VocationalSkill, LivingStatus } from '../types';
+import { Beneficiary, CalamityType, VocationalSkill, LivingStatus, RegionalAdminAccount } from '../types';
 
 interface IntakeDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (beneficiary: Beneficiary) => void;
+  activeRegionalAdmin?: RegionalAdminAccount | null;
 }
 
 const AVAILABLE_SKILLS: VocationalSkill[] = [
@@ -41,7 +42,8 @@ const AVAILABLE_SKILLS: VocationalSkill[] = [
 export const IntakeDrawer: React.FC<IntakeDrawerProps> = ({
   isOpen,
   onClose,
-  onSubmit
+  onSubmit,
+  activeRegionalAdmin
 }) => {
   // --------------------------------------------------------------------------
   // FORM STATE MANAGEMENT
@@ -83,13 +85,18 @@ export const IntakeDrawer: React.FC<IntakeDrawerProps> = ({
 
     if (!name.trim()) return;
 
+    const adminDistrictId = activeRegionalAdmin?.districtId || 'KL-WYD-2024';
+    const adminDistrictName = activeRegionalAdmin?.districtName?.split('(')[0]?.trim() || 'Wayanad';
+
     const newBeneficiary: Beneficiary = {
       id: `BEN-${Math.floor(1000 + Math.random() * 9000)}`,
       name: name.trim(),
       phone: phone || '98470 11223',
       aadhaarMasked: `•••• •••• ${aadhaarLast4 ? aadhaarLast4.padStart(4, '0') : '7721'}`,
-      districtId: 'KL-WYD-2024',
-      campId,
+      state: 'Kerala',
+      district: adminDistrictName,
+      districtId: adminDistrictId,
+      campId: campId || `${adminDistrictName} Designated Relief Shelter`,
       calamity,
       skills: selectedSkills,
       experienceYears: Number(experienceYears) || 3,

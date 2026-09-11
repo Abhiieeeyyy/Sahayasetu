@@ -25,6 +25,7 @@ import { PostNeedModal } from '../components/PostNeedModal';
 import { EditJobModal } from '../components/EditJobModal';
 import { DispatchApprovalModal } from '../components/DispatchApprovalModal';
 import { addCitizenNotification } from '../services/notificationService';
+import { isSameJurisdiction, getDistrictDisplayName } from '../utils/jurisdictionUtils';
 
 interface SkillMatchingViewProps {
   requisitions: JobRequisition[];
@@ -181,7 +182,10 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   const candidateMatches: CandidateMatch[] = React.useMemo(() => {
     if (!activeReq) return [];
 
-    const availableCandidates = scopedBeneficiaries.filter(b => b.placementStatus === 'Available');
+    // STRICT JURISDICTION RULE: Each region's citizens only for their jurisdiction work
+    const availableCandidates = scopedBeneficiaries.filter(b => 
+      b.placementStatus === 'Available' && isSameJurisdiction(b, activeReq)
+    );
 
     return availableCandidates.map((candidate, idx) => {
       // Check trade overlap against primary skills and prioritized choices
@@ -215,6 +219,16 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
   // --------------------------------------------------------------------------
   const handleDispatch = (match: CandidateMatch) => {
     if (!activeReq) return;
+
+    // Strict Regional Jurisdiction Guard: Cross-regional dispatch is strictly prohibited
+    if (!isSameJurisdiction(match.beneficiary, activeReq)) {
+      onShowToast(
+        'Cross-Regional Dispatch Prohibited',
+        `Dispatch Blocked: Citizen ${match.beneficiary.name} is registered in ${getDistrictDisplayName(match.beneficiary.districtId || match.beneficiary.district)} and cannot work in ${getDistrictDisplayName(activeReq.districtId || activeReq.districtName)}. State emergency protocol strictly restricts workers to their home jurisdiction.`,
+        'warning'
+      );
+      return;
+    }
 
     // Super Admin cannot dispatch citizens - authority is reserved for Regional Admins
     if (currentRole === 'super-admin') {
@@ -824,10 +838,15 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
               )}
 
               {/* Candidate Matches Header */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)' }}>
-                  Matching Candidates in District Pool ({candidateMatches.length})
-                </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, color: 'var(--color-on-surface-variant)' }}>
+                    Matching Candidates in {getDistrictDisplayName(activeReq.districtId || activeReq.districtName)} Pool ({candidateMatches.length})
+                  </span>
+                  <span className="badge" style={{ backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontSize: '10px' }}>
+                    Strict Jurisdiction Locked
+                  </span>
+                </div>
                 <span style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)' }}>
                   Weights: Trade Overlap (50%) + Proximity (25%) + Fitness (25%)
                 </span>
@@ -846,7 +865,12 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                   <span className="material-symbols-outlined" style={{ fontSize: '48px', opacity: 0.5 }}>
                     person_search
                   </span>
-                  <p style={{ marginTop: '8px' }}>No available matching candidates unassigned in this district sector.</p>
+                  <p style={{ marginTop: '8px' }}>
+                    No available matching candidates unassigned in the {getDistrictDisplayName(activeReq.districtId || activeReq.districtName)} jurisdiction.
+                  </p>
+                  <p style={{ fontSize: '11px', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
+                    Strict regional rule: Cross-district candidate dispatch is prohibited.
+                  </p>
                 </div>
               ) : (
                 candidateMatches.map((match) => {
@@ -885,12 +909,15 @@ export const SkillMatchingView: React.FC<SkillMatchingViewProps> = ({
                             {b.name.charAt(0)}
                           </div>
                           <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                               <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-on-surface)' }}>
                                 {b.name}
                               </span>
                               <span className="badge badge-verified" style={{ fontSize: '9px' }}>
                                 Aadhaar Match
+                              </span>
+                              <span className="badge" style={{ fontSize: '9px', backgroundColor: '#e0f2fe', color: '#0369a1', border: '1px solid #bae6fd' }}>
+                                ✓ {getDistrictDisplayName(b.districtId || b.district)} Resident
                               </span>
                             </div>
                             <div style={{ fontSize: '12px', color: 'var(--color-on-surface-variant)', marginTop: '2px' }}>
