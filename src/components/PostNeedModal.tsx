@@ -41,7 +41,7 @@ export const PostNeedModal: React.FC<PostNeedModalProps> = ({
   const [requiredSkill, setRequiredSkill] = useState<VocationalSkill>('Masonry');
   const [requiredCount, setRequiredCount] = useState(12);
   const [dailyWage, setDailyWage] = useState(850);
-  const [hardshipAllowance, setHardshipAllowance] = useState(150);
+  const hardshipAllowance = 150;
   const [durationWeeks, setDurationWeeks] = useState(4);
 
   // Prefill fields from active Regional Admin if available

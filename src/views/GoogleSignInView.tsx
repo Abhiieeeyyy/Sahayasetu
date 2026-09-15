@@ -13,7 +13,6 @@ import React, { useState } from 'react';
 import { RegistrationLanguage } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { isSupabaseConfigured } from '../lib/supabaseClient';
 
 interface GoogleSignInViewProps {
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info' | 'error') => void;

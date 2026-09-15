@@ -26,13 +26,11 @@ import {
   getStoredRegionalAdmins, 
   saveStoredRegionalAdmins, 
   getActiveRegionalAdmin,
-  setActiveRegionalAdmin,
-  purgeAllUserData 
+  setActiveRegionalAdmin 
 } from '../services/regionalAdminService';
 import {
   getStoredDisasters,
-  saveStoredDisasters,
-  DISASTERS_STORAGE_KEY
+  saveStoredDisasters
 } from '../services/disasterService';
 
 interface SuperAdminCommandViewProps {
@@ -47,115 +45,6 @@ interface SuperAdminCommandViewProps {
   onDeleteBeneficiary?: (beneficiaryId: string) => void;
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info' | 'error') => void;
 }
-
-// ----------------------------------------------------------------------------
-// LOCAL STORAGE KEYS & INITIAL SEED DATA
-// ----------------------------------------------------------------------------
-const ADMINS_STORAGE_KEY = 'sahayasetu_regional_admins_v2';
-
-const INITIAL_REGIONAL_ADMINS: RegionalAdminAccount[] = [
-  {
-    id: 'ADM-101',
-    name: 'Dr. Arunkumar Menon',
-    email: 'arunkumar.menon@keralaredcross.org',
-    phone: '+91 94471 28901',
-    ngoName: 'Kerala Red Cross Disaster Society',
-    ngoDarpanId: 'DARPAN-KL/2024/0912',
-    accessKey: 'KRC-WYD-9941',
-    sdmaOfficerId: 'SDMA-KL-WYD-401',
-    districtId: 'KL-WYD-2024',
-    districtName: 'Wayanad Hills (Meppadi / Chooralmala)',
-    dateProvisioned: '01 Aug 2026',
-    status: 'Active'
-  },
-  {
-    id: 'ADM-102',
-    name: 'Dr. Fathima Beevi',
-    email: 'fathima.b@kozhikodecare.org',
-    phone: '+91 94472 31094',
-    ngoName: 'Kozhikode Coastal Care Foundation',
-    ngoDarpanId: 'DARPAN-KL/2024/0788',
-    accessKey: 'KCC-KKD-4412',
-    sdmaOfficerId: 'SDMA-KL-KKD-208',
-    districtId: 'KL-KKD-2024',
-    districtName: 'Kozhikode Coastal Catchment',
-    dateProvisioned: '05 Aug 2026',
-    status: 'Active'
-  },
-  {
-    id: 'ADM-103',
-    name: 'Mathew Thomas',
-    email: 'mathew.t@seedsidukki.org',
-    phone: '+91 94460 77312',
-    ngoName: 'SEEDS High-Range Relief Trust',
-    ngoDarpanId: 'DARPAN-KL/2023/1149',
-    accessKey: 'SHR-IDK-7721',
-    sdmaOfficerId: 'SDMA-KL-IDK-512',
-    districtId: 'KL-IDK-2024',
-    districtName: 'Idukki High Range Catchment',
-    dateProvisioned: '10 Aug 2026',
-    status: 'Active'
-  }
-];
-
-const INITIAL_REGIONAL_DISASTERS: RegionDisaster[] = [
-  {
-    id: 'DIS-WYD-01',
-    regionId: 'KL-WYD-2024',
-    regionName: 'Wayanad Hills (Meppadi / Chooralmala)',
-    title: 'Chooralmala & Mundakkai Massive Landslides',
-    disasterType: 'Landslide',
-    severity: 'Extreme Tier-1',
-    declaredDate: '30 Jul 2026',
-    affectedTaluks: 'Vythiri, Meppadi, Chooralmala, Mundakkai Sector 2',
-    estimatedAffected: 4200,
-    reliefCampsCount: 18,
-    status: 'Active Emergency',
-    emergencyDirectives: 'NDRF 4th Battalion mobilized. Bailey bridge transport corridor operational.'
-  },
-  {
-    id: 'DIS-KKD-02',
-    regionId: 'KL-KKD-2024',
-    regionName: 'Kozhikode Coastal Catchment',
-    title: 'Chaliyar River Inundation & Coastal Surge',
-    disasterType: 'Flash Flood',
-    severity: 'High Tier-2',
-    declaredDate: '02 Aug 2026',
-    affectedTaluks: 'Kozhikode, Koyilandy, Vadakara',
-    estimatedAffected: 1850,
-    reliefCampsCount: 8,
-    status: 'Relief & Rescue',
-    emergencyDirectives: 'Kerala Fire & Rescue teams deployed with motor inflatable rescue boats.'
-  },
-  {
-    id: 'DIS-IDK-03',
-    regionId: 'KL-IDK-2024',
-    regionName: 'Idukki High Range Catchment',
-    title: 'Periyar Catchment Hill Slope Slips',
-    disasterType: 'Landslide',
-    severity: 'High Tier-2',
-    declaredDate: '08 Aug 2026',
-    affectedTaluks: 'Udumbanchola, Munnar Gap Road, Devikulam',
-    estimatedAffected: 950,
-    reliefCampsCount: 5,
-    status: 'Rehabilitation',
-    emergencyDirectives: 'PWD heavy excavator clearing National Highway 85.'
-  },
-  {
-    id: 'DIS-ALP-04',
-    regionId: 'KL-ALP-2024',
-    regionName: 'Alappuzha Coastal Kuttanad',
-    title: 'Kuttanad Lowland River Swell & Waterlogging',
-    disasterType: 'Flood',
-    severity: 'Moderate Tier-3',
-    declaredDate: '12 Aug 2026',
-    affectedTaluks: 'Kuttanad, Ambalappuzha, Champakulam',
-    estimatedAffected: 1400,
-    reliefCampsCount: 6,
-    status: 'Rehabilitation',
-    emergencyDirectives: 'Mobile medical boats operating across canals.'
-  }
-];
 
 export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
   districts,
@@ -213,19 +102,7 @@ export const SuperAdminCommandView: React.FC<SuperAdminCommandViewProps> = ({
     saveStoredDisasters(disasters);
   }, [disasters]);
 
-  const handleWipeAllUserData = () => {
-    if (window.confirm('Are you sure you want to completely delete all registered users and applications? This will create a fresh start with 0 users across the site.')) {
-      purgeAllUserData();
-      if (onPurgeAllBeneficiaries) {
-        onPurgeAllBeneficiaries();
-      }
-      onShowToast(
-        'Fresh Start Complete',
-        'All user records and applications have been wiped. Platform is now completely empty.',
-        'success'
-      );
-    }
-  };
+
 
   // --------------------------------------------------------------------------
   // MODULE 1: NGO REGIONAL ADMIN CREATION STATE

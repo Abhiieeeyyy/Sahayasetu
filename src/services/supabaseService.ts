@@ -14,10 +14,6 @@ import { Beneficiary, JobRequisition, DistrictTenant, RegionalAdminAccount } fro
 
 /**
  * Persists a newly registered beneficiary in Supabase `users` table
- * and records an immutable audit log entry.
- */
-/**
- * Persists a newly registered beneficiary in Supabase `users` table
  * with ALL verification data collected during Google-authenticated registration,
  * and records an immutable audit log entry.
  */
@@ -126,32 +122,7 @@ const mapRowToBeneficiary = (row: any): Beneficiary => ({
   aadhaarRaw: row.bank_account_dbt?.aadhaar_raw || undefined
 });
 
-/**
- * Fetches registered beneficiaries strictly scoped to a single region.
- * Used by Regional Admin (enforced at service level AND database RLS level).
- */
-export const fetchRegionalBeneficiaries = async (
-  regionId: string = 'KL-WYD-2024'
-): Promise<Beneficiary[]> => {
-  if (!isSupabaseConfigured) return [];
 
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .or(`district_id.eq.${regionId},region_id.eq.${regionId}`);
-
-    if (error) {
-      console.warn('Supabase regional fetch warning:', error.message);
-      return [];
-    }
-
-    return (data || []).map(mapRowToBeneficiary);
-  } catch (err) {
-    console.warn('Supabase regional fetch error:', err);
-    return [];
-  }
-};
 
 /**
  * Fetches all registered beneficiaries across all regions (Super Admin only).
@@ -202,30 +173,7 @@ export const deleteBeneficiaryFromDb = async (
   }
 };
 
-/**
- * Subscribes to live Postgres database changes on the `users` table via Supabase Realtime.
- * Automatically notifies callbacks on INSERT, UPDATE, and DELETE.
- */
-export const subscribeToUsersRealtime = (
-  onChange: (eventType: 'INSERT' | 'UPDATE' | 'DELETE', payload: any) => void
-): (() => void) => {
-  if (!isSupabaseConfigured) return () => {};
 
-  const channel = supabase
-    .channel('sahayasetu_users_realtime')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'users' },
-      (payload) => {
-        onChange(payload.eventType as any, payload);
-      }
-    )
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
-};
 
 /**
  * Subscribes to live Postgres database changes across all 4 managed database entities:

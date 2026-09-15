@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (accessToken && refreshToken) {
             try {
-              const { data, error } = await supabase.auth.setSession({
+              const { data } = await supabase.auth.setSession({
                 access_token: accessToken,
                 refresh_token: refreshToken
               });
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // 4. If no session established yet but code exists, exchange code safely
         if (!activeSession && code) {
           try {
-            const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+            const { data } = await supabase.auth.exchangeCodeForSession(code);
             if (data?.session) {
               activeSession = data.session;
             }

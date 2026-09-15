@@ -22,8 +22,6 @@ sahayasetu/
 ├── docs/                                  # In-depth architectural & technical documentation
 │   └── TECHNICAL_DESIGN_DOCUMENT.md
 ├── public/                                # Static web assets & icons
-├── scripts/                               # Database seeding and utility scripts
-│   └── seedUsers.js
 ├── src/                                   # Application source code
 │   ├── components/                        # Reusable UI widgets, modals, drawers & banners
 │   ├── context/                           # React Context providers (Auth, Language)
@@ -113,13 +111,9 @@ These files represent the main screens and functional portals of the application
   - **Wage Ledger**: Historical tracking of civil reconstruction workdays and bank transfers.
   - **Direct Regional Helpline**: Displays contact details for their assigned district regional relief officer.
 
-### 8. `CitizenDashboardView.tsx`
-* **Role**: Citizen Workspace.
-* **Function**: Summary dashboard showing verification badges, employment readiness score, and quick navigation to profile editing or digital relief passes.
-
-### 9. `GoogleSignInView.tsx`
+### 8. `GoogleSignInView.tsx`
 * **Role**: Public Citizen Authentication.
-* **Function**: Simulated & Supabase Google OAuth sign-in gateway allowing displaced citizens to log into their applications securely using Google credentials.
+* **Function**: Google OAuth sign-in gateway allowing displaced citizens to log into their applications securely using Google credentials.
 
 ---
 
@@ -140,8 +134,6 @@ Reusable interface elements, popups, and navigational headers:
 | **`LanguageSelectionModal.tsx`** | Language selection popup supporting Malayalam and English. |
 | **`RegionalAdminLoginModal.tsx`** | Quick modal popup for Regional Admin authentication. |
 | **`EditRegionalAdminCredentialsModal.tsx`** | Modal allowing active Regional Admins to update their password and contact details. |
-| **`ProvisionRegionalAdminModal.tsx`** | Super Admin modal for provisioning new regional admin accounts for specific Kerala districts. |
-| **`ProvisionTenantModal.tsx`** | Modal for establishing new district tenants and command nodes. |
 | **`Toast.tsx`** | Floating notification banner displaying success, warning, or informational alerts with SMS audit references. |
 
 ---
@@ -220,12 +212,11 @@ SahayaSetu uses a custom Vanilla CSS design system built on CSS variables:
 
 ---
 
-## 11. `supabase/` & `scripts/` (Database & Tooling)
+## 11. `supabase/` (Database & Schema)
 
 | File | Purpose |
 | :--- | :--- |
-| **`supabase/schema.sql`** | Complete PostgreSQL database schema with tables for `users`, `job_posts`, `job_applications`, `regional_admins`, and `disaster_details`, complete with Row Level Security (RLS) policies. |
-| **`scripts/seedUsers.js`** | Node.js script for populating the database with initial realistic test beneficiaries and civil projects. |
+| **`supabase/schema.sql`** | Complete PostgreSQL database schema with tables for `users`, `job_posts`, `regional_admins`, and `disaster_details`, complete with Row Level Security (RLS) policies and complete seed datasets for all 14 Kerala districts. |
 
 ---
 

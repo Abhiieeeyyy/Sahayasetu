@@ -28,8 +28,7 @@ export type NavigationTab =
   | 'super-admin'            // SGA: Statewide multi-tenant command center
   | 'region-analysis'        // SGA: Region-wise disaster and relief telemetry analysis
   | 'self-portal'            // Beneficiary wage and active assignment portal
-  | 'registration'           // Rapid onboarding dossier (Citizen / Officer)
-  | 'citizen-dashboard';     // Logged-in citizen view & readiness status
+  | 'registration';          // Rapid onboarding dossier (Citizen / Officer)
 
 /**
  * Represents the active user role/perspective to enforce strict role-based access control (RBAC):
@@ -94,18 +93,7 @@ export interface RegionDisaster {
   emergencyDirectives?: string;        // Response orders or NDRF deployment notes
 }
 
-/**
- * Application status tracking lifecycle for displaced citizens.
- */
-export type ApplicationStepStatus = 'completed' | 'current' | 'pending';
 
-export interface ApplicationTrackingStep {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  status: ApplicationStepStatus;
-}
 
 // ----------------------------------------------------------------------------
 // 2. BENEFICIARY PROFILE & ROSTER TYPES (BPI)
@@ -262,18 +250,7 @@ export interface WageEntry {
   transactionRef?: string;       // Public Financial Management System (PFMS) ref
 }
 
-/**
- * Emergency notification or broadcast bulletin published to beneficiaries.
- */
-export interface EmergencyBroadcast {
-  id: string;                    // Unique broadcast ID
-  title: string;                 // Broadcast title
-  timestamp: string;             // Time posted
-  urgency: 'Critical' | 'Warning' | 'Notice'; // Urgency classification
-  content: string;               // Announcement body
-  actionLabel?: string;          // Interactive CTA label if any
-  contactPhone?: string;         // Emergency helpline
-}
+
 
 // ----------------------------------------------------------------------------
 // 6. UI INTERACTION & FEEDBACK TOAST TYPES

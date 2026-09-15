@@ -8,7 +8,7 @@
  * selected after Google Sign-In.
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { RegistrationLanguage } from '../types';
 
 interface LanguageContextType {

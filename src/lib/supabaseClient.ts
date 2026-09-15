@@ -15,7 +15,7 @@
  *    live Supabase URL / API key are not yet configured in .env.
  */
 
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 
   ((import.meta as any).env?.VITE_SUPABASE_URL as string) || 

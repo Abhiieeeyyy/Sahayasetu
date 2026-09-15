@@ -45,7 +45,6 @@ import { SkillMatchingView } from './views/SkillMatchingView';
 import { SuperAdminCommandView } from './views/SuperAdminCommandView';
 import { BeneficiarySelfPortalView } from './views/BeneficiarySelfPortalView';
 import { UserRegistrationView } from './views/UserRegistrationView';
-import { CitizenDashboardView } from './views/CitizenDashboardView';
 import { GoogleSignInView } from './views/GoogleSignInView';
 import { RegionalAdminLoginView } from './views/RegionalAdminLoginView';
 import { SuperAdminLoginView, isSuperAdminLoggedIn, setSuperAdminLoggedIn } from './views/SuperAdminLoginView';
@@ -55,7 +54,6 @@ import { EditRegionalAdminCredentialsModal } from './components/EditRegionalAdmi
 import { 
   getActiveRegionalAdmin, 
   setActiveRegionalAdmin, 
-  getStoredRegionalAdmins,
   saveStoredRegionalAdmins,
   validateActiveRegionalAdminSession,
   purgeAllUserData, 
@@ -71,7 +69,6 @@ import {
   fetchDisasterDetailsFromDb,
   purgeAllUsersFromDb,
   deleteBeneficiaryFromDb,
-  subscribeToUsersRealtime,
   subscribeToAllEntitiesRealtime,
   subscribeToRegionalAdminsRealtime
 } from './services/supabaseService';
@@ -82,11 +79,8 @@ import { revertCitizenJobAssignment } from './services/notificationService';
 import { isSameJurisdiction, getDistrictDisplayName } from './utils/jurisdictionUtils';
 
 // ----------------------------------------------------------------------------
-// FRESH HUMANITARIAN DATA
-// All mock seeded data wiped to guarantee clean, fresh tables across all modules
+// FRESH HUMANITARIAN REQUISITIONS
 // ----------------------------------------------------------------------------
-const INITIAL_BENEFICIARIES: Beneficiary[] = [];
-
 const INITIAL_REQUISITIONS: JobRequisition[] = [
   {
     id: 'JOB-WYD-101',
@@ -452,7 +446,7 @@ export const App: React.FC = () => {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>(loadStoredBeneficiaries);
   const [requisitions, setRequisitions] = useState<JobRequisition[]>(INITIAL_REQUISITIONS);
   const [districts, setDistricts] = useState<DistrictTenant[]>(INITIAL_DISTRICTS);
-  const [wages, setWages] = useState<WageEntry[]>(INITIAL_WAGES);
+  const [wages] = useState<WageEntry[]>(INITIAL_WAGES);
 
   // --------------------------------------------------------------------------
   // USER APPLICATION TRACKING FILTER (MULTIPLE APPLICATIONS SUPPORT)

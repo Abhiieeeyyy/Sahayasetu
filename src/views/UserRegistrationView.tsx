@@ -12,8 +12,8 @@
  * 5. Uses session-wide language preference from LanguageContext.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Beneficiary, VocationalSkill, CalamityType, RegistrationLanguage } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Beneficiary, VocationalSkill, RegistrationLanguage } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getStoredDisasters, RegionDisaster } from '../services/disasterService';

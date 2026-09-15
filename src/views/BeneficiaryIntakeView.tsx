@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Beneficiary, VocationalSkill, UserRole, RegionalAdminAccount } from '../types';
+import { Beneficiary, UserRole, RegionalAdminAccount } from '../types';
 import { IntakeDrawer } from '../components/IntakeDrawer';
 import { UserDetailsModal } from '../components/UserDetailsModal';
 import { normalizeDistrictCode } from '../utils/jurisdictionUtils';
