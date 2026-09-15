@@ -1127,7 +1127,6 @@ export const App: React.FC = () => {
                     ) : (
                       <BeneficiaryIntakeView
                         beneficiaries={beneficiaries}
-                        onAddBeneficiary={handleAddBeneficiary}
                         onDeployBeneficiary={handleDeployBeneficiary}
                         onDeleteBeneficiary={handleDeleteBeneficiary}
                         onRevertDispatch={handleRevertDispatch}
@@ -1210,7 +1209,6 @@ export const App: React.FC = () => {
                     {activeTab === 'beneficiary-intake' && (
                       <BeneficiaryIntakeView
                         beneficiaries={beneficiaries}
-                        onAddBeneficiary={handleAddBeneficiary}
                         onDeployBeneficiary={handleDeployBeneficiary}
                         onDeleteBeneficiary={handleDeleteBeneficiary}
                         onRevertDispatch={handleRevertDispatch}

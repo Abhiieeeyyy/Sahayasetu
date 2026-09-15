@@ -21,13 +21,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { Beneficiary, UserRole, RegionalAdminAccount } from '../types';
-import { IntakeDrawer } from '../components/IntakeDrawer';
 import { UserDetailsModal } from '../components/UserDetailsModal';
 import { normalizeDistrictCode } from '../utils/jurisdictionUtils';
 
 interface BeneficiaryIntakeViewProps {
   beneficiaries: Beneficiary[];
-  onAddBeneficiary: (beneficiary: Beneficiary) => void;
   onDeployBeneficiary: (beneficiaryId: string) => void;
   onRevertDispatch?: (beneficiaryId: string, reqId?: string) => void;
   onShowToast: (title: string, message: string, type?: 'success' | 'warning' | 'info') => void;
@@ -40,7 +38,6 @@ interface BeneficiaryIntakeViewProps {
 
 export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
   beneficiaries,
-  onAddBeneficiary,
   onDeployBeneficiary,
   onRevertDispatch,
   onShowToast,
@@ -57,7 +54,6 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'camp' | 'makeshift' | 'available' | 'masons' | 'electricians'>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('ALL');
-  const [isIntakeDrawerOpen, setIsIntakeDrawerOpen] = useState(false);
   const [selectedUserDetails, setSelectedUserDetails] = useState<Beneficiary | null>(null);
 
   // Active district for regional admin (defaults to Wayanad if not logged in)
@@ -704,19 +700,9 @@ export const BeneficiaryIntakeView: React.FC<BeneficiaryIntakeViewProps> = ({
       </div>
 
       {/* ----------------------------------------------------------------------
-       * SECTION 6: MODAL & DRAWER SUB-COMPONENTS
-       * Rapid intake drawer, registered user details modal, and relief pass modal
+       * SECTION 6: MODAL SUB-COMPONENTS
+       * Registered user details modal
        * ---------------------------------------------------------------------- */}
-      <IntakeDrawer
-        isOpen={isIntakeDrawerOpen}
-        onClose={() => setIsIntakeDrawerOpen(false)}
-        activeRegionalAdmin={activeRegionalAdmin}
-        onSubmit={(newBen) => {
-          onAddBeneficiary(newBen);
-          onShowToast('Beneficiary Registered', `${newBen.name} successfully enqueued into live roster.`);
-        }}
-      />
-
       {selectedUserDetails && (
         <UserDetailsModal
           isOpen={true}

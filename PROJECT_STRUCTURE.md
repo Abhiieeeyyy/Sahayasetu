@@ -129,7 +129,6 @@ Reusable interface elements, popups, and navigational headers:
 | **`PostNeedModal.tsx`** | Modal drawer enabling regional admins to publish new emergency civil rebuilding job vacancies with wage rates, required trade, duration, and quota. |
 | **`EditJobModal.tsx`** | Modal enabling regional admins to modify already-posted emergency jobs (update required trades, wage, duration, priority, or headcount). |
 | **`UserDetailsModal.tsx`** | Comprehensive dossier modal showing all details of a registered citizen (biometrics, bank details, emergency contacts, vocational experience). |
-| **`IntakeDrawer.tsx`** | Rapid field registration slide-over drawer for volunteers registering people at camp desks without leaving the live roster. |
 | **`OfflinePassModal.tsx`** | Generates digital and printable cryptographic relief transit passes with QR codes for military/police checkpoints. |
 | **`LanguageSelectionModal.tsx`** | Language selection popup supporting Malayalam and English. |
 | **`RegionalAdminLoginModal.tsx`** | Quick modal popup for Regional Admin authentication. |
